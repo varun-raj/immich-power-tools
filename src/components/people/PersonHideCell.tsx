@@ -37,7 +37,7 @@ export default function PersonHideCell({ person, onUpdate }: IProps) {
   return (
     <button
       onClick={() => handleEdit(!hidden)}
-      className="bg-gray-200 rounded-lg px-2 py-1 text-sm border"
+      className="bg-gray-200 rounded-lg px-2 py-1 text-sm border-0"
     >
       {hidden ? "Show" : "Hide"}
     </button>

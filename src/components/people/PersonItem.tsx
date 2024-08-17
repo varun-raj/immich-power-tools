@@ -6,6 +6,8 @@ import { PersonMergeDropdown } from "./PersonMergeDropdown";
 import PersonBirthdayCell from "./PersonBirthdayCell";
 import PersonHideCell from "./PersonHideCell";
 import clsx from "clsx";
+import Link from "next/link";
+import { ENV } from "@/config/environment";
 
 interface IProps {
   person: IPerson;
@@ -42,7 +44,12 @@ export default function PersonItem({ person }: IProps) {
           src={person.thumbnailPath}
           alt={person.name}
         />
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 left-2 ">
+        <Link className="bg-green-300 rounded-lg px-2 py-1 text-sm" href={`${ENV.IMMICH_URL}/people/${person.id}`} target="_blank">
+          View
+          </Link>
+        </div>
+        <div className="absolute top-2 right-2 ">
           <PersonHideCell
             person={person}
             onUpdate={(newData) => {
@@ -50,6 +57,7 @@ export default function PersonItem({ person }: IProps) {
             }}
           />
         </div>
+
       </div>
       {!editMode ? (
         <h2
@@ -72,6 +80,11 @@ export default function PersonItem({ person }: IProps) {
           autoFocus
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleEdit();
+            }
           }}
           disabled={loading}
           onBlur={handleEdit}

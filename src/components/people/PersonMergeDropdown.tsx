@@ -84,9 +84,10 @@ export function PersonMergeDropdown(
   };
 
   const handleSelect = (value: IPerson) => {
+    setOpen(false);
     return mergePerson(person.id, value.id)
     .then(() => {
-      setOpen(false);
+      
     })
   };
 
