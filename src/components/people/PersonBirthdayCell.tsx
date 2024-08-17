@@ -33,9 +33,5 @@ export default function PersonBirthdayCell(
 
 
 
-  return (
-    <div>
-      <DatePicker date={person.birthDate} onSelect={handleEdit}/>
-    </div>
-  )
+  return <DatePicker date={person.birthDate} onSelect={handleEdit}/>
 }

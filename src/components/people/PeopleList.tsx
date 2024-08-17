@@ -1,5 +1,4 @@
 import { listPeople } from "@/handlers/api/people.handler";
-import { IListData } from "@/types/common";
 import { IPerson } from "@/types/person";
 import React, { useEffect, useState } from "react";
 import Loader from "../ui/loader";
@@ -9,6 +8,9 @@ import { Table } from "../ui/table";
 import PersonBirthdayCell from "./PersonBirthdayCell";
 import Link from "next/link";
 import { ENV } from "@/config/environment";
+import PersonHideCell from "./PersonHideCell";
+import { PeoplePagination } from "./PeoplePagination";
+import { useRouter } from "next/router";
 
 const columns: ColumnDef<IPerson>[] = [
   {
@@ -25,7 +27,7 @@ const columns: ColumnDef<IPerson>[] = [
     header: "Hidden",
     accessorKey: "isHidden",
     cell: ({ row }) => (
-      <span>{row.original.isHidden ? "Yes" : "No"}</span>
+      <PersonHideCell person={row.original} />
     ),
   },
   {
@@ -46,15 +48,18 @@ const columns: ColumnDef<IPerson>[] = [
   },
 ];
 
-
-
 export default function PeopleList() {
+  const router = useRouter()
+  const { page = 1 } = router.query as { page: string }
   const [people, setPeople] = useState<IPerson[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchData = async () => {
-    return listPeople()
+    setLoading(true);
+    return listPeople({
+      page
+    })
       .then((response) => {
         setPeople(response.people);
       })
@@ -67,17 +72,28 @@ export default function PeopleList() {
   };
 
   useEffect(() => {
+    if (!router.isReady) return;
     fetchData();
-  }, []);
+  }, [page]);
+
+  const renderContent = () => {
 
   if (loading) return <Loader />;
-
   if (errorMessage) return <div>{errorMessage}</div>;
+  return (
+    <div className="grid grid-cols-8 gap-4 p-2">
+      {people.map((person) => (
+        <PersonItem person={person} />
+      ))}
+    </div>
+  )
+}
 
   return (
     <div>
-      <div className="flex flex-col gap-2">
-      <Table<IPerson> columns={columns} data={people} />
+        {renderContent()}
+      <div className="fixed bottom-0 w-full bg-gray-200 py-2 flex justify-center">
+      <PeoplePagination />
       </div>
     </div>
   );

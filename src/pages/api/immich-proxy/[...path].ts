@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const targetUrl = `${ENV.IMMICH_URL}/api${proxyPath}`;
 
-  console.log('targetUrl:', req.method)
+  console.log('targetUrl:', targetUrl)
 
   try {
     const response = await fetch(targetUrl, {
@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'x-api-key': ENV.IMMICH_API_KEY,
         'Content-Type': 'application/json',
       },
+
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null,
     })
 

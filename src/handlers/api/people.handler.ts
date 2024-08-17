@@ -3,8 +3,11 @@ import { cleanUpPerson } from "@/helpers/person.helper";
 import API from "@/lib/api"
 import { IPeopleListResponse, IPerson } from "@/types/person"
 
-export const listPeople = (): Promise<IPeopleListResponse> => {
-  return API.get(LIST_PEOPLE_PATH).then((response) => {
+interface IPersonListFilters {
+  page: string | number;
+}
+export const listPeople = (filters: IPersonListFilters): Promise<IPeopleListResponse> => {
+  return API.get(LIST_PEOPLE_PATH, filters).then((response) => {
     return {
       ...response,
       people: response.people.map(cleanUpPerson),

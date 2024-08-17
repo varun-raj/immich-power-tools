@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Avatar } from "../ui/avatar";
 import { updatePerson } from "@/handlers/api/people.handler";
 import { PersonMergeDropdown } from "./PersonMergeDropdown";
+import PersonBirthdayCell from "./PersonBirthdayCell";
+import PersonHideCell from "./PersonHideCell";
+import clsx from "clsx";
 
 interface IProps {
   person: IPerson;
@@ -27,25 +30,44 @@ export default function PersonItem({ person }: IProps) {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Avatar
-        className="w-12 h-12"
-        src={person.thumbnailPath}
-        alt={person.name}
-      />
+    <div
+      className={clsx("flex flex-col rounded-lg pb-2 border border-2 border-transparent items-center gap-2", {
+        "opacity-50": formData.isHidden,
+        "border border-blue-500": formData.name,
+      })}
+    >
+      <div className="relative w-full h-auto">
+        <Avatar
+          className="w-full h-auto rounded-lg"
+          src={person.thumbnailPath}
+          alt={person.name}
+        />
+        <div className="absolute top-2 right-2">
+          <PersonHideCell
+            person={person}
+            onUpdate={(newData) => {
+              setFormData(newData);
+            }}
+          />
+        </div>
+      </div>
       {!editMode ? (
         <h2
-          className="text-lg font-semibold"
+          className="text-lg text-center font-semibold"
           onClick={() => {
             setEditMode((prev) => !prev);
           }}
         >
-          {formData.name ? formData.name : <span className="text-gray-400">Unknown</span>}
+          {formData.name ? (
+            formData.name
+          ) : (
+            <span className="text-gray-400">Unknown</span>
+          )}
         </h2>
       ) : (
         <input
           type="text"
-          className="text-lg font-semibold"
+          className="text-lg font-semibold text-center"
           defaultValue={formData.name}
           autoFocus
           onChange={(e) => {
@@ -56,6 +78,7 @@ export default function PersonItem({ person }: IProps) {
         />
       )}
       <PersonMergeDropdown person={person} />
+      <PersonBirthdayCell person={person} />
     </div>
   );
 }

@@ -12,7 +12,7 @@ const config = {
   prefix: "",
   theme: {
     fontFamily: {
-      sans: ["var(--font-sans)", ...fontFamily.sans],
+     
     },
     container: {
       center: true,
