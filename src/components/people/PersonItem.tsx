@@ -2,6 +2,7 @@ import { IPerson } from "@/types/person";
 import React, { useState } from "react";
 import { Avatar } from "../ui/avatar";
 import { updatePerson } from "@/handlers/api/people.handler";
+import { PersonMergeDropdown } from "./PersonMergeDropdown";
 
 interface IProps {
   person: IPerson;
@@ -54,6 +55,7 @@ export default function PersonItem({ person }: IProps) {
           onBlur={handleEdit}
         />
       )}
+      <PersonMergeDropdown person={person} />
     </div>
   );
 }

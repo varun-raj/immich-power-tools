@@ -7,6 +7,8 @@ import PersonItem from "./PersonItem";
 import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "../ui/table";
 import PersonBirthdayCell from "./PersonBirthdayCell";
+import Link from "next/link";
+import { ENV } from "@/config/environment";
 
 const columns: ColumnDef<IPerson>[] = [
   {
@@ -18,6 +20,22 @@ const columns: ColumnDef<IPerson>[] = [
     header: "Birth Date",
     accessorKey: "birthDate",
     cell: ({ row }) => <PersonBirthdayCell person={row.original} />,
+  },
+  {
+    header: "Hidden",
+    accessorKey: "isHidden",
+    cell: ({ row }) => (
+      <span>{row.original.isHidden ? "Yes" : "No"}</span>
+    ),
+  },
+  {
+    header: "Link",
+    accessorKey: "id",
+    cell: ({ row }) => (
+      <Link href={`${ENV.IMMICH_URL}/people/${row.original.id}`} target="_blank">
+        View
+      </Link>
+    )
   },
   {
     header: "Updated At",
