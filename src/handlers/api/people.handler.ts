@@ -12,6 +12,10 @@ export const listPeople = (): Promise<IPeopleListResponse> => {
   });
 }
 
-export const updatePerson = (id: string, data: Partial<IPerson>) => {
+export const updatePerson = (id: string, data: Partial<{
+  name: string;
+  birthDate: string;
+  isHidden: boolean;
+}>) => {
   return API.put(UPDATE_PERSON_PATH(id), data)
 }
