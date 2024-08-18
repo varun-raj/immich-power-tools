@@ -1,8 +1,13 @@
+
 # ![Logo](./public/favicon-32x32.png) Immich Power Tools
 
 A unofficial immich client to provide better tools to organize and manage your immich account. Building it to speed up your workflows in Immich to organize your people and albums.
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=5b6249ac-d318-44e1-a3e2-6ed3c7a1d38a" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+[Watch Demo Video here](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
+
+[![Immich Power Tools](./screenshots/screenshot-1.jpeg)](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
+
 
 ### Back story
 
