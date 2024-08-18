@@ -1,4 +1,4 @@
-import { Home, User } from "lucide-react";
+import { Home, Image, User } from "lucide-react";
 
 
 export const sidebarNavs = [
@@ -6,6 +6,11 @@ export const sidebarNavs = [
     title: "Manage People",
     link: "/",
     icon: <User className="h-4 w-4" />,
+  },
+  {
+    title: "Exif Analytics",
+    link: "/analytics/exif",
+    icon: <Image className="h-4 w-4" />,
   },
   {
     title: "Statistics",

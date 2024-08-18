@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef<
+const CardRoot = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -15,7 +15,7 @@ const Card = React.forwardRef<
     {...props}
   />
 ))
-Card.displayName = "Card"
+CardRoot.displayName = "CardRoot"
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -73,4 +73,23 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+interface CardProps {
+  title?: string
+  description?: string
+
+  children: React.ReactNode
+}
+const Card = ({ children, title, description }: CardProps) => {
+  return (
+    <CardRoot>
+      {!!(title || description) && (
+        <CardHeader>
+          {title && <CardTitle>{title}</CardTitle>}
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+      )}
+      <CardContent>{children}</CardContent>
+    </CardRoot>
+  )
+}
+export { Card, CardRoot, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
