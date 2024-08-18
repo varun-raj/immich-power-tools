@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "author": {
+    "name": "Varun Raj Manoharan",
+    "email": "varun@skcript.com",
+    "url": "https://varunraj.in"
+  },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
