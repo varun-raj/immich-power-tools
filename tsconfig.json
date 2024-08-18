@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "target": "ESNext",
     "paths": {
       "@/*": ["./src/*"]
     }
