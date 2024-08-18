@@ -12,7 +12,7 @@ const config = {
   prefix: "",
   theme: {
     fontFamily: {
-     
+      mono: [ ...fontFamily.mono ],
     },
     container: {
       center: true,

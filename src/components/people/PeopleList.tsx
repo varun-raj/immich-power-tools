@@ -52,6 +52,7 @@ export default function PeopleList() {
   const router = useRouter()
   const { page = 1 } = router.query as { page: string }
   const [people, setPeople] = useState<IPerson[]>([]);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -62,6 +63,7 @@ export default function PeopleList() {
     })
       .then((response) => {
         setPeople(response.people);
+        setCount(response.total);
       })
       .catch((error) => {
         setErrorMessage(error.message);
@@ -76,25 +78,15 @@ export default function PeopleList() {
     fetchData();
   }, [page]);
 
-  const renderContent = () => {
+
 
   if (loading) return <Loader />;
   if (errorMessage) return <div>{errorMessage}</div>;
   return (
-    <div className="grid grid-cols-8 gap-4 p-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6  gap-4 p-2">
       {people.map((person) => (
         <PersonItem person={person} />
       ))}
     </div>
   )
-}
-
-  return (
-    <div>
-        {renderContent()}
-      <div className="fixed bottom-0 w-full bg-gray-200 py-2 flex justify-center">
-      <PeoplePagination />
-      </div>
-    </div>
-  );
 }

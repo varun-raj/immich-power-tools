@@ -95,12 +95,11 @@ export function PersonMergeDropdown(
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="justify-start flex gap-2">
-            <Merge size={14} />
-            <span className="text-xs">Merge</span>
+          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7">
+            Merge
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0" side="right" align="start">
+        <PopoverContent className="p-0" side="bottom" align="center">
           <Command>
             <CommandInput
               placeholder="Change status..."

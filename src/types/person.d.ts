@@ -10,4 +10,5 @@ export interface IPerson {
 
 interface IPeopleListResponse extends IListData{
   people: IPerson[]
+  total: number
 }
