@@ -87,7 +87,7 @@ export default function PersonItem({ person }: IProps) {
       </div>
       {!editMode ? (
         <h2
-          className="text-lg text-center font-semibold hover:bg-gray-300 w-full px-2 py-1 rounded-lg"
+          className="text-lg text-center font-semibold hover:bg-gray-300 dark:hover:bg-gray-800 w-full px-2 py-1 rounded-lg"
           onClick={() => {
             setEditMode((prev) => !prev);
           }}
