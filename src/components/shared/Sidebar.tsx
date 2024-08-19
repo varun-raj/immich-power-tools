@@ -51,11 +51,6 @@ export default function Sidebar() {
               >
                 {nav.icon}
                 {nav.title}
-                {nav.badge && (
-                  <Badge variant="outline" className="rounded-full text-nowrap">
-                    {nav.badge}
-                  </Badge>
-                )}
               </Link>
             ))}
           </nav>

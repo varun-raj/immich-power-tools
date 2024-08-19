@@ -9,3 +9,11 @@ export const MERGE_PERSON_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/people/
 
 
 export const EXIF_DISTRIBUTION_PATH = (column: string) => BASE_API_ENDPOINT + "/analytics/exif/" + column;
+
+// Albums
+export const LIST_POTENTIAL_ALBUMS_DATES_PATH = BASE_API_ENDPOINT + "/albums/potential-albums-dates";
+export const LIST_POTENTIAL_ALBUMS_ASSETS_PATH = BASE_API_ENDPOINT + "/albums/potential-albums-assets";
+export const ASSET_THUMBNAIL_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id;
+export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id + "?size=preview";
+export const LIST_ALBUMS_PATH = BASE_PROXY_ENDPOINT + "/albums";
+export const ADD_ASSETS_ALBUMS_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";

@@ -4,10 +4,13 @@ import { cn } from "@/lib/utils";
 
 interface IProps {
   children: React.ReactNode[] | React.ReactNode;
+  className?: string;
 }
-export default function PageLayout({ children }: IProps) {
+export default function PageLayout({ children, className }: IProps) {
   const header = Array.isArray(children)
-    ? children.find((child) => React.isValidElement(child) && child.type === Header)
+    ? children.find(
+        (child) => React.isValidElement(child) && child.type === Header
+      )
     : null;
 
   const childrenWithoutHeader = Array.isArray(children)
@@ -19,11 +22,15 @@ export default function PageLayout({ children }: IProps) {
   return (
     <>
       {header}
-      <main className={
-        cn("flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto", {
-          'mb-14': !!header,
-        })
-      }>
+      <main
+        className={cn(
+          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto",
+          {
+            "mb-14": !!header,
+          },
+          className
+        )}
+      >
         {childrenWithoutHeader}
       </main>
     </>
