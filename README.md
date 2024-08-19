@@ -57,7 +57,7 @@ bun run dev
 **Tech Related**
 
 - [ ] Dark Mode
-- [ ] Dockerize
+- [x] Dockerize
 - [ ] Authentication
 
 ### Tech Stack
