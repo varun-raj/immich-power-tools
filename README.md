@@ -45,20 +45,26 @@ Run the development server:
 bun run dev
 ```
 
-
 ### Features
 
 **Immich Related**
 
 - [x] Manage People 
+  - [ ] Smart Merge 
 - [ ] Manage Albums
+  - [ ] Bulk Delete
+  - [ ] Bulk Edit
+  - [ ] Filters
 - [ ] Statistics
+  - [x] EXIF Data
+  - [ ] Assets Overtime Chart
 
 **Tech Related**
 
-- [ ] Dark Mode
+- [x] Dark Mode
 - [x] Dockerize
 - [ ] Authentication
+- [ ] Push to [dockerhub](https://hub.docker.com/)
 
 ### Tech Stack
 
