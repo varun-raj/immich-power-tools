@@ -47,7 +47,7 @@ export default function Header({ leftComponent, rightComponent }: IProps) {
         <title>{leftComponent} - Immich Power Tools</title>
       </Head>
     )}
-    <header key="header" className="sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b bg-muted px-4 lg:h-[60px] lg:px-6">
+    <header key="header" className="sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0 md:hidden">

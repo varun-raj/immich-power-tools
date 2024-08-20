@@ -3,8 +3,17 @@ import { cleanUpPerson } from "@/helpers/person.helper";
 import API from "@/lib/api"
 import { IPeopleListResponse, IPerson } from "@/types/person"
 
-interface IPersonListFilters {
-  page: string | number;
+type ISortField = "assetCount" | "updatedAt" | "createdAt";
+
+export interface IPersonListFilters {
+  page: number | string;
+  perPage?: number;
+  nameLessOnly?: boolean | string;
+  minimumAssetCount?: number;
+  maximumAssetCount?: number;
+  sort?: ISortField;
+  sortOrder?: "asc" | "desc";
+
 }
 export const listPeople = (filters: IPersonListFilters): Promise<IPeopleListResponse> => {
   return API.get(LIST_PEOPLE_PATH, filters).then((response) => {

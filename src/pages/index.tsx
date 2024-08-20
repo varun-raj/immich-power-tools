@@ -7,15 +7,5 @@ import { PeoplePagination } from "@/components/people/PeoplePagination";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  return (
-    <PageLayout>
-      <Header 
-        leftComponent="Manage People" 
-        rightComponent={
-          <PeoplePagination />
-        }
-      />
-      <PeopleList />
-    </PageLayout>
-  );
+  return <PeopleList />
 }

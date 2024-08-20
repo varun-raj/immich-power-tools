@@ -28,7 +28,7 @@ export const assets = pgTable('assets', {
   isExternal: boolean('isExternal').default(false).notNull(),
   deletedAt: timestamp('deletedAt', { withTimezone: true }),
   localDateTime: timestamp('localDateTime', { withTimezone: true }).notNull(),
-  // stackId: uuid('stackId').references(() => assetStack.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+  stackId: uuid('stackId'),
   duplicateId: uuid('duplicateId'),
 });
 

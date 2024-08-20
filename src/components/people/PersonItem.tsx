@@ -11,11 +11,13 @@ import { ENV } from "@/config/environment";
 import { ArrowUpRight } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
+import { Badge } from "../ui/badge";
 
 interface IProps {
   person: IPerson;
+  onRemove: (person: IPerson) => void;
 }
-export default function PersonItem({ person }: IProps) {
+export default function PersonItem({ person, onRemove }: IProps) {
   const { immichURL } = useConfig();
   const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
@@ -90,6 +92,9 @@ export default function PersonItem({ person }: IProps) {
           />
         </div>
 
+        <div className="absolute bottom-2 w-full flex justify-center items-center">
+          <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
+        </div>
         <div className="absolute top-2 left-2 group-hover:block hidden">
           <Link
             className="bg-green-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
@@ -100,7 +105,7 @@ export default function PersonItem({ person }: IProps) {
           </Link>
         </div>
         <div className="absolute top-2 right-2 ">
-          <PersonMergeDropdown person={person} />
+          <PersonMergeDropdown person={person} onRemove={onRemove}/>
         </div>
       </div>
       {!editMode ? (

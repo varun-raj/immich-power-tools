@@ -1,0 +1,11 @@
+{
+  "dialect": "postgresql",
+  "schema": "./src/schema",
+  "breakpoints": false,
+  "url": "postgresql://postgres:postgres-aedf4b0c1d50@192.168.0.200:5432/immich",
+  "dbCredentials": {
+    "user": "postgres",
+    "password": "postgres-aedf4b0c1d50",
+    "host": "192.168.0.200"
+  }
+}

@@ -1,31 +1,29 @@
-import { listPeople } from "@/handlers/api/people.handler";
+import { IPersonListFilters, listPeople } from "@/handlers/api/people.handler";
 import { IPerson } from "@/types/person";
 import React, { useEffect, useState } from "react";
 import Loader from "../ui/loader";
 import PersonItem from "./PersonItem";
-import { ColumnDef } from "@tanstack/react-table";
-import { Table } from "../ui/table";
-import PersonBirthdayCell from "./PersonBirthdayCell";
-import Link from "next/link";
-import { ENV } from "@/config/environment";
-import PersonHideCell from "./PersonHideCell";
-import { PeoplePagination } from "./PeoplePagination";
+import { PeopleFilters } from "./PeopleFilters";
 import { useRouter } from "next/router";
-
+import PeopleFilterContext from "@/contexts/PeopleFilterContext";
+import PageLayout from "../layouts/PageLayout";
+import Header from "../shared/Header";
 
 export default function PeopleList() {
-  const router = useRouter()
-  const { page = 1 } = router.query as { page: string }
+  const router = useRouter();
   const [people, setPeople] = useState<IPerson[]>([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filters, setFilters] = useState<IPersonListFilters>({
+    page: 1,
+  });
 
+  
   const fetchData = async () => {
     setLoading(true);
-    return listPeople({
-      page
-    })
+    setErrorMessage(null);
+    return listPeople(filters)
       .then((response) => {
         setPeople(response.people);
         setCount(response.total);
@@ -38,20 +36,47 @@ export default function PeopleList() {
       });
   };
 
+  const handleRemove = (person: IPerson) => {
+    setPeople((prev) => prev.filter((p) => {
+      console.log(p.id, person.id, p.id !== person.id);
+      return p.id !== person.id
+    }));
+  }
+
   useEffect(() => {
     if (!router.isReady) return;
     fetchData();
-  }, [page]);
+  }, [filters]);
 
+  console.log(people.length);
 
+  const renderContent = () => {
+    if (loading) return <Loader />;
+    if (errorMessage) return <div>{errorMessage}</div>;
 
-  if (loading) return <Loader />;
-  if (errorMessage) return <div>{errorMessage}</div>;
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6  gap-4 p-2">
+        {people.map((person) => (
+          <PersonItem person={person} key={person.id} onRemove={handleRemove}/>
+        ))}
+      </div>
+    );
+  };
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6  gap-4 p-2">
-      {people.map((person) => (
-        <PersonItem person={person} key={person.id}/>
-      ))}
-    </div>
-  )
+    <PeopleFilterContext.Provider
+      value={{
+        ...filters,
+        updateContext: (newConfig) =>
+          setFilters((prev) => ({ ...prev, ...newConfig })),
+      }}
+    >
+      <PageLayout>
+        <Header
+          leftComponent="Manage People"
+          rightComponent={<PeopleFilters />}
+        />
+        {renderContent()}
+      </PageLayout>
+    </PeopleFilterContext.Provider>
+  );
 }

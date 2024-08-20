@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -11,56 +9,29 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Merge } from "lucide-react";
 import { mergePerson, searchPeople } from "@/handlers/api/people.handler";
 import { IPerson } from "@/types/person";
 import { set } from "date-fns";
 import { CommandLoading } from "cmdk";
 import { Avatar } from "../ui/avatar";
-
-type Status = {
-  value: string;
-  label: string;
-};
-
-const statuses: Status[] = [
-  {
-    value: "backlog",
-    label: "Backlog",
-  },
-  {
-    value: "todo",
-    label: "Todo",
-  },
-  {
-    value: "in progress",
-    label: "In Progress",
-  },
-  {
-    value: "done",
-    label: "Done",
-  },
-  {
-    value: "canceled",
-    label: "Canceled",
-  },
-];
+import { useEffect, useRef, useState } from "react";
+import { useToast } from "../ui/use-toast";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
+  onRemove?: (person: IPerson) => void;
 }
-export function PersonMergeDropdown(
-  { person }: PersonMergeDropdownProps
-) {
-  const [searchedPeople, setSearchedPeople] = React.useState<IPerson[]>([]);
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const searchTimer = React.useRef<NodeJS.Timeout>();
+export function PersonMergeDropdown({
+  person,
+  onRemove,
+}: PersonMergeDropdownProps) {
+  const [searchedPeople, setSearchedPeople] = useState<IPerson[]>([]);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const searchTimer = useRef<NodeJS.Timeout>();
+  const { toast } = useToast();
 
   const handleSearch = (value: string) => {
     if (searchTimer.current) {
@@ -86,20 +57,30 @@ export function PersonMergeDropdown(
   const handleSelect = (value: IPerson) => {
     setOpen(false);
     return mergePerson(person.id, value.id)
-    .then(() => {
-      
-    })
+      .then(() => {
+        onRemove?.(person);
+      })
+      .then(() => {
+        toast({
+          title: "Success",
+          description: "Person merged successfully",
+        });
+      });
   };
+
+  useEffect(() => {
+    if (open) handleSearch("");
+  }, [open]);
 
   return (
     <div className="flex items-center space-x-4">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
           <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7">
             Merge
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="p-0" side="bottom" align="center">
+        </DialogTrigger>
+        <DialogContent className="p-0">
           <Command>
             <CommandInput
               placeholder="Change status..."
@@ -128,8 +109,8 @@ export function PersonMergeDropdown(
               </CommandGroup>
             </CommandList>
           </Command>
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
