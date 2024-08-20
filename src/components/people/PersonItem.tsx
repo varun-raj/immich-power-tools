@@ -9,11 +9,13 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ENV } from "@/config/environment";
 import { ArrowUpRight } from "lucide-react";
+import { useConfig } from "@/contexts/ConfigContext";
 
 interface IProps {
   person: IPerson;
 }
 export default function PersonItem({ person }: IProps) {
+  const { immichURL } = useConfig();
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(person);
@@ -75,7 +77,7 @@ export default function PersonItem({ person }: IProps) {
         <div className="absolute top-2 left-2 group-hover:block hidden">
           <Link
             className="bg-green-300 block rounded-lg px-2 py-1 text-sm"
-            href={`${ENV.IMMICH_URL}/people/${person.id}`}
+            href={`${immichURL}/people/${person.id}`}
             target="_blank"
           >
             <ArrowUpRight size={16} />

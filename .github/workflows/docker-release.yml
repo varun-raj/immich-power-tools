@@ -42,7 +42,4 @@ jobs:
           docker build --build-arg VERSION=${{ env.VERSION }} \
           --push -t varunraj/immich-power-tools:${{ env.VERSION }} \
           -t varunraj/immich-power-tools:latest .
-        env:
-          NEXT_PUBLIC_IMMICH_URL: http://192.168.0.200:3001
-          IMMICH_API_KEY: "immich-api-key"
-          DATABASE_URL: "dabaase-url"
+        

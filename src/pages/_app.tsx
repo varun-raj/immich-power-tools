@@ -1,9 +1,34 @@
 import RootLayout from "@/components/layouts/RootLayout";
 import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from "next-themes";
+import { ENV } from "@/config/environment";
+import ConfigContext from "@/contexts/ConfigContext";
 
-
-export default function App({ Component, pageProps }: AppProps) {
-  return <ThemeProvider attribute="class" storageKey = 'theme'><RootLayout><Component {...pageProps} /></RootLayout></ThemeProvider>
+interface AppPropsWithProps extends AppProps {
+  props: {
+    immichURL: string;
+  };
 }
+const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
+  console.log("App -> pageProps", props);
+  return (
+    <ConfigContext.Provider value={props.props}>
+      <ThemeProvider attribute="class" storageKey="theme">
+        <RootLayout>
+          <Component {...pageProps} />
+        </RootLayout>
+      </ThemeProvider>
+    </ConfigContext.Provider>
+  );
+};
+
+App.getInitialProps = async () => {
+  return {
+    props: {
+      immichURL: ENV.IMMICH_URL,
+    },
+  };
+};
+
+export default App;

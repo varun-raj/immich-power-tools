@@ -12,41 +12,6 @@ import PersonHideCell from "./PersonHideCell";
 import { PeoplePagination } from "./PeoplePagination";
 import { useRouter } from "next/router";
 
-const columns: ColumnDef<IPerson>[] = [
-  {
-    header: "Name",
-    accessorKey: "name",
-    cell: ({ row }) => <PersonItem person={row.original} />,
-  },
-  {
-    header: "Birth Date",
-    accessorKey: "birthDate",
-    cell: ({ row }) => <PersonBirthdayCell person={row.original} />,
-  },
-  {
-    header: "Hidden",
-    accessorKey: "isHidden",
-    cell: ({ row }) => (
-      <PersonHideCell person={row.original} />
-    ),
-  },
-  {
-    header: "Link",
-    accessorKey: "id",
-    cell: ({ row }) => (
-      <Link href={`${ENV.IMMICH_URL}/people/${row.original.id}`} target="_blank">
-        View
-      </Link>
-    )
-  },
-  {
-    header: "Updated At",
-    accessorKey: "updatedAt",
-    cell: ({ row }) => <span>{new Date(
-      row.original.updatedAt
-    ).toDateString()}</span>,
-  },
-];
 
 export default function PeopleList() {
   const router = useRouter()

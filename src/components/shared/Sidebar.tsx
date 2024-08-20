@@ -11,12 +11,14 @@ import { useTheme } from "next-themes";
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useConfig } from "@/contexts/ConfigContext";
 
 const ThemeSwitcher = dynamic(() => import("@/components/shared/ThemeSwitcher"), {
   ssr: false,
 });
 
 export default function Sidebar() {
+  const { immichURL } = useConfig();
   const router = useRouter();
   const { pathname } = router;
 
@@ -58,8 +60,8 @@ export default function Sidebar() {
         <div>
           <div className="flex flex-col gap-1 text-xs text-center py-2">
             <p className="text-muted-foreground font-mono">Connected to</p>
-            <Link href={ENV.IMMICH_URL} target="_blank" className="font-mono">
-              {ENV.IMMICH_URL}
+            <Link href={immichURL} target="_blank" className="font-mono">
+              {immichURL}
             </Link>
           </div>
           <div className="border text-muted-foreground text-xs text-center py-2">
