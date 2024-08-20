@@ -10,28 +10,44 @@ import Link from "next/link";
 import { ENV } from "@/config/environment";
 import { ArrowUpRight } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
+import { useToast } from "../ui/use-toast";
 
 interface IProps {
   person: IPerson;
 }
 export default function PersonItem({ person }: IProps) {
   const { immichURL } = useConfig();
+  const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(person);
 
   const handleEdit = () => {
-    setLoading(true);
-    return updatePerson(person.id, {
-      name: formData.name,
-    })
-      .then(() => {
-        setEditMode(!editMode);
+    if (formData.name && formData.name !== person.name) {
+      setLoading(true);
+      return updatePerson(person.id, {
+        name: formData.name,
       })
-      .catch(() => {})
-      .finally(() => {
-        setLoading(false);
-      });
+        .then(() => {
+          setEditMode(!editMode);
+          toast({
+            title: "Success",
+            description: "Person updated successfully",
+          });
+        })
+        .catch(() => {
+          toast({
+            title: "Error",
+            description: "Failed to update person",
+            variant: "destructive",
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setEditMode(!editMode);
+    }
   };
 
   const handleHide = (hidden: boolean) => {
@@ -76,7 +92,7 @@ export default function PersonItem({ person }: IProps) {
 
         <div className="absolute top-2 left-2 group-hover:block hidden">
           <Link
-            className="bg-green-300 block rounded-lg px-2 py-1 text-sm"
+            className="bg-green-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
             href={`${immichURL}/people/${person.id}`}
             target="_blank"
           >

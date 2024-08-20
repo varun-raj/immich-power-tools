@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
 import ConfigContext from "@/contexts/ConfigContext";
+import { useRef } from "react";
 
 interface AppPropsWithProps extends AppProps {
   props: {
@@ -11,9 +12,10 @@ interface AppPropsWithProps extends AppProps {
   };
 }
 const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
-  console.log("App -> pageProps", props);
+  const intialData = useRef(props.props);
+
   return (
-    <ConfigContext.Provider value={props.props}>
+    <ConfigContext.Provider value={intialData.current}>
       <ThemeProvider attribute="class" storageKey="theme">
         <RootLayout>
           <Component {...pageProps} />
