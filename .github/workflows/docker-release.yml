@@ -31,6 +31,6 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker buildx build --build-arg VERSION=${{ env.VERSION }} \
+          docker build --build-arg VERSION=${{ env.VERSION }} \
           --push -t varunraj/immich-power-tools:${{ env.VERSION }} \
           -t varunraj/immich-power-tools:latest .
