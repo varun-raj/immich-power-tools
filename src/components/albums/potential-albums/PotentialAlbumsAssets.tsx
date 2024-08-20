@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
+import { CalendarArrowDown, CalendarArrowUp, Hourglass } from "lucide-react";
 
 export default function PotentialAlbumsAssets() {
   const { startDate, selectedIds, assets, updateContext } = usePotentialAlbumContext();
@@ -64,6 +65,22 @@ export default function PotentialAlbumsAssets() {
     if (startDate) fetchAssets();
   }, [startDate]);
 
+  if (loading) return (
+    <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
+      <Hourglass />
+      <p className="text-lg">Loading...</p>
+    </div>
+  )
+
+  if (!startDate) return (
+    <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
+      <CalendarArrowUp />
+      <p className="text-lg">Please select a date</p>
+      <p className="text-sm">
+        When you select a date from the left, you will see all the orphan assets captured on that date
+      </p>
+    </div>
+  )
   return (
     <>
       <Lightbox
