@@ -3,7 +3,9 @@ version: '3.8'
 services:
   immich_power_tools:
     container_name: immich_power_tools
-    image: ghcr.io/varun-raj/immich_power_tools:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     env_file:

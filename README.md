@@ -18,9 +18,10 @@ Recently I've migrated my entire Google photos library to Immich, I was able to 
 
 #### 🐬 Using Docker
 
-You can run the project using `Dockerfile` and `docker-compose.yml` file.
+You can run the project using `docker-compose.yml` file.
 
 ```bash
+wget https://raw.githubusercontent.com/varun-raj/immich-power-tools/main/docker-compose.yml
 docker compose up -d
 ```
 
