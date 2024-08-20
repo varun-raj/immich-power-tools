@@ -8,7 +8,7 @@ name: Docker Release
 on:
   push:
     branches:
-      - main
+      - feat-docker
     tags:
       - "v*"
       
@@ -42,3 +42,4 @@ jobs:
           docker build --build-arg VERSION=${{ env.VERSION }} \
           --push -t varunraj/immich-power-tools:${{ env.VERSION }} \
           -t varunraj/immich-power-tools:latest .
+        

@@ -32,7 +32,7 @@ docker compose up -d
 Copy paste the `.env.example` to `.env` and fill in the values.
 
 ```bash
-NEXT_PUBLIC_IMMICH_URL="" # Immich API URL
+IMMICH_URL="" # Immich API URL
 IMMICH_API_KEY="" # Immich API Key 
 DATABASE_URL="" # Postgress Database URL
 ```
