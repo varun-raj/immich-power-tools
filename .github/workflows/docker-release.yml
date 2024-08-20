@@ -9,7 +9,7 @@ on:
   push:
     branches:
       - feat-docker
-    tags:
+      tags:
       - "v*"
       
 jobs:
@@ -23,23 +23,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
+      - name: 'Login to GitHub Container Registry'
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}  
 
-      - name: Extract version from tag
+      - name: Extract version from package.json
         id: extract_version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${VERSION#v}
-          VERSION=0.1.3
+          VERSION=$(jq -r '.version' package.json)
+          echo "Version extracted: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         run: |
           docker build --build-arg VERSION=${{ env.VERSION }} \
-          --push -t varunraj/immich-power-tools:${{ env.VERSION }} \
-          -t varunraj/immich-power-tools:latest .
-        
+          -t ghcr.io/${{ github.repository }}:${{ env.VERSION }} \
+          -t ghcr.io/${{ github.repository }}:latest .
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ env.VERSION }}     
