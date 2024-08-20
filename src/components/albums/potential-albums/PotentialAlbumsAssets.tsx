@@ -37,6 +37,7 @@ export default function PotentialAlbumsAssets() {
       isSelected: selectedIds.includes(p.id),
     }));
   }, [assets, selectedIds]);
+  console.log(images)
 
   const slides = useMemo(
     () =>
@@ -96,6 +97,7 @@ export default function PotentialAlbumsAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
+
         />
       </div>
     </>

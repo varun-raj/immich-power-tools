@@ -4,6 +4,7 @@ import PotentialAlbumsDates from "@/components/albums/potential-albums/Potential
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import PotentialAlbumContext, {
   IPotentialAlbumConfig,
@@ -30,6 +31,7 @@ export default function PotentialAlbums() {
           assets: config.assets.filter(
             (asset) => !config.selectedIds.includes(asset.id)
           ),
+          selectedIds: [],
         });
       })
       .then(() => {
@@ -56,6 +58,31 @@ export default function PotentialAlbums() {
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>
+            {config.selectedIds.length === config.assets.length ? (
+              <Button
+                variant={"outline"}
+                onClick={() =>
+                  setConfig({
+                    ...config,
+                    selectedIds: [],
+                  })
+                }
+              >
+                Unselect all
+              </Button>
+            ) : (
+              <Button
+                variant={"outline"}
+                onClick={() =>
+                  setConfig({
+                    ...config,
+                    selectedIds: config.assets.map((a) => a.id),
+                  })
+                }
+              >
+                Select all
+              </Button>
+            )}
             <AlbumSelectorDialog onSelected={handleSelect} />
           </>
         }
