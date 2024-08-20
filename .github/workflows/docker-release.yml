@@ -1,17 +1,10 @@
 name: Docker Release
 
-# on:
-#   push:
-#     tags:
-#       - "v*"
-
 on:
   push:
-    branches:
-      - feat-docker
-      tags:
+    tags:
       - "v*"
-      
+    
 jobs:
   build:
     runs-on: ubuntu-latest
