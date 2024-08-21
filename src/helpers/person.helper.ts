@@ -11,6 +11,7 @@ export const cleanUpPerson = (person: IAPIPerson): IPerson => {
   return {
     ...person,
     thumbnailPath: PERSON_THUBNAIL_PATH(person.id),
+    
     birthDate: person.birthDate ? new Date(person.birthDate) : null,
     updatedAt: new Date(person.updatedAt),
   }
