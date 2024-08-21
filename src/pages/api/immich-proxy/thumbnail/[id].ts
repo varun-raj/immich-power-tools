@@ -41,7 +41,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Send the image data
     res.send(Buffer.from(imageBuffer))
   } catch (error) {
+
+    res.redirect("https://placehold.co/400")
     console.error('Error:', error)
-    res.status(500).json({ message: 'Internal Server Error' })
+    // res.status(500).json({ message: 'Internal Server Error' })
   }
 }

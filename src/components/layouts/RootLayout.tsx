@@ -1,5 +1,4 @@
 
-import { cn } from "@/lib/utils"
 import Sidebar from "../shared/Sidebar"
 import { Toaster } from "../ui/toaster"
 
@@ -16,7 +15,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {children}
       </div>
       <Toaster />
-
     </div>
   )
 }
