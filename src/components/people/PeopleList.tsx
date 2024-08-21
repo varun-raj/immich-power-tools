@@ -55,7 +55,7 @@ export default function PeopleList() {
     if (errorMessage) return <div>{errorMessage}</div>;
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6  gap-4 p-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6  gap-1 p-2">
         {people.map((person) => (
           <PersonItem person={person} key={person.id} onRemove={handleRemove}/>
         ))}
