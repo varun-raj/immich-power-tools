@@ -3,15 +3,14 @@ import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
-import ConfigContext from "@/contexts/ConfigContext";
+import ConfigContext, { ConfigContextType } from "@/contexts/ConfigContext";
 import { useRef } from "react";
 
 interface AppPropsWithProps extends AppProps {
-  props: {
-    immichURL: string;
-  };
+  props: ConfigContextType;
 }
 const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
+  
   const intialData = useRef(props.props);
 
   return (
@@ -29,6 +28,8 @@ App.getInitialProps = async () => {
   return {
     props: {
       immichURL: ENV.IMMICH_URL,
+      googleClientId: ENV.GOOGLE_CLIENT_ID,
+      baseURL: ENV.BASE_URL,
     },
   };
 };

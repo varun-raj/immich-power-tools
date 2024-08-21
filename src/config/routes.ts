@@ -17,3 +17,8 @@ export const ASSET_THUMBNAIL_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asse
 export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id + "?size=preview";
 export const LIST_ALBUMS_PATH = BASE_PROXY_ENDPOINT + "/albums";
 export const ADD_ASSETS_ALBUMS_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";
+
+// Integrations
+export const GOOGLE_AUTH_PATH = BASE_API_ENDPOINT + "/integrations/google/auth-check";
+export const GOOGLE_ALBUM_LIST_PATH = BASE_API_ENDPOINT + "/integrations/google/list-albums";
+export const GOOGLE_MEDIA_LIST_PATH = BASE_API_ENDPOINT + "/integrations/google/list-media";

@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd, Home, Image, User } from "lucide-react";
+import { GalleryVerticalEnd, Home, Image, ImageIcon, User } from "lucide-react";
 
 export const sidebarNavs = [
   {
@@ -15,5 +15,10 @@ export const sidebarNavs = [
     title: "Potential Albums",
     link: "/albums/potential-albums",
     icon: <GalleryVerticalEnd className="h-4 w-4" />,
+  },
+  {
+    title: "Import From Google",
+    link: "/integrations/google",
+    icon: <ImageIcon className="h-4 w-4" />,
   },
 ];

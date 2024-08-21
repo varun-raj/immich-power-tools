@@ -1,11 +1,15 @@
 import { createContext, useContext } from "react";
 
-interface ConfigContextType {
+export interface ConfigContextType {
   immichURL: string;
+  googleClientId: string;
+  baseURL: string;
 }
 
 const ConfigContext = createContext<ConfigContextType>({
   immichURL: "",
+  googleClientId: "",
+  baseURL: "",
 });
 
 export default ConfigContext;
