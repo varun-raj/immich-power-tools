@@ -36,10 +36,10 @@ services:
 
 Add the Immich API Key to the env file (which you already have for the immich)
 
-
 ```bash
 IMMICH_API_KEY= # your_immich_api_key
 ```
+Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 #### Method 2 - Portainer
 
 If you're using portainer, run the docker using `docker run` and add the power tools to the same network as immich.
