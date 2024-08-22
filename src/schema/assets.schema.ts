@@ -3,7 +3,7 @@ import { pgTable, uuid, varchar, timestamp, boolean } from 'drizzle-orm/pg-core'
 export const assets = pgTable('assets', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   deviceAssetId: varchar('deviceAssetId').notNull(),
-  // ownerId: uuid('ownerId').notNull().references(() => users.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  ownerId: uuid('ownerId').notNull(),
   deviceId: varchar('deviceId').notNull(),
   type: varchar('type').notNull(),
   originalPath: varchar('originalPath').notNull(),

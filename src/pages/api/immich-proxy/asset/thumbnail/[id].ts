@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     if (!response.ok) {
+      console.error('HTTP error:', response)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
