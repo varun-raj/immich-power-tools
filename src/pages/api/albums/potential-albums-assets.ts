@@ -1,11 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
+import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { exif } from "@/schema";
 import { count, desc, isNotNull, ne, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const SELECT_ORPHAN_PHOTOS = (date: string) =>
+const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
   sql.raw(`
   SELECT 
       a."id",
@@ -35,7 +36,8 @@ const SELECT_ORPHAN_PHOTOS = (date: string) =>
       ON a.id = e."assetId"
   WHERE 
       aaa."albumsId" IS NULL 
-      AND a."localDateTime"::date = '${date}';
+      AND a."ownerId" = '${ownerId}'
+      AND a."localDateTime"::date = '${date}'
 `);
 
 export default async function handler(
@@ -43,8 +45,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    const currentUser = await getCurrentUser()
     const { startDate } = req.query as { startDate: string };
-    const { rows } = await db.execute(SELECT_ORPHAN_PHOTOS(startDate));
+    const { rows } = await db.execute(SELECT_ORPHAN_PHOTOS(startDate, currentUser.id));
     return res.status(200).json(rows);
   } catch (error: any) {
     res.status(500).json({

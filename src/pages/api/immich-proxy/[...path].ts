@@ -8,8 +8,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const targetUrl = `${ENV.IMMICH_URL}/api${proxyPath}`;
 
-  console.log('targetUrl:', targetUrl)
-
   try {
     const response = await fetch(targetUrl, {
       method: req.method,

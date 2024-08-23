@@ -1,24 +1,18 @@
 import Link from "next/link";
-import { Bell, Camera, Package2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 import { sidebarNavs } from "@/config/constants/sidebarNavs";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
-import { Badge } from "../ui/badge";
-import { ENV } from "@/config/environment";
-import { useTheme } from "next-themes";
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useConfig } from "@/contexts/ConfigContext";
+import ProfileInfo from "./ProfileInfo";
 
 const ThemeSwitcher = dynamic(() => import("@/components/shared/ThemeSwitcher"), {
   ssr: false,
 });
 
 export default function Sidebar() {
-  const { immichURL } = useConfig();
   const router = useRouter();
   const { pathname } = router;
 
@@ -58,24 +52,8 @@ export default function Sidebar() {
           </nav>
         </div>
         <div>
-          <div className="flex flex-col gap-1 text-xs text-center py-2">
-            <p className="text-muted-foreground font-mono">Connected to</p>
-            <Link href={immichURL} target="_blank" className="font-mono">
-              {immichURL}
-            </Link>
-          </div>
-          <div className="border text-muted-foreground text-xs text-center py-2">
-            <p>
-              Made with <span className="text-red-500">&hearts;</span> by{" "}
-              <Link
-                target="_blank"
-                href="https://x.com/zathvarun"
-                className="text-primary"
-              >
-                @zathvarun
-              </Link>
-            </p>
-          </div>
+          <ProfileInfo />
+
         </div>
       </div>
     </div>

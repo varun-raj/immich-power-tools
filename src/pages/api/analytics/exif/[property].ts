@@ -1,8 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
-import { exif } from "@/schema";
-import { count, desc, isNotNull, ne } from "drizzle-orm";
+import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
+import { assets, exif } from "@/schema";
+import { and, count, desc, eq, isNotNull, ne } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const columnMap = {
@@ -33,12 +34,17 @@ export default async function handler(
   }
   
   try {
+    const currentUser = await getCurrentUser();
     const dataFromDB = await db.select({
       value: count(),
       label: column,
     })
     .from(exif)
-    .where(isNotNull(column))
+    .leftJoin(assets, eq(assets.id, exif.assetId))
+    .where(and(
+      isNotNull(column),
+      eq(assets.ownerId, currentUser.id),
+    ))
     .limit(20)
     .groupBy(column).orderBy(desc(count()));
 

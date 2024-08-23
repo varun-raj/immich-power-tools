@@ -1,37 +1,62 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Merge } from "lucide-react";
-import { mergePerson, searchPeople } from "@/handlers/api/people.handler";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { SearchSlash, X } from "lucide-react";
+import {
+  listSimilarFaces,
+  mergePerson,
+  searchPeople,
+} from "@/handlers/api/people.handler";
 import { IPerson } from "@/types/person";
-import { set } from "date-fns";
-import { CommandLoading } from "cmdk";
 import { Avatar } from "../ui/avatar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
+import { Input } from "../ui/input";
+import Loader from "../ui/loader";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { CaretDownIcon } from "@radix-ui/react-icons";
+import FaceThumbnail from "./merge/FaceThumbnail";
+import ErrorBlock from "../shared/ErrorBlock";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
   onRemove?: (person: IPerson) => void;
 }
+
 export function PersonMergeDropdown({
   person,
   onRemove,
 }: PersonMergeDropdownProps) {
-  const [searchedPeople, setSearchedPeople] = useState<IPerson[]>([]);
+  const [searchedPeople, setSearchedPeople] = useState<IPerson[] | null>(null);
+  const [similarPeople, setSimilarPeople] = useState<IPerson[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [similarLoading, setSimilarLoading] = useState(true);
   const searchTimer = useRef<NodeJS.Timeout>();
+  const [selectedPeople, setSelectedPeople] = useState<IPerson[]>([]);
+  const [primaryPerson, setPrimaryPerson] = useState<IPerson>(person);
+  const [merging, setMerging] = useState(false);
   const { toast } = useToast();
+
+  const selectedIds = useMemo(
+    () => selectedPeople.map((p) => p.id),
+    [selectedPeople]
+  );
 
   const handleSearch = (value: string) => {
     if (searchTimer.current) {
@@ -39,6 +64,10 @@ export function PersonMergeDropdown({
     }
 
     searchTimer.current = setTimeout(() => {
+      if (!value || !value.trim().length) {
+        setSearchedPeople(null);
+        return;
+      }
       setLoading(true);
       if (!value) {
         setSearchedPeople([]);
@@ -54,23 +83,145 @@ export function PersonMergeDropdown({
     }, 500);
   };
 
+  const fetchSuggestions = () => {
+    return listSimilarFaces(person.id)
+      .then(setSimilarPeople)
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to fetch similar people",
+        });
+      })
+      .finally(() => {
+        setSimilarLoading(false);
+      });
+  };
+
   const handleSelect = (value: IPerson) => {
-    setOpen(false);
-    return mergePerson(person.id, value.id)
+    const isAlreadySelected = selectedPeople.some((p) => p.id === value.id);
+    if (isAlreadySelected) {
+      setSelectedPeople(selectedPeople.filter((p) => p.id !== value.id));
+      return;
+    }
+    if (selectedPeople.length >= 5) {
+      toast({
+        title: "Error",
+        description: "You can only merge 5 people at a time",
+      });
+      return;
+    } else {
+      setSelectedPeople([...selectedPeople, value]);
+    }
+    if (primaryPerson.name.length === 0 && value.name.length > 0) {
+      setPrimaryPerson(value);
+    }
+    // setOpen(false);
+    // return mergePerson(person.id, value.id)
+    //   .then(() => {
+    //     onRemove?.(person);
+    //   })
+    //   .then(() => {
+    //     toast({
+    //       title: "Success",
+    //       description: "Person merged successfully",
+    //     });
+    //   });
+  };
+
+  const handleMerge = () => {
+    if (selectedPeople.length === 0) {
+      return;
+    }
+    const personIds = selectedPeople.map((p) => p.id);
+    setMerging(true);
+    return mergePerson(person.id, personIds)
       .then(() => {
         onRemove?.(person);
       })
       .then(() => {
+        setOpen(false);
         toast({
           title: "Success",
-          description: "Person merged successfully",
+          description: "People merged successfully",
         });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to merge people",
+        });
+      })
+      .finally(() => {
+        setMerging(false);
       });
   };
 
+  const handleRemove = (value: IPerson) => {
+    const newSelected = selectedPeople.filter((p) => p.id !== value.id);
+    if (primaryPerson.id === value.id) {
+      const newPrimary = newSelected[0];
+      setPrimaryPerson(newPrimary || person);
+    }
+    setSelectedPeople(newSelected);
+  };
+
   useEffect(() => {
-    if (open) handleSearch("");
-  }, [open]);
+    if (open && !similarPeople.length) fetchSuggestions();
+  }, [open, person.id, similarPeople]);
+
+  const renderPeopleList = (people: IPerson[], title: string) => {
+    return (
+      <div className="max-h-[400px] min-h-[400px] overflow-y-auto">
+        <p className="pb-2 uppercase">{title}</p>
+        <div className="grid grid-cols-4 gap-2">
+          {people.map((person) => (
+            <FaceThumbnail
+              key={person.id}
+              person={person}
+              onSelect={handleSelect}
+              selected={selectedIds.includes(person.id)}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+  const renderContent = () => {
+    if (loading || similarLoading) {
+      return (
+        <div className="min-h-[400px] flex flex-col items-center justify-center">
+          <Loader />
+        </div>
+      );
+    }
+    if (searchedPeople && searchedPeople?.length === 0) {
+      return (
+        <div className="min-h-[400px] flex flex-col items-center justify-center">
+          <p>No Results Found</p>
+        </div>
+      );
+    }
+
+    if (searchedPeople && searchedPeople?.length > 0) {
+      return renderPeopleList(searchedPeople, "Search Results");
+    }
+
+    if (similarPeople && similarPeople.length === 0) {
+      return (
+        <ErrorBlock
+          title="No Similar People Found"
+          description="Please search for the person"
+          icon={<SearchSlash />}
+        />
+      );
+    }
+
+    if (similarPeople && similarPeople.length > 0) {
+      return renderPeopleList(similarPeople, "Similar People");
+    }
+
+    return <p className="text-xs">Please search for people</p>;
+  };
 
   return (
     <div className="flex items-center space-x-4">
@@ -80,35 +231,104 @@ export function PersonMergeDropdown({
             Merge
           </Button>
         </DialogTrigger>
-        <DialogContent className="p-0">
-          <Command>
-            <CommandInput
-              placeholder="Change status..."
-              onValueChange={handleSearch}
-            />
-            <CommandList>
-              {loading && <CommandLoading />}
-              <CommandGroup heading="People">
-                {searchedPeople.map((person) => (
-                  <CommandItem
-                    key={person.id}
-                    value={person.name}
-                    onSelect={() => {
-                      handleSelect(person);
-                    }}
-                    className="flex items-center gap-2"
-                  >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Merge {person.name ? person.name : "Untagged Person"}
+            </DialogTitle>
+            <DialogDescription>
+              <div className="flex items-center gap-2">
+                <p>
+                  {selectedPeople.length > 0
+                    ? `Merging ${selectedPeople.length} people to ${person.name}`
+                    : "Search and select people to merge with"}
+                </p>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex gap-1 items-center">
                     <Avatar
-                      src={person.thumbnailPath}
-                      alt={person.name}
-                      className="w-6 h-6"
+                      src={primaryPerson.thumbnailPath}
+                      alt={primaryPerson.name}
+                      className="w-4 h-4"
                     />
-                    <span>{person.name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+                    <p>{primaryPerson?.name || "Untagged Person"}</p>
+                    <CaretDownIcon />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {[person, ...selectedPeople].map((person) => (
+                      <DropdownMenuItem
+                        key={person.id}
+                        onSelect={() => setPrimaryPerson(person)}
+                        className="flex gap-1"
+                      >
+                        <Avatar
+                          src={person.thumbnailPath}
+                          alt={person.name}
+                          className="w-6 h-6"
+                        />
+                        <span>{person.name || "Untagged Person"}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            placeholder="Search people..."
+            onChange={(e) => {
+              handleSearch(e.target.value);
+            }}
+          />
+
+          {selectedPeople.length > 0 ? (
+            <div className="flex flex-nowrap overflow-x-auto gap-2 py-2">
+              {selectedPeople.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
+                >
+                  <Avatar
+                    src={person.thumbnailPath}
+                    alt={person.name}
+                    className="w-6 h-6"
+                  />
+                  <p className="text-xs text-nowrap">
+                    {person.name ? person.name : <span>Untagged person</span>}
+                  </p>
+                  <button
+                    className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
+                    onClick={() => handleRemove(person)}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="py-4 text-sm text-zinc-500">No Selections Yet</p>
+            </div>
+          )}
+
+          {renderContent()}
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setOpen(false);
+                setSelectedPeople([]);
+                setPrimaryPerson(person);
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMerge}
+              disabled={selectedPeople.length === 0 || merging}
+            >
+              Merge {selectedPeople.length + 1} People
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

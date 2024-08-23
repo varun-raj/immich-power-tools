@@ -7,9 +7,13 @@ import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import { CalendarArrowDown, CalendarArrowUp, Hourglass } from "lucide-react";
+import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
+import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
+import { formatDate, parseDate } from "@/helpers/date.helper";
+import { addDays } from "date-fns";
 
-export default function PotentialAlbumsAssets() {
-  const { startDate, selectedIds, assets, updateContext } = usePotentialAlbumContext();
+export default function MissingLocationAssets() {
+  const { startDate, selectedIds, assets, updateContext } = useMissingLocationContext();
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -17,11 +21,12 @@ export default function PotentialAlbumsAssets() {
   const [index, setIndex] = useState(-1);
 
   const fetchAssets = async () => {
+    if (!startDate) return;
     setLoading(true);
     updateContext({
       assets: [],
     })
-    return listPotentialAlbumsAssets({ startDate })
+    return listMissingLocationAssets({ startDate })
       .then((assets) => updateContext({ assets }))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));

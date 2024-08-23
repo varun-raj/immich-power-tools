@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
+import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { stringToBoolean } from "@/helpers/data.helper";
 import { assetFaces, assets, exif, person } from "@/schema";
 import {
@@ -43,12 +44,15 @@ export default async function handler(
       sortOrder = "desc",
     } = req.query as any as IQuery;
 
+    const currentUser = await getCurrentUser();
+
     const maximumAssetCount = !maxValue || maxValue <= 0 ? 1000000 : maxValue;
     const whereClause = and(
       eq(person.isHidden, false),
       isNull(assets.duplicateId),
       eq(assets.isVisible, true),
       eq(assets.isArchived, false),
+      eq(assets.ownerId, currentUser.id),
       stringToBoolean(nameLessOnly) ? eq(person.name, "") : undefined
     );
 

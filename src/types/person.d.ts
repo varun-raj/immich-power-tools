@@ -6,7 +6,7 @@ export interface IPerson {
   isHidden:      boolean;
   updatedAt:     Date;
   assetCount:   number;
-  
+  similarity?:   number;
 }
 
 interface IPeopleListResponse extends IListData{

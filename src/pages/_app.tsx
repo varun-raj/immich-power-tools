@@ -4,7 +4,8 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
 import ConfigContext from "@/contexts/ConfigContext";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getMe } from "@/handlers/api/user.handler";
 
 interface AppPropsWithProps extends AppProps {
   props: {
