@@ -38,7 +38,6 @@ export default function PeopleList() {
 
   const handleRemove = (person: IPerson) => {
     setPeople((prev) => prev.filter((p) => {
-      console.log(p.id, person.id, p.id !== person.id);
       return p.id !== person.id
     }));
   }
@@ -48,7 +47,6 @@ export default function PeopleList() {
     fetchData();
   }, [filters]);
 
-  console.log(people.length);
 
   const renderContent = () => {
     if (loading) return <Loader />;

@@ -12,7 +12,6 @@ export default async function handler(
 ) {
   try {
     const currentUser = await getCurrentUser();
-    console.log({ currentUser });
     const rows = await db
       .select({
         asset_count: desc(count(assets.id)),

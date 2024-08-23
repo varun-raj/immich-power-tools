@@ -42,7 +42,6 @@ export default function MissingLocationAssets() {
       isSelected: selectedIds.includes(p.id),
     }));
   }, [assets, selectedIds]);
-  console.log(images)
 
   const slides = useMemo(
     () =>

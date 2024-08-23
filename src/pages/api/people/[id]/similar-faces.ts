@@ -60,7 +60,6 @@ export default async function handler(
         error: "Person has no face",
       });
     }
-    console.log(assetFaceRecord.id);
 
     const faceSearchRecords = await db
       .select()
