@@ -14,15 +14,8 @@ Recently I've migrated my entire Google photos library to Immich, I was able to 
 
 ### 🐬 Using Docker
 
-You can run the project using `docker-compose.yml` file.
-
-```bash
-wget https://raw.githubusercontent.com/varun-raj/immich-power-tools/main/docker-compose.yml
-docker compose up -d
-```
-If you're running docker inside a network, you can use the power tools in two way
-
-#### Method 1 - Docker Compose
+#### Power-tools is designed to be used alongside Immich, and there are two ways you can run it.
+#### Method 1 - Docker Compose ( Recommended )
 
 Add the following into your docker compose as a new service along side other immich services. Make sure you've `power-tools` in same network as immich.
 
@@ -39,17 +32,14 @@ services:
       - "8001:3000"
     env_file:
       - .env
-
 ```
 
-And the env file will have the following values format
-
+Add the Immich API Key to the env file (which you already have for the immich)
 
 ```bash
-IMMICH_URL=http://192.168.0.200:3001 // This should be the immich url which is accessible in your browser
 IMMICH_API_KEY= # your_immich_api_key
-DATABASE_URL=postgresql://<POSTGRES-USER>:<POSTGRES-PASSWORD>@<CONTAINER_NAME>:<PORT>/<DATABASE_NAME>
 ```
+Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 #### Method 2 - Portainer
 
 If you're using portainer, run the docker using `docker run` and add the power tools to the same network as immich.
@@ -59,18 +49,25 @@ docker run -d --name immich_power_tools -p 8001:3000 --env-file .env ghcr.io/var
 ```
 
 
-### 🚀 Using Local Setup
+### 🚀 For local development
 
 > [!NOTE]  
 > Please use `bun` to run the project. If you don't have `bun` installed, checkout [bun.sh](https://bun.sh/) for installation.
 
+
 Copy paste the `.env.example` to `.env` and fill in the values.
 
 ```bash
-IMMICH_URL="" # Immich API URL
+IMMICH_URL="" # Immich URL
 IMMICH_API_KEY="" # Immich API Key
-DATABASE_URL="" # Postgress Database URL
+DB_USERNAME="" # Postgress Database Username
+DB_PASSWORD = "" # Postgres Database Password
+DB_HOST = "" # Postgres Host (IP address or hostname of the database)
+DB_PORT = "" # Postgres Port number (Default: 5432)
+DB_DATABASE_NAME = "" # Name of the database 
 ```
+> [!NOTE]  
+> Make sure you have postgres port exposed on you machine.
 
 Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 
