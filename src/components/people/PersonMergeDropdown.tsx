@@ -18,8 +18,6 @@ import {
   searchPeople,
 } from "@/handlers/api/people.handler";
 import { IPerson } from "@/types/person";
-import { set } from "date-fns";
-import { CommandLoading } from "cmdk";
 import { Avatar } from "../ui/avatar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
@@ -31,7 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { CaretDownIcon, FaceIcon } from "@radix-ui/react-icons";
+import { CaretDownIcon } from "@radix-ui/react-icons";
 import FaceThumbnail from "./merge/FaceThumbnail";
 import ErrorBlock from "../shared/ErrorBlock";
 
@@ -103,6 +101,7 @@ export function PersonMergeDropdown({
     const isAlreadySelected = selectedPeople.some((p) => p.id === value.id);
     if (isAlreadySelected) {
       setSelectedPeople(selectedPeople.filter((p) => p.id !== value.id));
+      return;
     }
     if (selectedPeople.length >= 5) {
       toast({
@@ -168,7 +167,7 @@ export function PersonMergeDropdown({
 
   useEffect(() => {
     if (open && !similarPeople.length) fetchSuggestions();
-  }, [open, person.id]);
+  }, [open, person.id, similarPeople]);
 
   const renderPeopleList = (people: IPerson[], title: string) => {
     return (
@@ -286,7 +285,7 @@ export function PersonMergeDropdown({
               {selectedPeople.map((person) => (
                 <div
                   key={person.id}
-                  className="flex border px-1 items-center gap-1 bg-zinc-900 rounded-lg p-1"
+                  className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
                 >
                   <Avatar
                     src={person.thumbnailPath}
@@ -297,7 +296,7 @@ export function PersonMergeDropdown({
                     {person.name ? person.name : <span>Untagged person</span>}
                   </p>
                   <button
-                    className="rounded-full hover:bg-zinc-800 p-1"
+                    className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
                     onClick={() => handleRemove(person)}
                   >
                     <X className="w-4 h-4" />

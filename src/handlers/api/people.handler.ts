@@ -41,5 +41,5 @@ export const mergePerson = (id: string, targetIds: string[]) => {
 }
 
 export const listSimilarFaces = (id: string) => {
-  return API.get(SIMILAR_FACES_PATH(id)).then((response) => response.map(cleanUpPerson));
+  return API.get(SIMILAR_FACES_PATH(id)).then((response) => response.map((person: any) => cleanUpPerson(person, true)));
 }
