@@ -22,6 +22,7 @@ export default async function handler(
       .leftJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
         isNull(exif.latitude),
+        eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)

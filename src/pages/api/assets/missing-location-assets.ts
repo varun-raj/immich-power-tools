@@ -53,6 +53,7 @@ export default async function handler(
         isNotNull(assets.createdAt),
         gte(exif.dateTimeOriginal, startDateDate),
         lte(exif.dateTimeOriginal, endDateDate),
+        eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
       ));
 
