@@ -4,7 +4,7 @@ A unofficial immich client to provide better tools to organize and manage your i
 
 [Watch Demo Video here](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
 
-[![Immich Power Tools](./screenshots/screenshot-1.jpeg)](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
+[![Immich Power Tools](./screenshots/screenshot-1.png)](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
 
 ## 💭 Back story
 
@@ -24,7 +24,6 @@ See the sample [docker-compose-all-immich.yml](./docker-compose-all-immich) file
 ```yaml
 services:
   # Other services...
-  
   power-tools:
     container_name: immich_power_tools
     image: ghcr.io/varun-raj/immich-power-tools:latest
@@ -58,13 +57,13 @@ docker run -d --name immich_power_tools -p 8001:3000 --env-file .env ghcr.io/var
 Copy paste the `.env.example` to `.env` and fill in the values.
 
 ```bash
-IMMICH_URL="" # Immich URL
-IMMICH_API_KEY="" # Immich API Key
-DB_USERNAME="" # Postgress Database Username
-DB_PASSWORD = "" # Postgres Database Password
-DB_HOST = "" # Postgres Host (IP address or hostname of the database)
-DB_PORT = "" # Postgres Port number (Default: 5432)
-DB_DATABASE_NAME = "" # Name of the database 
+  IMMICH_URL="" # Immich URL
+  IMMICH_API_KEY="" # Immich API Key
+  DB_USERNAME="" # Postgress Database Username
+  DB_PASSWORD = "" # Postgres Database Password
+  DB_HOST = "" # Postgres Host (IP address or hostname of the database)
+  DB_PORT = "" # Postgres Port number (Default: 5432)
+  DB_DATABASE_NAME = "" # Name of the database 
 ```
 > [!NOTE]  
 > Make sure you have postgres port exposed on you machine.
@@ -82,11 +81,12 @@ bun run dev
 **Immich Related**
 
 - [x] Manage People
-  - [ ] Smart Merge
+  - [x] Smart Merge
 - [ ] Manage Albums
   - [ ] Bulk Delete
   - [ ] Bulk Edit
   - [ ] Filters
+  - [x] Potential Albums
 - [ ] Statistics
   - [x] EXIF Data
   - [ ] Assets Overtime Chart
