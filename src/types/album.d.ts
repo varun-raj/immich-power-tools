@@ -26,3 +26,12 @@ export interface IAlbumOwner {
   profileImagePath: string;
   avatarColor:      string;
 }
+
+export interface IAlbumCreate {
+  albumName: string;
+  assetIds?: string[];
+  albumUsers?: {
+    role: string;
+    userId: string;
+  }[];
+}

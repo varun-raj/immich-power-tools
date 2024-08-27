@@ -1,3 +1,4 @@
+import AlbumCreateDialog from "@/components/albums/AlbumCreateDialog";
 import AlbumSelectorDialog from "@/components/albums/AlbumSelectorDialog";
 import PotentialAlbumsAssets from "@/components/albums/potential-albums/PotentialAlbumsAssets";
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
@@ -6,15 +7,17 @@ import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useCurrentUser } from "@/contexts/CurrentUserContext";
 import PotentialAlbumContext, {
   IPotentialAlbumConfig,
 } from "@/contexts/PotentialAlbumContext";
-import { addAssetToAlbum } from "@/handlers/api/album.handler";
-import { IAlbum } from "@/types/album";
+import { addAssetToAlbum, createAlbum } from "@/handlers/api/album.handler";
+import { IAlbum, IAlbumCreate } from "@/types/album";
 import React from "react";
 
 export default function PotentialAlbums() {
   const { toast } = useToast();
+  const { id } = useCurrentUser();
 
   const [config, setConfig] = React.useState<IPotentialAlbumConfig>({
     startDate: undefined,
@@ -49,6 +52,16 @@ export default function PotentialAlbums() {
       });
   };
 
+  const handleCreate = (formData: IAlbumCreate) => {
+    return createAlbum({
+      ...formData,
+      assetIds: config.selectedIds,
+      albumUsers: [{
+        role: "editor",
+        userId: id,
+      }]
+    })
+  }
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
@@ -84,6 +97,7 @@ export default function PotentialAlbums() {
               </Button>
             )}
             <AlbumSelectorDialog onSelected={handleSelect} />
+            <AlbumCreateDialog onSubmit={handleCreate} assetIds={config.assets.map((a) => a.id)} />
           </>
         }
       />
