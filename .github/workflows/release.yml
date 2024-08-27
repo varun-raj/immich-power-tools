@@ -20,7 +20,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: release
-        run: npx semantic-release
+        run: |
+          npm install
+          npx semantic-release
 
   build:
     runs-on: ubuntu-latest
