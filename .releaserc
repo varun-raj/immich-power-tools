@@ -25,6 +25,12 @@
       }
     ],
     [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+    [
       "@semantic-release/github",
       {
         "assets": []
@@ -37,12 +43,7 @@
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
-    ["semantic-release-export-data"],
-    [
-        "@semantic-release/npm",
-        {
-          "npmPublish": false
-        }
-      ]
+    ["semantic-release-export-data"]
+    
   ]
 }
