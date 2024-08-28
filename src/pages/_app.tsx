@@ -10,6 +10,7 @@ import { getMe } from "@/handlers/api/user.handler";
 interface AppPropsWithProps extends AppProps {
   props: {
     immichURL: string;
+    exImmichUrl: string;
   };
 }
 const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
@@ -29,6 +30,7 @@ const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
 App.getInitialProps = async () => {
   return {
     props: {
+      exImmichUrl: ENV.EXTERNAL_IMMICH_URL,
       immichURL: ENV.IMMICH_URL,
     },
   };
