@@ -2,10 +2,12 @@ import { createContext, useContext } from "react";
 
 interface ConfigContextType {
   immichURL: string;
+  exImmichUrl: string;
 }
 
 const ConfigContext = createContext<ConfigContextType>({
   immichURL: "",
+  exImmichUrl: "",
 });
 
 export default ConfigContext;

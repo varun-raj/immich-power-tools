@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useConfig } from "@/contexts/ConfigContext";
 
 export default function ProfileInfo() {
-  const { immichURL } = useConfig();
+  const { immichURL,exImmichUrl } = useConfig();
   const [user, setUser] = React.useState<IUser | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -30,7 +30,11 @@ export default function ProfileInfo() {
   return (
     <>
       <div className="flex flex-col gap-2 text-xs text-center py-2">
-        <p className="text-muted-foreground font-mono">Connected to</p>
+        <p className="text-muted-foreground font-mono">Connected to (External)</p>
+        <Link href={exImmichUrl} target="_blank" className="font-mono">
+          {exImmichUrl}
+        </Link>
+        <p className="text-muted-foreground font-mono">Connected to (Internal)</p>
         <Link href={immichURL} target="_blank" className="font-mono">
           {immichURL}
         </Link>

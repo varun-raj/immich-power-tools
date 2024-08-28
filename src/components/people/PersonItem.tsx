@@ -18,7 +18,7 @@ interface IProps {
   onRemove: (person: IPerson) => void;
 }
 export default function PersonItem({ person, onRemove }: IProps) {
-  const { immichURL } = useConfig();
+  const { exImmichUrl } = useConfig();
   const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -98,7 +98,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
         <div className="absolute top-2 left-2 group-hover:block hidden">
           <Link
             className="bg-green-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
-            href={`${immichURL}/people/${person.id}`}
+            href={`${exImmichUrl}/people/${person.id}`}
             target="_blank"
           >
             <ArrowUpRight size={16} />
