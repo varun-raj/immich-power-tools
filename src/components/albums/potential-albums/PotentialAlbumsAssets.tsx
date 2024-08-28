@@ -4,12 +4,13 @@ import { listPotentialAlbumsAssets } from "@/handlers/api/album.handler";
 import { IAsset } from "@/types/asset";
 import React, { useEffect, useMemo, useState } from "react";
 import { Gallery } from "react-grid-gallery";
-import Lightbox from "yet-another-react-lightbox";
+import Lightbox, { SlideImage, SlideTypes } from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import { CalendarArrowDown, CalendarArrowUp, Hourglass } from "lucide-react";
-
+import Video from "yet-another-react-lightbox/plugins/video";
 export default function PotentialAlbumsAssets() {
-  const { startDate, selectedIds, assets, updateContext } = usePotentialAlbumContext();
+  const { startDate, selectedIds, assets, updateContext } =
+    usePotentialAlbumContext();
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -20,7 +21,7 @@ export default function PotentialAlbumsAssets() {
     setLoading(true);
     updateContext({
       assets: [],
-    })
+    });
     return listPotentialAlbumsAssets({ startDate })
       .then((assets) => updateContext({ assets }))
       .catch(setErrorMessage)
@@ -40,10 +41,20 @@ export default function PotentialAlbumsAssets() {
 
   const slides = useMemo(
     () =>
-      images.map(({ original, width, height }) => ({
+      images.map(({ original, width, height, type, videoURL }) => ({
         src: original,
         width,
         height,
+        type: (type === "VIDEO" ? "video" : "image") as any,
+        sources:
+          type === "VIDEO"
+            ? [
+                {
+                  src: videoURL,
+                  type: "video/mp4",
+                },
+              ]
+            : [],
       })),
     [images]
   );
@@ -51,41 +62,44 @@ export default function PotentialAlbumsAssets() {
   const handleClick = (idx: number) => setIndex(idx);
 
   const handleSelect = (_idx: number, asset: IAsset) => {
-    const isPresent  =selectedIds.includes(asset.id)
-    if(isPresent){
-      updateContext({selectedIds:selectedIds.filter((id)=>id!==asset.id)})
+    const isPresent = selectedIds.includes(asset.id);
+    if (isPresent) {
+      updateContext({
+        selectedIds: selectedIds.filter((id) => id !== asset.id),
+      });
+    } else {
+      updateContext({ selectedIds: [...selectedIds, asset.id] });
     }
-    else{
-      updateContext({selectedIds:[...selectedIds,asset.id]})
-    }
-
   };
 
   useEffect(() => {
     if (startDate) fetchAssets();
   }, [startDate]);
 
-  if (loading) return (
-    <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
-      <Hourglass />
-      <p className="text-lg">Loading...</p>
-    </div>
-  )
+  if (loading)
+    return (
+      <div className="flex flex-col gap-2 min-h-full justify-center items-center w-full">
+        <Hourglass />
+        <p className="text-lg">Loading...</p>
+      </div>
+    );
 
-  if (!startDate) return (
-    <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
-      <CalendarArrowUp />
-      <p className="text-lg">Please select a date</p>
-      <p className="text-sm">
-        When you select a date from the left, you will see all the orphan assets captured on that date
-      </p>
-    </div>
-  )
+  if (!startDate)
+    return (
+      <div className="flex flex-col gap-2 min-h-full justify-center items-center w-full">
+        <CalendarArrowUp />
+        <p className="text-lg">Please select a date</p>
+        <p className="text-sm text-zinc-700">
+          When you select a date from the left, you will see all the orphan
+          assets captured on that date
+        </p>
+      </div>
+    );
   return (
     <>
       <Lightbox
         slides={slides}
-        plugins={[Captions]}
+        plugins={[Captions, Video]}
         open={index >= 0}
         index={index}
         close={() => setIndex(-1)}
@@ -96,7 +110,6 @@ export default function PotentialAlbumsAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
-
         />
       </div>
     </>

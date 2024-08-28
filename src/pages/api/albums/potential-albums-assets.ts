@@ -38,6 +38,7 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       aaa."albumsId" IS NULL 
       AND a."ownerId" = '${ownerId}'
       AND a."localDateTime"::date = '${date}'
+      AND a."type" = 'VIDEO'
 `);
 
 export default async function handler(

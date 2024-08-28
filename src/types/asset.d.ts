@@ -18,6 +18,7 @@ export interface IAsset {
   exifImageHeight: number;
   url: string;
   previewUrl: string;
+  videoURL?: string;
 }
 
 export interface IAssetThumbhash {
