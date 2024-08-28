@@ -28,6 +28,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: release
     if: needs.release.outputs.new-release-published == 'true'
     steps:
