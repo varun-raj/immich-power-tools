@@ -3,6 +3,7 @@ import PotentialAlbumsAssets from "@/components/albums/potential-albums/Potentia
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
 import MissingLocationAssets from "@/components/assets/missing-location/MissingLocationAssets";
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
+import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog";
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +12,9 @@ import { useToast } from "@/components/ui/use-toast";
 import MissingLocationContext, {
   IMissingLocationConfig,
 } from "@/contexts/MissingLocationContext";
+import { updateAssets } from "@/handlers/api/asset.handler";
 
-import { addAssetToAlbum } from "@/handlers/api/album.handler";
-import { IAlbum } from "@/types/album";
+import { IPlace } from "@/types/common";
 import React from "react";
 
 export default function MissingLocations() {
@@ -25,31 +26,17 @@ export default function MissingLocations() {
     assets: [],
   });
 
-  const handleSelect = (album: IAlbum) => {
-    return addAssetToAlbum(album.id, config.selectedIds)
-      .then(() => {
-        setConfig({ ...config, selectedIds: [] });
-        setConfig({
-          ...config,
-          assets: config.assets.filter(
-            (asset) => !config.selectedIds.includes(asset.id)
-          ),
-          selectedIds: [],
-        });
-      })
-      .then(() => {
-        toast({
-          title: `Assets added to ${album.albumName}`,
-          description: `${config.selectedIds.length} assets added to album`,
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Error",
-          description: "Failed to add assets album",
-          variant: "destructive",
-        });
+  const handleSubmit = (place: IPlace) => {
+    return updateAssets({
+      ids: config.selectedIds,
+      latitude: place.latitude,
+      longitude: place.longitude,
+    }).then(() => {
+      setConfig({
+        ...config,
+        selectedIds: [],
       });
+    })
   };
 
   return (
@@ -86,6 +73,7 @@ export default function MissingLocations() {
                 Select all
               </Button>
             )}
+            <TagMissingLocationDialog onSubmit={handleSubmit} />
           </>
         }
       />

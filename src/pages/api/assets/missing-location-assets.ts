@@ -55,6 +55,7 @@ export default async function handler(
         lte(exif.dateTimeOriginal, endDateDate),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
+        isNotNull(assets.previewPath),
       ));
 
     return res.status(200).json(rows);

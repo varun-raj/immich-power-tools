@@ -3,6 +3,7 @@ import {
   LIST_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
+  UPDATE_ASSETS_PATH,
 } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
@@ -30,3 +31,15 @@ export const listMissingLocationAssets = async (
     assets.map(cleanUpAsset)
   );
 };
+
+
+export interface IUpdateAssetsParams {
+  ids: string[];
+  latitude?: number;
+  longitude?: number;
+}
+
+export const updateAssets = async (params: IUpdateAssetsParams) => {
+  return API.put(UPDATE_ASSETS_PATH, params);
+}
+  
