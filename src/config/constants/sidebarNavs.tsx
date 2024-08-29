@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd, Home, Image, LocateOff, User } from "lucide-react";
+import { GalleryVerticalEnd, Home, Image, LocateOff, MapPinX, User } from "lucide-react";
 
 export const sidebarNavs = [
   {
@@ -19,6 +19,6 @@ export const sidebarNavs = [
   {
     title: "Missing Locations",
     link: "/assets/missing-locations",
-    icon: <LocateOff className="h-4 w-4" />,
+    icon: <MapPinX className="h-4 w-4" />,
   },
 ];

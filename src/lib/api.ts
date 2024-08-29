@@ -3,6 +3,34 @@ import axios from 'axios'
 import qs from 'qs'
 
 
+const handleErrors = (error: AxiosError | any) => {
+  if (error.code === "ERR_BAD_RESPONSE") {
+    return Promise.reject({
+      error: "Unable to process this request, please try again later",
+      message: error.code
+    });
+  }
+  let errorObject = {}
+  if (error.response) {
+    const { status } = error.response
+    if (status === 422) {
+      errorObject = {
+        ...error.response.data,
+        message: 'Unable to process this request, please try again later',
+      }
+    } else {
+      errorObject = {
+        ...error.response.data,
+      }
+    }
+    return Promise.reject(errorObject)
+  }
+  errorObject = {
+    message: 'Network Error. Please check your connection and try again!',
+  }
+  return Promise.reject(errorObject)
+}
+
 export default class API {
   
 
@@ -91,6 +119,6 @@ export default class API {
     options.headers = Object.assign(API.headers(contentType), headers)
     return axios(options)
       .then((responseJson) => responseJson.data)
-      // .catch(handleErrors)
+      .catch(handleErrors)
   }
 }
