@@ -3,7 +3,7 @@ import PotentialAlbumsAssets from "@/components/albums/potential-albums/Potentia
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
 import MissingLocationAssets from "@/components/assets/missing-location/MissingLocationAssets";
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
-import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog";
+import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
