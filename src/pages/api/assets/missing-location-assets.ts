@@ -33,10 +33,8 @@ export default async function handler(
         deviceId: assets.deviceId,
         type: assets.type,
         originalPath: assets.originalPath,
-        previewPath: assets.previewPath,
         isFavorite: assets.isFavorite,
         duration: assets.duration,
-        thumbnailPath: assets.thumbnailPath,
         encodedVideoPath: assets.encodedVideoPath,
         originalFileName: assets.originalFileName,
         sidecarPath: assets.sidecarPath,
@@ -55,7 +53,6 @@ export default async function handler(
         lte(exif.dateTimeOriginal, endDateDate),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
-        isNotNull(assets.previewPath),
       ));
 
     return res.status(200).json(rows);

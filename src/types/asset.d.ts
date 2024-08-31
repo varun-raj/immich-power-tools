@@ -4,10 +4,8 @@ export interface IAsset {
   deviceId: string;
   type: string;
   originalPath: string;
-  previewPath: string;
   isFavorite: boolean;
   duration: null;
-  thumbnailPath: string;
   encodedVideoPath: string;
   originalFileName: string;
   sidecarPath: null;
