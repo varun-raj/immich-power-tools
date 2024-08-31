@@ -19,7 +19,7 @@ Recently I've migrated my entire Google photos library to Immich, I was able to 
 
 Add the following into your docker compose as a new service along side other immich services. Make sure you've `power-tools` in same network as immich.
 
-See the sample [docker-compose-all-immich.yml](./docker-compose-all-immich) file for reference.
+See the sample [docker-compose-all-immich.yml](./docker-compose-all-immich.yml) file for reference.
 
 ```yaml
 services:
