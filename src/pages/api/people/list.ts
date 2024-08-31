@@ -60,7 +60,6 @@ export default async function handler(
       .select({
         id: person.id,
         name: person.name,
-        thumbnailPath: person.thumbnailPath,
         birthDate: person.birthDate,
         isHidden: person.isHidden,
         updatedAt: person.updatedAt,
