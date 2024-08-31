@@ -3,3 +3,9 @@ export interface IListData {
   total: number,
   hidden: number,
 }
+
+export interface IPlace {
+  name: string;
+  latitude: number;
+  longitude: number;
+}

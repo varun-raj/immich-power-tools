@@ -115,17 +115,7 @@ export function PersonMergeDropdown({
     if (primaryPerson.name.length === 0 && value.name.length > 0) {
       setPrimaryPerson(value);
     }
-    // setOpen(false);
-    // return mergePerson(person.id, value.id)
-    //   .then(() => {
-    //     onRemove?.(person);
-    //   })
-    //   .then(() => {
-    //     toast({
-    //       title: "Success",
-    //       description: "Person merged successfully",
-    //     });
-    //   });
+    
   };
 
   const handleMerge = () => {
