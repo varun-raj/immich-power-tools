@@ -33,10 +33,12 @@ services:
       - .env
 ```
 
-Add the Immich API Key to the env file (which you already have for the immich)
+Add the Immich API Key and immich url's to the env file (which you already have for the immich)
 
 ```bash
 IMMICH_API_KEY= # your_immich_api_key
+IMMICH_URL = "http://local-ip-of-immich:port" # Your immich instace ip address and port
+EXTERNAL_IMMICH_URL = "https://external-address" # External address of immich
 ```
 Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 #### Method 2 - Portainer
