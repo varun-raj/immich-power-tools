@@ -8,6 +8,7 @@ import ErrorBlock from "../shared/ErrorBlock";
 import Loader from "../ui/loader";
 import { ArrowRight, TriangleAlert } from "lucide-react";
 import Link from "next/link";
+import { LoginForm } from "../auth/LoginForm";
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -25,7 +26,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return getMe()
       .then(setUser)
       .catch((error) => {
-        setErrorMessage(error);
+        if (error.status === 403) return setUser(null);
+        return setErrorMessage(error);
       })
       .finally(() => setLoading(false));
   };
@@ -36,6 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   if (loading) return <Loader />;
   if (errorMessage)
+    
     return (
       <div className="min-h-screen flex flex-col justify-center">
         <ErrorBlock
@@ -57,7 +60,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </div>
     );
-  if (!user) return null;
+
+  if (!user) return <LoginForm />;
 
   return (
     <UserContext.Provider value={user}>

@@ -1,6 +1,7 @@
 // pages/api/proxy.js
 
 import { ENV } from '@/config/environment';
+import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const config = {
@@ -17,13 +18,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { id } = req.query;
   const targetUrl = `${ENV.IMMICH_URL}/api/people/${id}/thumbnail`;
 
+  const currentUser = await getCurrentUser(req);
+
+  if (!currentUser) {
+    return res.status(403).json({ message: 'Forbidden' })
+  }
+
+  console.log('currentUser.accessToken:', currentUser)
+
   try {
     // Forward the request to the target API
     const response = await fetch(targetUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/octet-stream',
-        'x-api-key': ENV.IMMICH_API_KEY,
+        Authorization: `Bearer ${currentUser.accessToken}`,
       },
     })
 

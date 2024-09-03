@@ -28,7 +28,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const currentUser = await getCurrentUser()
+    const currentUser = await getCurrentUser(req)
     const { rows } = await db.execute(SELECT_ORPHAN_PHOTOS(currentUser.id));
     return res.status(200).json(rows);
   } catch (error: any) {

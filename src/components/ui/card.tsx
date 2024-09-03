@@ -76,12 +76,12 @@ CardFooter.displayName = "CardFooter"
 interface CardProps {
   title?: string
   description?: string
-
+  className?: string
   children: React.ReactNode
 }
-const Card = ({ children, title, description }: CardProps) => {
+const Card = ({ children, title, description, className }: CardProps) => {
   return (
-    <CardRoot>
+    <CardRoot  className={className}>
       {!!(title || description) && (
         <CardHeader>
           {title && <CardTitle>{title}</CardTitle>}

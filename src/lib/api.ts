@@ -7,23 +7,15 @@ const handleErrors = (error: AxiosError | any) => {
   if (error.code === "ERR_BAD_RESPONSE") {
     return Promise.reject({
       error: "Unable to process this request, please try again later",
-      message: error.code
+      message: error.code,
     });
   }
   let errorObject = {}
   if (error.response) {
-    const { status } = error.response
-    if (status === 422) {
-      errorObject = {
-        ...error.response.data,
-        message: 'Unable to process this request, please try again later',
-      }
-    } else {
-      errorObject = {
-        ...error.response.data,
-      }
-    }
-    return Promise.reject(errorObject)
+    return Promise.reject({
+      ...error.response.data,
+      status: error.response.status,
+    })
   }
   errorObject = {
     message: 'Network Error. Please check your connection and try again!',

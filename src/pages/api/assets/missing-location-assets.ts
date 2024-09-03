@@ -15,7 +15,7 @@ export default async function handler(
     startDate: string;
   };
 
-  const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUser(req);
 
   if (!startDate) {
     return res.status(400).json({

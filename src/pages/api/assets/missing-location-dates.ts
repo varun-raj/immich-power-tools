@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(req);
     const rows = await db
       .select({
         asset_count: desc(count(assets.id)),

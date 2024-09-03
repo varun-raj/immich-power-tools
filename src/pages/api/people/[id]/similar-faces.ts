@@ -34,7 +34,7 @@ export default async function handler(
       sortOrder = "desc",
     } = req.query as any as IQuery;
 
-    const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUser(req);
     const personRecords = await db
       .select()
       .from(person)
