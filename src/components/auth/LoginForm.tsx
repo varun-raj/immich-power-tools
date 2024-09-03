@@ -12,12 +12,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { loginUser } from "@/handlers/api/user.handler"
+import { useConfig } from "@/contexts/ConfigContext"
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
 
 export function LoginForm() {
-
+  const { exImmichUrl } = useConfig()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -44,45 +45,49 @@ export function LoginForm() {
 
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-4" onSubmit={handleSubmit}>
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link>
+    <div className="relative flex min-h-screen justify-center flex-col bg-background">
+      <Card className="mx-auto max-w-sm">
+        <CardHeader>
+          <img
+            src="/favicon.png"
+            width={32}
+            height={32}
+            alt="Immich Power Tools"
+            className="w-8 h-8"
+          />
+          <CardTitle className="text-2xl">Login to Immich</CardTitle>
+          <CardDescription>
+            Login to your connected Immich instance <Link href={exImmichUrl} className="text-xs" target="_blank">({exImmichUrl})</Link>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="grid gap-4" onSubmit={handleSubmit}>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                onChange={handleChange}
+              />
             </div>
-            <Input id="password" type="password" required 
-              onChange={handleChange}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            Login
-          </Button>
-          <Button variant="outline" className="w-full" disabled={loading}>
-            Login with Google
-          </Button>
-        </form>
-        
-      </CardContent>
-    </Card>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" required 
+                onChange={handleChange}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              Login
+            </Button>
+            <Button variant="outline" className="w-full" disabled={loading}>
+              Login with OAuth
+            </Button>
+          </form>
+          
+        </CardContent>
+      </Card>
+    </div>
   )
 }
