@@ -1,11 +1,14 @@
 import { getMe } from "@/handlers/api/user.handler";
 import { IUser } from "@/types/user";
 import React, { useEffect, useState } from "react";
-
+import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import { useConfig } from "@/contexts/ConfigContext";
+import { logoutUser } from "@/handlers/api/user.handler"
+import { useRouter } from 'next/router';
 
 export default function ProfileInfo() {
+  const router = useRouter();
   const { immichURL,exImmichUrl } = useConfig();
   const [user, setUser] = React.useState<IUser | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -19,6 +22,16 @@ export default function ProfileInfo() {
       })
       .finally(() => setLoading(false));
   };
+  const handleLogout = () => { 
+
+    logoutUser().then((status) => {
+      console.log(status)
+      router.push('/login');
+    }).catch((error) => {
+      setErrorMessage(error.message)
+    })
+
+  }
 
   useEffect(() => {
     fetchData();
@@ -39,6 +52,9 @@ export default function ProfileInfo() {
           {immichURL}
         </Link>
         <p className="text-sm">{user?.name}</p>
+        <Button variant="destructive" className="mx-4" onClick={handleLogout}>
+          Log Out
+        </Button>
       </div>
       <div className="border text-muted-foreground text-xs text-center py-2">
         <p>
