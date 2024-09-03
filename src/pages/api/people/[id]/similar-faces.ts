@@ -83,7 +83,6 @@ export default async function handler(
       .selectDistinctOn([person.id], {
         id: person.id,
         name: person.name,
-        thumbnailPath: person.thumbnailPath,
         birthDate: person.birthDate,
         isHidden: person.isHidden,
         updatedAt: person.updatedAt,
