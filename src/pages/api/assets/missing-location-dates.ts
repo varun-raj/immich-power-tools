@@ -23,6 +23,7 @@ export default async function handler(
         isNull(exif.latitude),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
+        eq(assets.isVisible, true),
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)
       .orderBy(desc(count(assets.id)));

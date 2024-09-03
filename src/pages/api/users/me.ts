@@ -17,7 +17,8 @@ export default async function handler(
   
   return res.status(405).json({ message: "Method Not Allowed" });
 
-  const user = getCurrentUser(req);
+  const user = await getCurrentUser(req);
+  console.log("currentUser.accessToken:", user);
 
   if (user) return res.status(200).json(user);
 

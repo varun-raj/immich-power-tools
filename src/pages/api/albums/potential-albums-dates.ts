@@ -17,6 +17,7 @@ LEFT JOIN
 WHERE 
     aaa."albumsId" IS NULL
     AND a."ownerId" = ${ownerId}
+    AND a."isVisible" = true
 GROUP BY
     DATE(a."localDateTime")
 ORDER BY 

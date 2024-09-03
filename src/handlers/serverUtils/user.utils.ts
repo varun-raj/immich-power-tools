@@ -40,6 +40,7 @@ export const getCurrentUser = async (req: NextApiRequest) => {
   
   if (session) {
     const user = await getCurrentUserFromAccessToken(session)
+    if (!user) return null
     return {
       ...user,
       accessToken: session,
