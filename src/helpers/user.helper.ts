@@ -9,7 +9,7 @@ export const getUserHeaders = (user: IUser, otherHeaders?: {
     'x-api-key'?: string;
     'Authorization'?: string
   } = {
-    'Content-Type': 'application/octet-stream',
+    'Content-Type': 'application/json',
   }
   if (user.isUsingAPIKey) {
     headers['x-api-key'] = ENV.IMMICH_API_KEY
