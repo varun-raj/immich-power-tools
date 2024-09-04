@@ -15,6 +15,8 @@ import { loginUser } from "@/handlers/api/user.handler"
 import { useConfig } from "@/contexts/ConfigContext"
 import { IUser } from "@/types/user"
 import Head from "next/head"
+import { Tooltip } from "../ui/tooltip"
+import { set } from "date-fns"
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
@@ -40,6 +42,7 @@ export function LoginForm(
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { 
     e.preventDefault() 
     setLoading(true)
+    setErrorMessage(null)
     loginUser(formData.email, formData.password)
     .then(onLogin)
     .catch((error) => {
@@ -71,6 +74,11 @@ export function LoginForm(
           </CardHeader>
           <CardContent>
             <form className="grid gap-4" onSubmit={handleSubmit}>
+              {errorMessage && (
+                <div className="border text-center border-red-500 text-red-500 p-2 rounded-lg text-xs" role="alert">
+                  <p>{errorMessage}</p>
+                </div>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -93,9 +101,9 @@ export function LoginForm(
               <p className="text-xs text-gray-400 text-center">
                 Or Use <code>IMMICH_API_KEY</code> in your environment to use API Key instead of password.
               </p>
-              {/* <Button variant="outline" className="w-full" disabled={loading}>
-                Login with OAuth
-              </Button> */}
+              <Button variant="outline" className="w-full" disabled={true}>
+                Login with OAuth (Comming Soon)
+              </Button>
             </form>
           </CardContent>
         </Card>
