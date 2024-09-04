@@ -65,3 +65,20 @@ export const loginUser = async (email: string, password: string) => {
 
   return null
 }
+
+export const logoutUser = async (Authorization: string) => {
+  const res = await fetch(ENV.IMMICH_URL + "/api/auth/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization" : "Bearer " + Authorization
+    },
+    
+  })
+
+  if (res.ok) {
+    return res.json()
+  }
+
+  return null
+}
