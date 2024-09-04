@@ -36,9 +36,11 @@ export default function ProfileInfo() {
         {user && (
           <>
             <p className="text-sm">{user?.name}</p>
-            {!user.isUsingAPIKey && <Button variant="destructive" className="mx-4" onClick={handleLogout}>
+            {!user.isUsingAPIKey && (
+              <Button variant="destructive" className="mx-4 h-6 text-xs" onClick={handleLogout}>
               Log Out
-            </Button>}
+            </Button>
+            )}
           </>
         )}
       </div>
