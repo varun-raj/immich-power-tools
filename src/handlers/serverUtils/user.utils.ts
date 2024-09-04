@@ -1,6 +1,12 @@
+import { appConfig } from "@/config/app.config"
 import { ENV } from "@/config/environment"
+import { getCookie } from "@/lib/cookie"
+import { NextApiRequest } from "next"
 
-export const getCurrentUser = () => {
+
+export const getCurrentUserFromAPIKey = () => {
+  if (!ENV.IMMICH_URL || !ENV.IMMICH_API_KEY) return null;
+
   return fetch(ENV.IMMICH_URL + "/api/users/me", {
     headers: {
       'x-api-key': ENV.IMMICH_API_KEY,
@@ -8,8 +14,75 @@ export const getCurrentUser = () => {
     },
   }).then((res) => {
     if (res.ok) {
+      return res.json().then((user) => {
+        return {
+          ...user,
+          isUsingAPIKey: true,
+        }
+      })
+    }
+    return null
+  })
+}
+
+export const getCurrentUserFromAccessToken = (token: string) => {
+  return fetch(ENV.IMMICH_URL + "/api/users/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  }).then((res) => {
+    if (res.ok) {
       return res.json()
     }
-    throw new Error("Failed to fetch user")
+    return null
   })
+}
+
+export const getCurrentUser = async (req: NextApiRequest) => {
+  const session = getCookie(req, appConfig.sessionCookieName)
+  
+  if (session) {
+    const user = await getCurrentUserFromAccessToken(session)
+    if (!user) return null
+    return {
+      ...user,
+      accessToken: session,
+    }
+  }
+
+  return getCurrentUserFromAPIKey()
+}
+
+export const loginUser = async (email: string, password: string) => {
+  const res = await fetch(ENV.IMMICH_URL + "/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  })
+
+  if (res.ok) {
+    return res.json()
+  }
+
+  return null
+}
+
+export const logoutUser = async (Authorization: string) => {
+  const res = await fetch(ENV.IMMICH_URL + "/api/auth/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization" : "Bearer " + Authorization
+    },
+    
+  })
+
+  if (res.ok) {
+    return res.json()
+  }
+
+  return null
 }

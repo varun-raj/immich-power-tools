@@ -36,6 +36,7 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       aaa."albumsId" IS NULL 
       AND a."ownerId" = '${ownerId}'
       AND a."localDateTime"::date = '${date}'
+      AND a."isVisible" = true
 `);
 
 export default async function handler(
@@ -43,7 +44,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const currentUser = await getCurrentUser()
+    const currentUser = await getCurrentUser(req)
     const { startDate } = req.query as { startDate: string };
     const { rows } = await db.execute(SELECT_ORPHAN_PHOTOS(startDate, currentUser.id));
     return res.status(200).json(rows);

@@ -1,6 +1,8 @@
 // pages/api/proxy.js
 
 import { ENV } from '@/config/environment';
+import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
+import { getUserHeaders } from '@/helpers/user.helper';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const config = {
@@ -17,14 +19,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { id, size } = req.query;
   const targetUrl = `${ENV.IMMICH_URL}/api/assets/${id}/thumbnail?size=${size || 'thumbnail'}`;
 
+  const user = await getCurrentUser(req);
+  
+  if (!user) {
+    return res.status(403).json({ message: 'Unauthorized' })
+  }
   try {
     // Forward the request to the target API
     const response = await fetch(targetUrl, {
       method: 'GET',
-      headers: {
+      headers: getUserHeaders(user, {
         'Content-Type': 'application/octet-stream',
-        'x-api-key': ENV.IMMICH_API_KEY,
-      },
+      }),
     })
 
     if (!response.ok) {
@@ -42,7 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Send the image data
     res.send(Buffer.from(imageBuffer))
   } catch (error) {
-    console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })
   }
 }

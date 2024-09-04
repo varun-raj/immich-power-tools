@@ -17,6 +17,7 @@ LEFT JOIN
 WHERE 
     aaa."albumsId" IS NULL
     AND a."ownerId" = ${ownerId}
+    AND a."isVisible" = true
 GROUP BY
     DATE(a."localDateTime")
 ORDER BY 
@@ -28,7 +29,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const currentUser = await getCurrentUser()
+    const currentUser = await getCurrentUser(req)
     const { rows } = await db.execute(SELECT_ORPHAN_PHOTOS(currentUser.id));
     return res.status(200).json(rows);
   } catch (error: any) {

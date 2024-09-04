@@ -34,7 +34,7 @@ export default async function handler(
   }
   
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(req);
     const dataFromDB = await db.select({
       value: count(),
       label: column,

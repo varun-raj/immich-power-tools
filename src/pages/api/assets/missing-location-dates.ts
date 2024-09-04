@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(req);
     const rows = await db
       .select({
         asset_count: desc(count(assets.id)),
@@ -23,6 +23,7 @@ export default async function handler(
         isNull(exif.latitude),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
+        eq(assets.isVisible, true),
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)
       .orderBy(desc(count(assets.id)));

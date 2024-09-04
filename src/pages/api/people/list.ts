@@ -44,7 +44,7 @@ export default async function handler(
       sortOrder = "desc",
     } = req.query as any as IQuery;
 
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser(req);
 
     const maximumAssetCount = !maxValue || maxValue <= 0 ? 1000000 : maxValue;
     const whereClause = and(
@@ -85,8 +85,6 @@ export default async function handler(
       );
     }
     const people = await query.limit(perPage).offset((page - 1) * perPage);
-
- 
 
     return res.status(200).json({
       people,

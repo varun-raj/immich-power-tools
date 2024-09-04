@@ -15,7 +15,7 @@ export default async function handler(
     startDate: string;
   };
 
-  const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUser(req);
 
   if (!startDate) {
     return res.status(400).json({
@@ -53,6 +53,7 @@ export default async function handler(
         lte(exif.dateTimeOriginal, endDateDate),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
+        eq(assets.isVisible, true),
       ));
 
     return res.status(200).json(rows);

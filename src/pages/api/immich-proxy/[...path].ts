@@ -1,6 +1,8 @@
 // pages/api/proxy/[...path].ts
 
 import { ENV } from '@/config/environment';
+import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
+import { getUserHeaders } from '@/helpers/user.helper';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,14 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const targetUrl = `${ENV.IMMICH_URL}/api${proxyPath}`;
 
+  const currentUser = await getCurrentUser(req);
   try {
     const response = await fetch(targetUrl, {
       method: req.method,
-      headers: {
-        'x-api-key': ENV.IMMICH_API_KEY,
-        'Content-Type': 'application/json',
-      },
-
+      headers: getUserHeaders(currentUser),
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null,
     })
 

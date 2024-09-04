@@ -1,7 +1,10 @@
 export const BASE_API_ENDPOINT = '/api';
 export const BASE_PROXY_ENDPOINT = BASE_API_ENDPOINT + '/immich-proxy';
 
-export const GET_ME_PATH = BASE_PROXY_ENDPOINT + "/users/me";
+export const GET_ME_PATH = BASE_API_ENDPOINT + "/users/me";
+export const LOGIN_PATH = BASE_API_ENDPOINT + "/users/login";
+export const LOGOUT_PATH = BASE_API_ENDPOINT + "/users/logout";
+
 
 export const LIST_PEOPLE_PATH = BASE_API_ENDPOINT + "/people/list";
 export const SEARCH_PEOPLE_PATH = BASE_PROXY_ENDPOINT + "/search/person";

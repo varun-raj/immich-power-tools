@@ -1,7 +1,9 @@
 import { IUser } from "@/types/user";
 import { createContext, useContext } from "react";
 
-interface IUserContextType extends IUser {}
+interface IUserContextType extends IUser {
+  updateContext: (user: IUser | null) => void;
+}
 
 const UserContext = createContext<IUserContextType | null>(null);
 
