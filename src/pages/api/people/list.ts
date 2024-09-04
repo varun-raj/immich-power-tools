@@ -86,8 +86,6 @@ export default async function handler(
     }
     const people = await query.limit(perPage).offset((page - 1) * perPage);
 
- 
-
     return res.status(200).json({
       people,
       total: 10,

@@ -15,7 +15,12 @@ export const getCurrentUserFromAPIKey = () => {
     },
   }).then((res) => {
     if (res.ok) {
-      return res.json()
+      return res.json().then((user) => {
+        return {
+          ...user,
+          isUsingAPIKey: true,
+        }
+      })
     }
     return null
   })

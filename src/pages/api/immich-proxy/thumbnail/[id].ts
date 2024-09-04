@@ -2,6 +2,7 @@
 
 import { ENV } from '@/config/environment';
 import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
+import { getUserHeaders } from '@/helpers/user.helper';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const config = {
@@ -28,10 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Forward the request to the target API
     const response = await fetch(targetUrl, {
       method: 'GET',
-      headers: {
+      headers: getUserHeaders(currentUser, {
         'Content-Type': 'application/octet-stream',
-        Authorization: `Bearer ${currentUser.accessToken}`,
-      },
+      }),
     })
 
     if (!response.ok) {

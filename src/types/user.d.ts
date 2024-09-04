@@ -15,4 +15,6 @@ export interface IUser {
   quotaUsageInBytes:    number;
   status:               string;
   license:              null;
+  isUsingAPIKey?:       boolean;
+  accessToken?:         string;
 }

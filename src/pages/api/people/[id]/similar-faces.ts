@@ -26,12 +26,6 @@ export default async function handler(
   try {
     const {
       id,
-      page = 1,
-      perPage = 60,
-      nameLessOnly = false,
-      minimumAssetCount = 0,
-      sort = "assetCount",
-      sortOrder = "desc",
     } = req.query as any as IQuery;
 
   const currentUser = await getCurrentUser(req);
