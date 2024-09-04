@@ -1,7 +1,6 @@
 import { appConfig } from "@/config/app.config"
 import { ENV } from "@/config/environment"
 import { getCookie } from "@/lib/cookie"
-import { decodeJWT } from "@/lib/jwt"
 import { NextApiRequest } from "next"
 
 
