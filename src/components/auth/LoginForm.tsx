@@ -98,12 +98,12 @@ export function LoginForm(
               <Button type="submit" className="w-full" disabled={loading}>
                 Login
               </Button>
-              <p className="text-xs text-gray-400 text-center">
-                Or Use <code>IMMICH_API_KEY</code> in your environment to use API Key instead of password.
-              </p>
               <Button variant="outline" className="w-full" disabled={true}>
                 Login with OAuth (Comming Soon)
               </Button>
+              <p className="text-xs text-gray-400 text-center">
+                Or Use <code>IMMICH_API_KEY</code> in your environment to use API Key instead of password.
+              </p>
             </form>
           </CardContent>
         </Card>
