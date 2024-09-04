@@ -6,6 +6,7 @@ import { ENV } from "@/config/environment";
 import ConfigContext from "@/contexts/ConfigContext";
 import { useEffect, useRef, useState } from "react";
 import { getMe } from "@/handlers/api/user.handler";
+import { db } from "@/config/db";
 
 interface AppPropsWithProps extends AppProps {
   props: {

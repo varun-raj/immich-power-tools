@@ -33,7 +33,6 @@ export function LoginForm(
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
@@ -49,7 +48,6 @@ export function LoginForm(
       setLoading(false)
     })
   }
-
 
   return (
     <>
@@ -96,7 +94,6 @@ export function LoginForm(
                 Login with OAuth
               </Button>
             </form>
-            
           </CardContent>
         </Card>
       </div>

@@ -24,8 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(403).json({ message: 'Forbidden' })
   }
 
-  console.log('currentUser.accessToken:', currentUser)
-
   try {
     // Forward the request to the target API
     const response = await fetch(targetUrl, {
