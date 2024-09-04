@@ -1,44 +1,26 @@
-import { getMe } from "@/handlers/api/user.handler";
-import { IUser } from "@/types/user";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import { useConfig } from "@/contexts/ConfigContext";
 import { logoutUser } from "@/handlers/api/user.handler"
-import { useRouter } from 'next/router';
+import { useCurrentUser } from "@/contexts/CurrentUserContext";
+import { useToast } from "../ui/use-toast";
 
 export default function ProfileInfo() {
-  const router = useRouter();
-  const { immichURL,exImmichUrl } = useConfig();
-  const [user, setUser] = React.useState<IUser | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { updateContext, ...user } = useCurrentUser()
+  const { immichURL, exImmichUrl } = useConfig();
+  const toast = useToast();
 
-  const fetchData = () => {
-    return getMe()
-      .then(setUser)
-      .catch((error) => {
-        setErrorMessage(error.message);
-      })
-      .finally(() => setLoading(false));
-  };
-  const handleLogout = () => { 
-
-    logoutUser().then((status) => {
-      console.log(status)
-      router.push('/login');
+  const handleLogout = () => logoutUser()
+    .then(() => {
+      updateContext(null)
     }).catch((error) => {
-      setErrorMessage(error.message)
+      toast.toast({
+        title: "Error",
+        description: error.message,
+      })
     })
 
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (errorMessage) return <div>{errorMessage}</div>;
 
   return (
     <>
@@ -51,10 +33,14 @@ export default function ProfileInfo() {
         <Link href={immichURL} target="_blank" className="font-mono">
           {immichURL}
         </Link>
-        <p className="text-sm">{user?.name}</p>
-        <Button variant="destructive" className="mx-4" onClick={handleLogout}>
-          Log Out
-        </Button>
+        {user && (
+          <>
+            <p className="text-sm">{user?.name}</p>
+            <Button variant="destructive" className="mx-4" onClick={handleLogout}>
+              Log Out
+            </Button>
+          </>
+        )}
       </div>
       <div className="border text-muted-foreground text-xs text-center py-2">
         <p>

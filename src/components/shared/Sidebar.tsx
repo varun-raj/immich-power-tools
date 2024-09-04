@@ -53,7 +53,6 @@ export default function Sidebar() {
         </div>
         <div>
           <ProfileInfo />
-
         </div>
       </div>
     </div>

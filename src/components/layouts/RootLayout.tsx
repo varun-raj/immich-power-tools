@@ -32,13 +32,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
       .finally(() => setLoading(false));
   };
 
+  const handleLoginCompletion = (user: IUser) => {
+    setUser(user);
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
 
   if (loading) return <Loader />;
   if (errorMessage)
-    
     return (
       <div className="min-h-screen flex flex-col justify-center">
         <ErrorBlock
@@ -61,10 +64,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </div>
     );
 
-  if (!user) return <LoginForm />;
+  if (!user) return <LoginForm onLogin={handleLoginCompletion} />;
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={{
+      ...user,
+      updateContext: setUser,
+    }}>
       <div className="grid max-h-screen min-h-screen w-full md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr]">
         <Sidebar />
         <div className="flex flex-col">{children}</div>
