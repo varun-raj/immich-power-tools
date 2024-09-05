@@ -1,7 +1,18 @@
 import { Inter } from "next/font/google";
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
-import EXIFDistribution, { IEXIFDistributionProps } from "@/components/analytics/exif/EXIFDistribution";
+import EXIFDistribution, {
+  IEXIFDistributionProps,
+} from "@/components/analytics/exif/EXIFDistribution";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import ContributionGraph from "@/components/analytics/exif/contributiongraph";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,36 +53,82 @@ const exifCharts: IEXIFDistributionProps[] = [
     description: "Distribution of ISO",
   },
   {
-    column: 'exposureTime',
-    title: 'Exposure Time',
-    description: 'Distribution of exposure time'
+    column: "exposureTime",
+    title: "Exposure Time",
+    description: "Distribution of exposure time",
   },
   {
-    column: 'lensModel',
-    title: 'Lens Model',
-    description: 'Distribution of lens model'
+    column: "lensModel",
+    title: "Lens Model",
+    description: "Distribution of lens model",
   },
   {
-    column: 'projectionType',
-    title: 'Projection Type',
-    description: 'Distribution of projection type'
-  }
-]
+    column: "projectionType",
+    title: "Projection Type",
+    description: "Distribution of projection type",
+  },
+];
 export default function ExifDataAnalytics() {
   return (
     <PageLayout>
-      <Header 
-        leftComponent="Exif Data" 
-      />
+      <Header leftComponent="Exif Data" />
+      <div className="grid grid-cols-4 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Total Files</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            {(() => {
+              const a = 700000;
+              return a.toLocaleString();
+            })()}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Images</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            {(() => {
+              const a = 600000;
+              return a.toLocaleString();
+            })()}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Videos</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            {(() => {
+              const a = 100000;
+              return a.toLocaleString();
+            })()}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Live</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            {(() => {
+              const a = 50000;
+              return a.toLocaleString();
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+      <ContributionGraph  />
       <div className="grid grid-cols-3 gap-4">
         {exifCharts.map((chart) => (
-          <EXIFDistribution 
+          <EXIFDistribution
             key={chart.column}
             column={chart.column}
             title={chart.title}
             description={chart.description}
           />
         ))}
+        
       </div>
     </PageLayout>
   );
