@@ -8,8 +8,10 @@ import Lightbox, { SlideImage, SlideTypes } from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import { CalendarArrowDown, CalendarArrowUp, Hourglass } from "lucide-react";
 import Video from "yet-another-react-lightbox/plugins/video";
+import { useConfig } from "@/contexts/ConfigContext";
 
 export default function PotentialAlbumsAssets() {
+  const { exImmichUrl } = useConfig();
   const { startDate, selectedIds, assets, updateContext } =
     usePotentialAlbumContext();
 
@@ -37,12 +39,22 @@ export default function PotentialAlbumsAssets() {
       width: p.exifImageWidth as number,
       height: p.exifImageHeight as number,
       isSelected: selectedIds.includes(p.id),
+      tags: [
+        {
+          title: "Immich Link",
+          value: (
+            <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
+              Open in Immich
+            </a>
+          ),
+        },
+      ],
     }));
   }, [assets, selectedIds]);
 
   const slides = useMemo(
     () =>
-      images.map(({ original, width, height, type, videoURL }) => ({
+      images.map(({ original, width, height, type, videoURL}) => ({
         src: original,
         width,
         height,
@@ -111,6 +123,13 @@ export default function PotentialAlbumsAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
+          tagStyle={{
+            color: "white",
+            fontSize: "12px",
+            backgroundColor: "rgba(0, 0, 0)",
+            padding: "2px",
+            borderRadius: "5px",
+          }}
         />
       </div>
     </>
