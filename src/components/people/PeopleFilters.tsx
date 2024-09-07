@@ -13,11 +13,23 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
+import { IPersonListFilters } from "@/handlers/api/people.handler";
 
 export function PeopleFilters() {
   const router = useRouter();
   const { updateContext, page, maximumAssetCount } = usePeopleFilterContext();
 
+  const handleChange = (data: Partial<IPersonListFilters>) => {
+    updateContext(data);
+    router.push({
+      pathname: router.pathname,
+      query: { 
+        ...router.query,
+        ...data,
+        page: undefined,
+      },
+    });
+  }
   const [nextPage, prevPage] = useMemo(() => {
     const pageNum = parseInt(page.toString() || "1", 10);
     return [pageNum + 1, pageNum - 1];
@@ -32,9 +44,9 @@ export function PeopleFilters() {
         onChange={(e) => {
           try {
             const value = parseInt(e.target.value || "0", 10);
-            updateContext({ maximumAssetCount: value });
+            handleChange({ maximumAssetCount: value });
           } catch (e) {
-            updateContext({ maximumAssetCount: 0 });
+            handleChange({ maximumAssetCount: 0 });
           }
         }}
       />
@@ -42,7 +54,7 @@ export function PeopleFilters() {
         <Switch
           id="nameLessOnly"
           onCheckedChange={(checked) => {
-            updateContext({ nameLessOnly: checked, page: 1 });
+            handleChange({ nameLessOnly: checked, page: 1 });
           }}
         />
         <Label className="text-nowrap" htmlFor="nameLessOnly">
@@ -52,19 +64,19 @@ export function PeopleFilters() {
 
       <Button
         disabled={prevPage < 1}
-        onClick={() => updateContext({ page: prevPage })}
+        onClick={() => handleChange({ page: prevPage })}
       >
         <ArrowLeft size={16} />
       </Button>
 
-      <Button onClick={() => updateContext({ page: nextPage })}>
+      <Button onClick={() => handleChange({ page: nextPage })}>
         <ArrowRight size={16} />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant={"secondary"}
-            onClick={() => updateContext({ page: nextPage })}
+            onClick={() => handleChange({ page: nextPage })}
           >
             <SortDesc size={16} />
           </Button>
@@ -72,7 +84,7 @@ export function PeopleFilters() {
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() =>
-              updateContext({ sort: "assetCount", sortOrder: "asc" })
+              handleChange({ sort: "assetCount", sortOrder: "asc" })
             }
           >
             <SortAsc size={16} />
@@ -81,7 +93,7 @@ export function PeopleFilters() {
 
           <DropdownMenuItem
             onClick={() =>
-              updateContext({ sort: "assetCount", sortOrder: "desc" })
+              handleChange({ sort: "assetCount", sortOrder: "desc" })
             }
           >
             <SortDesc size={16} />
@@ -91,7 +103,7 @@ export function PeopleFilters() {
 
           <DropdownMenuItem
             onClick={() =>
-              updateContext({ sort: "updatedAt", sortOrder: "asc" })
+              handleChange({ sort: "updatedAt", sortOrder: "asc" })
             }
           >
             <SortAsc size={16} />
@@ -100,7 +112,7 @@ export function PeopleFilters() {
 
           <DropdownMenuItem
             onClick={() =>
-              updateContext({ sort: "updatedAt", sortOrder: "desc" })
+              handleChange({ sort: "updatedAt", sortOrder: "desc" })
             }
           >
             <SortDesc size={16} />

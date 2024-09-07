@@ -16,6 +16,7 @@ export default function PeopleList() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filters, setFilters] = useState<IPersonListFilters>({
+    ...router.query,
     page: 1,
   });
 
