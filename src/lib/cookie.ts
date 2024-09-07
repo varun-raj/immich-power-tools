@@ -1,3 +1,4 @@
+import { ENV } from '@/config/environment'
 import type { CookieSerializeOptions } from 'cookie'
 import cookie from 'cookie'
 import type { IncomingMessage } from 'http'
@@ -22,8 +23,7 @@ export const serializeCookie = (
   return cookie.serialize(name, String(value), {
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: ENV.SECURE_COOKIE,
     path: '/',
     ...options,
   })
