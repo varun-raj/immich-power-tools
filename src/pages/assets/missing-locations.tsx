@@ -15,13 +15,16 @@ import MissingLocationContext, {
 import { updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { useRouter } from "next/router";
 import React from "react";
 
 export default function MissingLocations() {
   const { toast } = useToast();
 
+  const { query } = useRouter();
+  const { startDate } = query as { startDate: string };
   const [config, setConfig] = React.useState<IMissingLocationConfig>({
-    startDate: undefined,
+    startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
   });
