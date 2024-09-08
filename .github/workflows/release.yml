@@ -46,5 +46,3 @@ jobs:
           docker build --build-arg VERSION=${{ needs.release.outputs.new-release-version }} \
           -t ghcr.io/${{ github.repository }}:${{ needs.release.outputs.new-release-version }} \
           -t ghcr.io/${{ github.repository }}:latest .
-          docker push ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:${{ needs.release.outputs.new-release-version }}
