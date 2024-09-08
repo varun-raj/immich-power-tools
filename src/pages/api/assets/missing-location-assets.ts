@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { parseDate } from "@/helpers/date.helper";
 import { assets, exif } from "@/schema";
 import { addDays } from "date-fns";
-import { and, count, desc, eq, gte, isNotNull, isNull, lte, ne, sql } from "drizzle-orm";
+import { and, eq, gte, isNotNull, isNull, lte, ne, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -51,7 +51,6 @@ export default async function handler(
         isNotNull(assets.createdAt),
         gte(exif.dateTimeOriginal, startDateDate),
         lte(exif.dateTimeOriginal, endDateDate),
-        eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
         eq(assets.isVisible, true),
       ));
