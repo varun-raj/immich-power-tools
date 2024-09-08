@@ -14,6 +14,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { IPersonListFilters } from "@/handlers/api/people.handler";
+import AssetFilter from "../shared/common/AssetFilter";
 
 export function PeopleFilters() {
   const router = useRouter();

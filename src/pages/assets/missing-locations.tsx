@@ -5,6 +5,7 @@ import MissingLocationAssets from "@/components/assets/missing-location/MissingL
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
 import PageLayout from "@/components/layouts/PageLayout";
+import AssetFilter from "@/components/shared/common/AssetFilter";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ export default function MissingLocations() {
         leftComponent="Missing Location"
         rightComponent={
           <>
+            <AssetFilter />
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>

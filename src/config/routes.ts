@@ -35,3 +35,6 @@ export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/vi
 // Location
 
 export const SEARCH_PLACES_PATH = BASE_PROXY_ENDPOINT + "/search/places";
+
+// Common
+export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";

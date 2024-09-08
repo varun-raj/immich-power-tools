@@ -9,6 +9,7 @@ import Captions from "yet-another-react-lightbox/plugins/captions";
 import { CalendarArrowDown, CalendarArrowUp, Hourglass } from "lucide-react";
 import Video from "yet-another-react-lightbox/plugins/video";
 import { useConfig } from "@/contexts/ConfigContext";
+import LazyImage from "@/components/ui/lazy-image";
 
 export default function PotentialAlbumsAssets() {
   const { exImmichUrl } = useConfig();
@@ -123,6 +124,7 @@ export default function PotentialAlbumsAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
+          thumbnailImageComponent={LazyImage}
           tagStyle={{
             color: "white",
             fontSize: "12px",

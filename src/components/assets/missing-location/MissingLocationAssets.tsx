@@ -18,6 +18,7 @@ import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
 import { formatDate, parseDate } from "@/helpers/date.helper";
 import { addDays } from "date-fns";
 import { useConfig } from "@/contexts/ConfigContext";
+import LazyImage from "@/components/ui/lazy-image";
 
 export default function MissingLocationAssets() {
   const { exImmichUrl } = useConfig();
@@ -125,6 +126,7 @@ export default function MissingLocationAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
+          thumbnailImageComponent={LazyImage}
           tagStyle={{
             color: "white",
             fontSize: "12px",

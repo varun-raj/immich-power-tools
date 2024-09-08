@@ -46,6 +46,7 @@
     "react-day-picker": "9.0.8",
     "react-dom": "^18",
     "react-grid-gallery": "^1.0.1",
+    "react-query": "^3.39.3",
     "recharts": "^2.12.7",
     "sass": "^1.77.8",
     "tailwind-merge": "^2.5.2",
