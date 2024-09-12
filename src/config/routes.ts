@@ -35,3 +35,7 @@ export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/vi
 // Location
 
 export const SEARCH_PLACES_PATH = BASE_PROXY_ENDPOINT + "/search/places";
+
+//Analytics
+
+export const ASSET_STATISTICS = BASE_PROXY_ENDPOINT + "/assets/statistics";

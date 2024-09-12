@@ -1,4 +1,4 @@
-import { EXIF_DISTRIBUTION_PATH } from "@/config/routes";
+import { ASSET_STATISTICS, EXIF_DISTRIBUTION_PATH } from "@/config/routes";
 import API from "@/lib/api";
 
 export type ISupportedEXIFColumns = 
@@ -7,3 +7,7 @@ export type ISupportedEXIFColumns =
 export const getExifDistribution = async (column: ISupportedEXIFColumns) => {
   return API.get(EXIF_DISTRIBUTION_PATH(column));
 };
+
+export const getAssetStatistics = async () => {
+  return API.get(ASSET_STATISTICS);
+}

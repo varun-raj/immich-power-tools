@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ContributionGraph from "@/components/analytics/exif/contributiongraph";
+import { useEffect, useState } from "react";
+import { getAssetStatistics } from "@/handlers/api/analytics.handler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -69,48 +71,65 @@ const exifCharts: IEXIFDistributionProps[] = [
   },
 ];
 export default function ExifDataAnalytics() {
+  const [statistics, setStatistics] = useState({ images: 0, videos: 0, total: 0 });
+  const [loading, setLoading] = useState(false);
+
+
+  const fetchStatisticsData = async () => {
+    setLoading(true); // Set loading to true when starting to fetch data
+    return getAssetStatistics()
+      .then((data) => {
+        console.log("asdasdadasd")
+        setStatistics(data); // Update statistics with the returned data
+      })
+      .finally(() => setLoading(false)); // Stop loading after data is fetched
+  };
+
+  useEffect(() => {
+    fetchStatisticsData();
+  }, []);
   return (
     <PageLayout>
       <Header leftComponent="Exif Data" />
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Total Files</CardTitle>
+            <CardTitle className="text-center text-lg font-mono">Total Files</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center text-lg font-mono">
             {(() => {
-              const a = 700000;
+              const a = statistics.total;
               return a.toLocaleString();
             })()}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Images</CardTitle>
+            <CardTitle className="text-center text-lg font-mono">Images</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center text-lg font-mono">
             {(() => {
-              const a = 600000;
+              const a = statistics.images;
               return a.toLocaleString();
             })()}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Videos</CardTitle>
+            <CardTitle className="text-center text-lg font-mono">Videos</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center text-lg font-mono">
             {(() => {
-              const a = 100000;
+              const a = statistics.videos;
               return a.toLocaleString();
             })()}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Live</CardTitle>
+            <CardTitle className="text-center text-lg font-mono">Live</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center text-lg font-mono">
             {(() => {
               const a = 50000;
               return a.toLocaleString();
@@ -118,7 +137,8 @@ export default function ExifDataAnalytics() {
           </CardContent>
         </Card>
       </div>
-      <ContributionGraph  />
+
+      <ContributionGraph />
       <div className="grid grid-cols-3 gap-4">
         {exifCharts.map((chart) => (
           <EXIFDistribution
@@ -128,7 +148,7 @@ export default function ExifDataAnalytics() {
             description={chart.description}
           />
         ))}
-        
+
       </div>
     </PageLayout>
   );
