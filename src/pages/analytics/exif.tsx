@@ -12,9 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import ContributionGraph from "@/components/analytics/exif/contributiongraph";
+import AssetHeatMap from "@/components/analytics/exif/AssetHeatMap";
 import { useEffect, useState } from "react";
-import { getAssetStatistics } from "@/handlers/api/analytics.handler";
+import { getAssetStatistics, getLivePhotoStatistics } from "@/handlers/api/analytics.handler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -73,72 +73,58 @@ const exifCharts: IEXIFDistributionProps[] = [
 export default function ExifDataAnalytics() {
   const [statistics, setStatistics] = useState({ images: 0, videos: 0, total: 0 });
   const [loading, setLoading] = useState(false);
+  const [livePhotoStatistics, setLivePhotoStatistics] = useState({ total: 0 });
 
+  const fetchLivePhotoStatistics = async () => {
+    setLoading(true);
+    try {
+      const data = await getLivePhotoStatistics();
+      const livePhotoData = Array.isArray(data) && data.length ? data[0].value : 0;
+      setLivePhotoStatistics({ total: livePhotoData });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchStatisticsData = async () => {
-    setLoading(true); // Set loading to true when starting to fetch data
-    return getAssetStatistics()
-      .then((data) => {
-        console.log("asdasdadasd")
-        setStatistics(data); // Update statistics with the returned data
-      })
-      .finally(() => setLoading(false)); // Stop loading after data is fetched
+    setLoading(true);
+    try {
+      const data = await getAssetStatistics();
+      setStatistics(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchStatisticsData();
+    fetchLivePhotoStatistics();
   }, []);
+
   return (
     <PageLayout>
       <Header leftComponent="Exif Data" />
       <div className="grid grid-cols-4 gap-4">
+        {["Total", "Images", "Videos"].map((type, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <CardTitle className="text-center text-lg font-mono">{type}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center text-lg font-mono">
+              {loading ? "Loading..." : statistics[type.toLowerCase() as keyof typeof statistics].toLocaleString()}
+            </CardContent>
+          </Card>
+        ))}
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-lg font-mono">Total Files</CardTitle>
+            <CardTitle className="text-center text-lg font-mono">Live Photos</CardTitle>
           </CardHeader>
           <CardContent className="text-center text-lg font-mono">
-            {(() => {
-              const a = statistics.total;
-              return a.toLocaleString();
-            })()}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-lg font-mono">Images</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center text-lg font-mono">
-            {(() => {
-              const a = statistics.images;
-              return a.toLocaleString();
-            })()}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-lg font-mono">Videos</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center text-lg font-mono">
-            {(() => {
-              const a = statistics.videos;
-              return a.toLocaleString();
-            })()}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-lg font-mono">Live</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center text-lg font-mono">
-            {(() => {
-              const a = 50000;
-              return a.toLocaleString();
-            })()}
+            {loading ? "Loading..." : livePhotoStatistics.total.toLocaleString()}
           </CardContent>
         </Card>
       </div>
-
-      <ContributionGraph />
+      <AssetHeatMap />
       <div className="grid grid-cols-3 gap-4">
         {exifCharts.map((chart) => (
           <EXIFDistribution
