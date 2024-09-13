@@ -41,6 +41,7 @@ IMMICH_URL = "http://local-ip-of-immich:port" # Your immich instace ip address a
 EXTERNAL_IMMICH_URL = "https://external-address" # External address of immich
 ```
 Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
+
 #### Method 2 - Portainer
 
 If you're using portainer, run the docker using `docker run` and add the power tools to the same network as immich.
