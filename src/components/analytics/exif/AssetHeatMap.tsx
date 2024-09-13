@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getHeatMapData } from "@/handlers/api/analytics.handler";
+import { useConfig } from "@/contexts/ConfigContext";
 
 type HeatMapEntry = {
   date: string;
@@ -7,6 +8,8 @@ type HeatMapEntry = {
 };
 
 export default function AssetHeatMap() {
+  const {  exImmichUrl } = useConfig();
+
   const [heatMapData, setHeatMapData] = useState<HeatMapEntry[][]>([]);
   const [loading, setLoading] = useState(false);
   const [weeksPerMonth, setWeeksPerMonth] = useState<number[]>([]); // Store weeks per month
@@ -115,7 +118,7 @@ export default function AssetHeatMap() {
                       {
                         column[rowIndex]?.date ? (
                           <a
-                            href={`http://localhost:2283/search?query=%7B%22takenAfter%22%3A%22${column[rowIndex]?.date ?? "N/A"}T00%3A00%3A00.000Z%22%2C%22takenBefore%22%3A%22${column[rowIndex]?.date ?? "N/A"}T23%3A59%3A59.999Z%22%7D`}
+                            href={`${exImmichUrl}/search?query=%7B%22takenAfter%22%3A%22${column[rowIndex]?.date ?? "N/A"}T00%3A00%3A00.000Z%22%2C%22takenBefore%22%3A%22${column[rowIndex]?.date ?? "N/A"}T23%3A59%3A59.999Z%22%7D`}
                             className="block h-full w-full"
                             target="_blank"
                           >
