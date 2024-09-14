@@ -8,7 +8,7 @@ import { useToast } from "../ui/use-toast";
 
 export default function ProfileInfo() {
   const { updateContext, ...user } = useCurrentUser()
-  const { immichURL, exImmichUrl } = useConfig();
+  const { immichURL, exImmichUrl, version } = useConfig();
   const toast = useToast();
 
   const handleLogout = () => logoutUser()
@@ -44,7 +44,7 @@ export default function ProfileInfo() {
           </>
         )}
       </div>
-      <div className="border text-muted-foreground text-xs text-center py-2">
+      <div className="border text-muted-foreground text-xs py-2 flex justify-between items-center px-2">
         <p>
           Made with <span className="text-red-500">&hearts;</span> by{" "}
           <Link
@@ -55,6 +55,9 @@ export default function ProfileInfo() {
             @zathvarun
           </Link>
         </p>
+        <Link target="_blank" href={`https://github.com/varun-raj/immich-power-tools/releases/tag/v${version}`}>
+          v{version}
+        </Link>
       </div>
     </>
   );

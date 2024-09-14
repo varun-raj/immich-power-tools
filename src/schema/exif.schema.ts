@@ -32,3 +32,5 @@ export const exif = pgTable('exif', {
   autoStackId: varchar('autoStackId'),
   rating: integer('rating'),
 });
+
+export type IExifColumns = keyof typeof exif.$inferSelect
