@@ -4,14 +4,12 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
 import ConfigContext from "@/contexts/ConfigContext";
-import { useEffect, useRef, useState } from "react";
-import { getMe } from "@/handlers/api/user.handler";
-import { db } from "@/config/db";
-
+import { useRef } from "react";
 interface AppPropsWithProps extends AppProps {
   props: {
     immichURL: string;
     exImmichUrl: string;
+    version?: string;
   };
 }
 const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
@@ -29,10 +27,12 @@ const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
 };
 
 App.getInitialProps = async () => {
+
   return {
     props: {
       exImmichUrl: ENV.EXTERNAL_IMMICH_URL,
       immichURL: ENV.IMMICH_URL,
+      version: ENV.VERSION
     },
   };
 };

@@ -41,3 +41,5 @@ export const SEARCH_PLACES_PATH = BASE_PROXY_ENDPOINT + "/search/places";
 export const ASSET_STATISTICS = BASE_PROXY_ENDPOINT + "/assets/statistics";
 export const LIVE_PHOTO_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/livephoto";
 export const HEATMAP_DATA = BASE_API_ENDPOINT + "/analytics/statistics/heatmap";
+// Common
+export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";

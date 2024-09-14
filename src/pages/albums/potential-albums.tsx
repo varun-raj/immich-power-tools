@@ -13,14 +13,17 @@ import PotentialAlbumContext, {
 } from "@/contexts/PotentialAlbumContext";
 import { addAssetToAlbum, createAlbum } from "@/handlers/api/album.handler";
 import { IAlbum, IAlbumCreate } from "@/types/album";
+import { useRouter } from "next/router";
 import React from "react";
 
 export default function PotentialAlbums() {
   const { toast } = useToast();
   const { id } = useCurrentUser();
 
+  const { query } = useRouter();
+  const { startDate } = query as { startDate: string };
   const [config, setConfig] = React.useState<IPotentialAlbumConfig>({
-    startDate: undefined,
+    startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
   });
@@ -62,6 +65,7 @@ export default function PotentialAlbums() {
       }]
     })
   }
+  
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
@@ -71,7 +75,7 @@ export default function PotentialAlbums() {
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>
-            {config.selectedIds.length === config.assets.length ? (
+            {config.selectedIds.length && config.selectedIds.length === config.assets.length ? (
               <Button
                 variant={"outline"}
                 onClick={() =>

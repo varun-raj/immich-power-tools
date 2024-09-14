@@ -21,6 +21,7 @@ export default async function handler(
       .leftJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
         isNull(exif.latitude),
+        isNotNull(assets.createdAt),
         eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id), 
         eq(assets.isVisible, true),

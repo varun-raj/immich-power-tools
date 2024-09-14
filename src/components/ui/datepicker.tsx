@@ -16,9 +16,10 @@ import {
 interface IProps {
   date?: Date | null
   onSelect?: (date?: Date | null) => any
+  iconOnly?: boolean
 }
 export function DatePicker(
-  { date: _date, onSelect }: IProps
+  { date: _date, onSelect, iconOnly }: IProps
 ) {
   const [date, setDate] = React.useState<Date | null>(_date || null)
 
@@ -32,12 +33,12 @@ export function DatePicker(
         <Button
           variant={"outline"}
           className={cn(
-            "justify-start text-left font-normal",
+            "justify-start text-left font-normal flex gap-1",
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          <CalendarIcon className="h-3 w-3" />
+          {!iconOnly && <span>{date ? format(date, "PPP") : <span>Pick a date</span>}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

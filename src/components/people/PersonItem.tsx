@@ -86,7 +86,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
           }}
         >
           <Avatar
-            className="w-full h-auto rounded-lg"
+            className="w-full min-h-full h-auto rounded-lg"
             src={person.thumbnailPath}
             alt={person.name}
           />

@@ -5,6 +5,7 @@ import MissingLocationAssets from "@/components/assets/missing-location/MissingL
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
 import PageLayout from "@/components/layouts/PageLayout";
+import AssetFilter from "@/components/shared/common/AssetFilter";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,16 @@ import MissingLocationContext, {
 import { updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { useRouter } from "next/router";
 import React from "react";
 
 export default function MissingLocations() {
   const { toast } = useToast();
 
+  const { query } = useRouter();
+  const { startDate } = query as { startDate: string };
   const [config, setConfig] = React.useState<IMissingLocationConfig>({
-    startDate: undefined,
+    startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
   });

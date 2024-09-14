@@ -10,10 +10,13 @@ import { ArrowRight, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { LoginForm } from "../auth/LoginForm";
 import { useConfig } from "@/contexts/ConfigContext";
+import { queryClient } from "@/config/rQuery";
+import { QueryClientProvider } from "react-query";
 
 type RootLayoutProps = {
   children: ReactNode;
 };
+
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const { immichURL, exImmichUrl } = useConfig();
@@ -34,9 +37,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       .finally(() => setLoading(false));
   };
 
-  const handleLoginCompletion = (user: IUser) => {
-    setUser(user);
-  }
+  const handleLoginCompletion = (user: IUser) => setUser(user);
 
   useEffect(() => {
     fetchData();
@@ -86,15 +87,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
   if (!user) return <LoginForm onLogin={handleLoginCompletion} />;
 
   return (
-    <UserContext.Provider value={{
-      ...user,
-      updateContext: setUser,
-    }}>
-      <div className="grid max-h-screen min-h-screen w-full md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr]">
-        <Sidebar />
-        <div className="flex flex-col">{children}</div>
-        <Toaster />
-      </div>
-    </UserContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <UserContext.Provider value={{
+        ...user,
+        updateContext: setUser,
+      }}>
+        <div className="grid max-h-screen min-h-screen w-full md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr]">
+          <Sidebar />
+          <div className="flex flex-col">{children}</div>
+          <Toaster />
+        </div>
+      </UserContext.Provider>
+    </QueryClientProvider>
   );
 }

@@ -5,8 +5,10 @@ import {
 import React, { use, useEffect, useState } from "react";
 import PotentialDateItem from "./PotentialDateItem";
 import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
+import { useRouter } from "next/router";
 
 export default function PotentialAlbumsDates() {
+  const router = useRouter();
   const { updateContext } = usePotentialAlbumContext();
   const [dateRecords, setDateRecords] = React.useState<
     IPotentialAlbumsDatesResponse[]
@@ -25,6 +27,11 @@ export default function PotentialAlbumsDates() {
 
   const handleSelect = (date: string) => {
     updateContext({ startDate: date });
+    router.push({
+      pathname: router.pathname,
+      query: { startDate: date },
+    })
+    
   };
 
   useEffect(() => {
