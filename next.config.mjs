@@ -13,7 +13,7 @@ const nextConfig = {
     unoptimized: true,
   },
   env: {
-    VERSION: version,
+    VERSION: process.env.BUILD_VERSION || version,
   },
 };
 
