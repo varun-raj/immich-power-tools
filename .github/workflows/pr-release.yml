@@ -30,4 +30,3 @@ jobs:
         run: |
           docker build --build-arg VERSION=pr-${{ env.PR_NUMBER }} \
           -t ghcr.io/${{ github.repository }}:pr-${{ env.PR_NUMBER }} .
-          docker push ghcr.io/${{ github.repository }}:pr-${{ env.PR_NUMBER }}
