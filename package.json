@@ -31,6 +31,7 @@
     "@types/cookie": "^0.6.0",
     "@types/qs": "^6.9.15",
     "axios": "^1.7.4",
+    "chrono-node": "^1.4.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",

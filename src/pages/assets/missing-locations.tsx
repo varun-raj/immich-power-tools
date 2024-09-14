@@ -49,7 +49,6 @@ export default function MissingLocations() {
         leftComponent="Missing Location"
         rightComponent={
           <>
-            <AssetFilter />
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>
