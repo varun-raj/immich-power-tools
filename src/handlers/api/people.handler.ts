@@ -26,7 +26,7 @@ export const listPeople = (filters: IPersonListFilters): Promise<IPeopleListResp
 
 export const updatePerson = (id: string, data: Partial<{
   name: string;
-  birthDate: string;
+  birthDate: string | null;
   isHidden: boolean;
 }>) => {
   return API.put(UPDATE_PERSON_PATH(id), data)

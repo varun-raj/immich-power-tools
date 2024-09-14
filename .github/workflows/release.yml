@@ -43,6 +43,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         run: |
-          docker build --build-arg VERSION=${{ needs.release.outputs.new-release-version }} \
+          docker build --build-arg BUILD_VERSION=${{ needs.release.outputs.new-release-version }} VERSION=${{ needs.release.outputs.new-release-version }} \
           -t ghcr.io/${{ github.repository }}:${{ needs.release.outputs.new-release-version }} \
           -t ghcr.io/${{ github.repository }}:latest .

@@ -3,13 +3,14 @@ import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
 import { IMissingLocationDatesResponse, listMissingLocationDates } from "@/handlers/api/asset.handler";
 import MissingLocationDateItem from "./MissingLocationDateItem";
 import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
+import { useRouter } from "next/router";
 
 export default function MissingLocationDates() {
   const { updateContext } = useMissingLocationContext();
+  const router = useRouter();
   const [dateRecords, setDateRecords] = React.useState<
     IMissingLocationDatesResponse[]
   >([]);
-
   const [loading, setLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -23,6 +24,10 @@ export default function MissingLocationDates() {
 
   const handleSelect = (date: string) => {
     updateContext({ startDate: date });
+    router.push({
+      pathname: router.pathname,
+      query: { startDate: date },
+    });
   };
 
   useEffect(() => {

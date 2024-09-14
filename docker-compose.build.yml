@@ -10,3 +10,5 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - BUILD_VERSION=${BUILD_VERSION}
