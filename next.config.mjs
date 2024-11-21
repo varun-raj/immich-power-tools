@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-import { readFileSync } from 'fs';
-
-const { version } = JSON.parse(readFileSync('./package.json', 'utf-8'));
-
-console.log(`Version: ${version}`);
-
 const nextConfig = {
   reactStrictMode: false,
   output: 'standalone',
@@ -13,7 +7,7 @@ const nextConfig = {
     unoptimized: true,
   },
   env: {
-    VERSION: process.env.BUILD_VERSION || version,
+    VERSION: process.env.VERSION,
   },
 };
 
