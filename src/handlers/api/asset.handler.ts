@@ -37,6 +37,7 @@ export interface IUpdateAssetsParams {
   ids: string[];
   latitude?: number;
   longitude?: number;
+  dateTimeOriginal?: string;
 }
 
 export const updateAssets = async (params: IUpdateAssetsParams) => {

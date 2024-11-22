@@ -6,6 +6,9 @@ import React, { use, useEffect, useState } from "react";
 import PotentialDateItem from "./PotentialDateItem";
 import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
 import { useRouter } from "next/router";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp, ArrowUpDownIcon, SortAsc, SortDesc } from "lucide-react";
 
 export default function PotentialAlbumsDates() {
   const router = useRouter();
@@ -13,13 +16,17 @@ export default function PotentialAlbumsDates() {
   const [dateRecords, setDateRecords] = React.useState<
     IPotentialAlbumsDatesResponse[]
   >([]);
+  const [filters, setFilters] = useState<{ sortBy: string, sortOrder: string }>({ sortBy: "date", sortOrder: "desc" });
 
   const [loading, setLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchData = async () => {
-    return listPotentialAlbumsDates({})
+    return listPotentialAlbumsDates({
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder,
+    })
       .then(setDateRecords)
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
@@ -31,15 +38,38 @@ export default function PotentialAlbumsDates() {
       pathname: router.pathname,
       query: { startDate: date },
     })
-    
   };
+
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filters]);
 
   return (
-    <div className="overflow-y-auto min-w-[170px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
+    <div className="overflow-y-auto min-w-[200px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
+      <div className="flex justify-between items-center gap-2">
+        <Select
+          defaultValue={filters.sortBy}
+          onValueChange={(value) => setFilters({ ...filters, sortBy: value })}
+        >
+          <SelectTrigger className="!p-2">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent defaultValue={filters.sortBy}>
+            <SelectGroup title="Sort by">
+              <SelectLabel>Sort by</SelectLabel>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="asset_count">Asset Count</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <div>
+          <Button variant="default" size="sm" onClick={() => setFilters({ ...filters, sortOrder: filters.sortOrder === "asc" ? "desc" : "asc" })}>
+            {filters.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
+          </Button>
+        </div>
+      </div>
+
       {dateRecords.map((record) => (
         <PotentialDateItem
           key={record.date}

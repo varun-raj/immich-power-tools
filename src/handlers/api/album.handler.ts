@@ -7,6 +7,8 @@ import { IAsset } from "@/types/asset";
 interface IPotentialAlbumsDatesFilters {
   startDate?: string;
   endDate?: string;
+  sortBy?: string;
+  sortOrder?: string;
 }
 export interface IPotentialAlbumsDatesResponse {
   date: string;
