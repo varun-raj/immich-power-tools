@@ -26,14 +26,22 @@ const TooltipContent = React.forwardRef<
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
 
-const Tooltip: React.FC<React.ComponentProps<typeof TooltipRoot>> = ({
+export interface ITooltipProps extends React.ComponentProps<typeof TooltipRoot> {
+  content: string
+}
+const Tooltip: React.FC<ITooltipProps> = ({
   children,
+  content,
   ...props
 }) => (
   <TooltipProvider>
     <TooltipRoot {...props}>
-      {children}
-      <TooltipContent />
+      <TooltipTrigger asChild>
+        {children}
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{content}</p>
+      </TooltipContent>
     </TooltipRoot>
   </TooltipProvider>
 )

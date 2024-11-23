@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getHeatMapData } from "@/handlers/api/analytics.handler";
 import { useConfig } from "@/contexts/ConfigContext";
+import { Tooltip } from "@/components/ui/tooltip";
 
 type HeatMapEntry = {
   date: string;
@@ -8,7 +9,7 @@ type HeatMapEntry = {
 };
 
 export default function AssetHeatMap() {
-  const {  exImmichUrl } = useConfig();
+  const { exImmichUrl } = useConfig();
 
   const [heatMapData, setHeatMapData] = useState<HeatMapEntry[][]>([]);
   const [loading, setLoading] = useState(false);
@@ -117,18 +118,19 @@ export default function AssetHeatMap() {
                     >
                       {
                         column[rowIndex]?.date ? (
-                          <a
-                            href={`${exImmichUrl}/search?query=%7B%22takenAfter%22%3A%22${column[rowIndex]?.date ?? "N/A"}T00%3A00%3A00.000Z%22%2C%22takenBefore%22%3A%22${column[rowIndex]?.date ?? "N/A"}T23%3A59%3A59.999Z%22%7D`}
-                            className="block h-full w-full"
-                            target="_blank"
-                          >
-                            <div
-                              className="h-full w-full"
-                              title={`Date: ${column[rowIndex]?.date ?? "N/A"}, Count: ${column[rowIndex]?.count ?? 0}`}
-                            />
-                          </a>) : <div
+                          <Tooltip delayDuration={0} content={`Date: ${column[rowIndex]?.date ?? "N/A"} - Count: ${column[rowIndex]?.count ?? 0}`}>
+                            <a
+                              href={`${exImmichUrl}/search?query=%7B%22takenAfter%22%3A%22${column[rowIndex]?.date ?? "N/A"}T00%3A00%3A00.000Z%22%2C%22takenBefore%22%3A%22${column[rowIndex]?.date ?? "N/A"}T23%3A59%3A59.999Z%22%7D`}
+                              className="block h-full w-full"
+                              target="_blank"
+                            >
+                              <div
+                                className="h-full w-full"
+                              />
+                            </a></Tooltip>) : <div
                           className="h-full w-full"
                         />
+
                       }
                     </td>
                   ))}
