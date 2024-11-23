@@ -21,9 +21,9 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       a."sidecarPath",
       a."thumbhash",
       a."deletedAt",
-      a."localDateTime",
       e."exifImageWidth",
-      e."exifImageHeight"
+      e."exifImageHeight",
+      e."dateTimeOriginal"
   FROM 
       assets a
   LEFT JOIN 
@@ -35,7 +35,7 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
   WHERE 
       aaa."albumsId" IS NULL 
       AND a."ownerId" = '${ownerId}'
-      AND a."localDateTime"::date = '${date}'
+      AND e."dateTimeOriginal"::date = '${date}'
       AND a."isVisible" = true
 `);
 

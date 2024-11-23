@@ -14,10 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const response = await fetch(targetUrl, {
       method: req.method,
-      headers: getUserHeaders(currentUser),
+      headers: {
+        ...getUserHeaders(currentUser),
+        'Accept-Encoding': 'gzip, deflate, br',
+      },
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null,
     })
 
+    // Log response headers for debugging
+    console.log('Response Headers:', response.headers);
 
     // Forward the status code
     res.status(response.status)
@@ -28,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.setHeader(key, value)
     })
 
-    // Stream the response body
+  // Stream the response body
     const reader = response.body?.getReader()
     if (reader) {
       while (true) {
@@ -38,8 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
     res.end()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Proxy error:', error)
-    res.status(500).json({ error })
+    res.status(500).json({ error: error?.message })
   }
 }
