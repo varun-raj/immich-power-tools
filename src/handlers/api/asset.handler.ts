@@ -12,6 +12,8 @@ import { IAsset } from "@/types/asset";
 interface IMissingAssetAlbumsFilters {
   startDate?: string;
   endDate?: string;
+  sortBy?: string;
+  sortOrder?: string;
 }
 export interface IMissingLocationDatesResponse {
   date: string;

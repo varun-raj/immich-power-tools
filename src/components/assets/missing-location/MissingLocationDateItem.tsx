@@ -1,8 +1,9 @@
 import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 
 import { IMissingLocationDatesResponse } from "@/handlers/api/asset.handler";
+import { parseDate, formatDate } from "@/helpers/date.helper";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useMemo } from "react";
 
 interface IProps {
   record: IMissingLocationDatesResponse;
@@ -10,6 +11,10 @@ interface IProps {
 }
 export default function MissingLocationDateItem({ record, onSelect }: IProps) {
   const { startDate } = useMissingLocationContext()
+  const dateLabel = useMemo(() => {
+    if (!record.date) return "Unknown"
+    return formatDate(parseDate(record.date, "yyyy-MM-dd").toISOString(), "do MMM yyyy")
+  }, [record.date])
   return (
     <div
       role="button"
@@ -20,8 +25,8 @@ export default function MissingLocationDateItem({ record, onSelect }: IProps) {
         startDate === record.date ? "bg-zinc-100 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700" : "")
       }
     >
-      <p className="font-mono text-sm">{record.date}</p>
-      <p className="text-xs">{record.asset_count} W/O Location</p>
+      <p className="font-mono text-sm">{dateLabel}</p>
+      <p className="text-xs text-foreground/50">{record.asset_count} Orphan Assets</p>
     </div>
   );
 }

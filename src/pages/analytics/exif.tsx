@@ -110,7 +110,7 @@ export default function ExifDataAnalytics() {
             <CardHeader>
               <CardTitle className="text-center text-lg font-mono">{type}</CardTitle>
             </CardHeader>
-            <CardContent className="text-center text-lg font-mono">
+            <CardContent className="text-center text-3xl font-mono">
               {loading ? "Loading..." : statistics[type.toLowerCase() as keyof typeof statistics].toLocaleString()}
             </CardContent>
           </Card>
@@ -119,7 +119,7 @@ export default function ExifDataAnalytics() {
           <CardHeader>
             <CardTitle className="text-center text-lg font-mono">Live Photos</CardTitle>
           </CardHeader>
-          <CardContent className="text-center text-lg font-mono">
+          <CardContent className="text-center text-3xl font-mono">
             {loading ? "Loading..." : livePhotoStatistics.total.toLocaleString()}
           </CardContent>
         </Card>

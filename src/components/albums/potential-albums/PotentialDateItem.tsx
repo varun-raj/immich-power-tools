@@ -1,7 +1,9 @@
 import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
 import { IPotentialAlbumsDatesResponse } from "@/handlers/api/album.handler";
+import { formatDate } from "@/helpers/date.helper";
+import { parseDate } from "@/helpers/date.helper";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useMemo } from "react";
 
 interface IProps {
   record: IPotentialAlbumsDatesResponse;
@@ -9,6 +11,9 @@ interface IProps {
 }
 export default function PotentialDateItem({ record, onSelect }: IProps) {
   const { startDate } = usePotentialAlbumContext()
+  const dateLabel = useMemo(() => {
+    return formatDate(parseDate(record.date, "yyyy-MM-dd").toISOString(), "do MMM yyyy")
+  }, [record.date])
   return (
     <div
       role="button"
@@ -19,8 +24,8 @@ export default function PotentialDateItem({ record, onSelect }: IProps) {
         startDate === record.date ? "bg-zinc-100 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700" : "")
       }
     >
-      <p className="font-mono text-sm">{record.date}</p>
-      <p className="text-xs">{record.asset_count} Orphan Assets</p>
+      <p className="font-mono text-sm">{dateLabel}</p>
+      <p className="text-xs text-foreground/50">{record.asset_count} Orphan Assets</p>
     </div>
   );
 }
