@@ -87,7 +87,7 @@ export default function AssetHeatMap() {
   };
 
   return (
-    <div className="p-4 w-full">
+    <div className="py-4 w-full">
       <h2 className="text-xl font-bold mb-4">Past Year</h2>
       {loading ? (
         <p>Loading...</p>
@@ -100,7 +100,7 @@ export default function AssetHeatMap() {
                   <th
                     key={index}
                     className="text-center"
-                    colSpan={weeks}
+                    colSpan={weeks || 4}
                   >
                     {months[index]}
                   </th>
@@ -113,22 +113,22 @@ export default function AssetHeatMap() {
                   {heatMapData.map((column, colIndex) => (
                     <td
                       key={colIndex}
-                      className={`h-6 ${getColor(column[rowIndex]?.count ?? -1)} rounded-lg`}
-                      style={{ width: `calc(${100 / 60}%)` }}
+                      className={`h-[20px] w-[20px] ${getColor(column[rowIndex]?.count ?? -1)} rounded`}
+                      // style={{ width: `calc(${100 / 60}%)` }}
                     >
                       {
                         column[rowIndex]?.date ? (
                           <Tooltip delayDuration={0} content={`Date: ${column[rowIndex]?.date ?? "N/A"} - Count: ${column[rowIndex]?.count ?? 0}`}>
                             <a
                               href={`${exImmichUrl}/search?query=%7B%22takenAfter%22%3A%22${column[rowIndex]?.date ?? "N/A"}T00%3A00%3A00.000Z%22%2C%22takenBefore%22%3A%22${column[rowIndex]?.date ?? "N/A"}T23%3A59%3A59.999Z%22%7D`}
-                              className="block h-full w-full"
+                              className="block h-[20px] max-w-[20px]"
                               target="_blank"
                             >
                               <div
-                                className="h-full w-full"
+                                className="h-[20px] max-w-[20px]"
                               />
                             </a></Tooltip>) : <div
-                          className="h-full w-full"
+                          className="h-[20px] max-w-[20px]"
                         />
 
                       }
