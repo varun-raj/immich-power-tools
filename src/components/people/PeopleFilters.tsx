@@ -27,7 +27,7 @@ export function PeopleFilters() {
       query: { 
         ...router.query,
         ...data,
-        page: undefined,
+        page: data.page || undefined,
       },
     });
   }

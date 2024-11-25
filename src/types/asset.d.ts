@@ -17,6 +17,7 @@ export interface IAsset {
   url: string;
   previewUrl: string;
   videoURL?: string;
+  dateTimeOriginal: string;
 }
 
 export interface IAssetThumbhash {

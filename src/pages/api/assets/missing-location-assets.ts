@@ -43,6 +43,7 @@ export default async function handler(
         exifImageWidth: exif.exifImageWidth,
         exifImageHeight: exif.exifImageHeight,
         ownerId: assets.ownerId,
+        dateTimeOriginal: exif.dateTimeOriginal,
       })
       .from(assets)
       .leftJoin(exif, eq(exif.assetId, assets.id))

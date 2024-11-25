@@ -103,47 +103,47 @@ export function PersonMergeDropdown({
       setSelectedPeople(selectedPeople.filter((p) => p.id !== value.id));
       return;
     }
-    if (selectedPeople.length >= 5) {
-      toast({
-        title: "Error",
-        description: "You can only merge 5 people at a time",
-      });
-      return;
-    } else {
-      setSelectedPeople([...selectedPeople, value]);
-    }
+    setSelectedPeople([...selectedPeople, value]);
     if (primaryPerson.name.length === 0 && value.name.length > 0) {
       setPrimaryPerson(value);
     }
-    
   };
+
+
 
   const handleMerge = () => {
     if (selectedPeople.length === 0) {
       return;
     }
+
     const personIds = selectedPeople.map((p) => p.id);
     setMerging(true);
-    return mergePerson(person.id, personIds)
-      .then(() => {
-        onRemove?.(person);
-      })
-      .then(() => {
+
+    const mergeInBatches = async (ids: string[], index: number = 0) => {
+      if (index >= ids.length) {
         setOpen(false);
         toast({
           title: "Success",
           description: "People merged successfully",
         });
-      })
-      .catch(() => {
+        setMerging(false);
+        return;
+      }
+
+      const batch = ids.slice(index, index + 5);
+      try {
+        await mergePerson(person.id, batch);
+        mergeInBatches(ids, index + 5);
+      } catch {
         toast({
           title: "Error",
           description: "Failed to merge people",
         });
-      })
-      .finally(() => {
         setMerging(false);
-      });
+      }
+    };
+
+    mergeInBatches(personIds);
   };
 
   const handleRemove = (value: IPerson) => {

@@ -1,6 +1,7 @@
 import AlbumSelectorDialog from "@/components/albums/AlbumSelectorDialog";
 import PotentialAlbumsAssets from "@/components/albums/potential-albums/PotentialAlbumsAssets";
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
+import AssetsOptions from "@/components/assets/assets-options/AssetsOptions";
 import MissingLocationAssets from "@/components/assets/missing-location/MissingLocationAssets";
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
@@ -17,7 +18,7 @@ import { updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 
 export default function MissingLocations() {
   const { toast } = useToast();
@@ -29,6 +30,8 @@ export default function MissingLocations() {
     selectedIds: [],
     assets: [],
   });
+
+  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
 
   const handleSubmit = (place: IPlace) => {
     return updateAssets({
@@ -78,6 +81,7 @@ export default function MissingLocations() {
               </Button>
             )}
             <TagMissingLocationDialog onSubmit={handleSubmit} />
+            <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
           </>
         }
       />

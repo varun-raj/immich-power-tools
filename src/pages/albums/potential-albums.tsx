@@ -2,6 +2,7 @@ import AlbumCreateDialog from "@/components/albums/AlbumCreateDialog";
 import AlbumSelectorDialog from "@/components/albums/AlbumSelectorDialog";
 import PotentialAlbumsAssets from "@/components/albums/potential-albums/PotentialAlbumsAssets";
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
+import AssetsOptions from "@/components/assets/assets-options/AssetsOptions";
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,7 @@ import PotentialAlbumContext, {
 import { addAssetToAlbum, createAlbum } from "@/handlers/api/album.handler";
 import { IAlbum, IAlbumCreate } from "@/types/album";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 
 export default function PotentialAlbums() {
   const { toast } = useToast();
@@ -27,6 +28,8 @@ export default function PotentialAlbums() {
     selectedIds: [],
     assets: [],
   });
+
+  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
 
   const handleSelect = (album: IAlbum) => {
     return addAssetToAlbum(album.id, config.selectedIds)
@@ -65,7 +68,7 @@ export default function PotentialAlbums() {
       }]
     })
   }
-  
+
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
@@ -102,6 +105,7 @@ export default function PotentialAlbums() {
             )}
             <AlbumSelectorDialog onSelected={handleSelect} />
             <AlbumCreateDialog onSubmit={handleCreate} assetIds={config.assets.map((a) => a.id)} />
+            <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
           </>
         }
       />
