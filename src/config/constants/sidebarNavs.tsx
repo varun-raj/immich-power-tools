@@ -7,7 +7,7 @@ export const sidebarNavs = [
     icon: <User className="h-4 w-4" />,
   },
   {
-    title: "Exif Analytics",
+    title: "Analytics",
     link: "/analytics/exif",
     icon: <Image className="h-4 w-4" />,
   },

@@ -8,7 +8,7 @@ import PersonHideCell from "./PersonHideCell";
 import clsx from "clsx";
 import Link from "next/link";
 import { ENV } from "@/config/environment";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
@@ -95,13 +95,19 @@ export default function PersonItem({ person, onRemove }: IProps) {
         <div className="absolute bottom-2 w-full flex justify-center items-center">
           <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
         </div>
-        <div className="absolute top-2 left-2 group-hover:block hidden">
+        <div className="absolute top-2 left-2 group-hover:flex hidden items-center gap-2">
           <Link
             className="bg-green-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
             href={`${exImmichUrl}/people/${person.id}`}
             target="_blank"
           >
             <ArrowUpRight size={16} />
+          </Link>
+          <Link
+            className="bg-gray-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
+            href={`/people/${person.id}`}
+          >
+            <Search size={16} />
           </Link>
         </div>
         <div className="absolute top-2 right-2 ">

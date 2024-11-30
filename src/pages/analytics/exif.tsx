@@ -106,7 +106,7 @@ export default function ExifDataAnalytics() {
   }, []);
 
   return (
-    <PageLayout>
+    <PageLayout className="p-4">
       <Header leftComponent="Exif Data" />
       <div className="grid grid-cols-4 gap-4">
         {["Total", "Images", "Videos"].map((type, i) => (

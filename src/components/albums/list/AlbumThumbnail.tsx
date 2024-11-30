@@ -40,7 +40,7 @@ export default function AlbumThumbnail({ album, onSelect }: IAlbumThumbnailProps
         </div>
         <Checkbox
           onCheckedChange={onSelect}
-          className="absolute hidden top-2 left-2 w-6 h-6 rounded-full border-gray-300 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="absolute top-2 left-2 w-6 h-6 rounded-full border-gray-300 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         />
       </label>
       <div className="items-center gap-2 absolute top-2 right-2 group-hover:hidden flex ">

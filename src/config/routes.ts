@@ -46,3 +46,6 @@ export const LIVE_PHOTO_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/
 export const HEATMAP_DATA = BASE_API_ENDPOINT + "/analytics/statistics/heatmap";
 // Common
 export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";
+
+// Person
+export const GET_PERSON_INFO = (personId: string) => BASE_API_ENDPOINT + "/people/" + personId + "/info";
