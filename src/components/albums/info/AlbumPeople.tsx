@@ -35,6 +35,8 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [hidingPerson, setHidingPerson] = useState<boolean>(false)
+  const [selectionMode, setSelectionMode] = useState<boolean>(false)
+  const [selectedPeople, setSelectedPeople] = useState<string[]>([])
 
   const selectedPerson = useMemo(() => {
     return people.find((person) => query.faceId === person.id)
@@ -53,7 +55,7 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
   const handleHidePerson = (personId: string) => {
     setHidingPerson(true)
     updatePerson(personId, { isHidden: true }).then(() => {
-      setPeople(people.filter((person) => person.id !== personId))
+      setPeople((oldPeople) => oldPeople.filter((person) => person.id !== personId))
       router.push({
         pathname,
         query: {
@@ -64,6 +66,24 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
     }).finally(() => {
       setHidingPerson(false)
     })
+  }
+
+  const handleHideSelectedPeople = () => {
+    const promises = selectedPeople.map((personId) => {
+      return handleHidePerson(personId)
+    })
+    Promise.all(promises).then(() => {
+      setSelectedPeople([])
+      setSelectionMode(false)
+    })
+  }
+
+  const handleBulkSelect = (personId: string) => {
+    if (selectedPeople.includes(personId)) {
+      setSelectedPeople(selectedPeople.filter((id) => id !== personId))
+    } else {
+      setSelectedPeople([...selectedPeople, personId])
+    }
   }
 
   useEffect(() => {
@@ -88,7 +108,7 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
             </div>
           </AccordionTrigger>
           <div className="flex items-center gap-2">
-            {selectedPerson && (
+            {selectedPerson ? (
               <>
                 <Tooltip content={"Open in Immich"} delayDuration={0}>
                   <div className="flex items-center gap-2">
@@ -112,7 +132,6 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
                   isHidden: false,
                   updatedAt: new Date()
                 }} onComplete={(mergedPerson) => {
-                  console.log(mergedPerson)
                   router.push({
                     pathname,
                     query: {
@@ -127,6 +146,20 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
                   </Button>
                 </div>
               </>
+            ) : (
+              <div className="flex items-center gap-2">
+                {selectedPeople.length > 0 && (
+                  <>
+                    <p className="text-sm font-medium">{selectedPeople.length} people selected</p>
+                    <Button variant="outline" size="sm" onClick={handleHideSelectedPeople}>
+                      Hide
+                    </Button>
+                  </>
+                )}
+                <Button variant="outline" size="sm" onClick={() => setSelectionMode(!selectionMode)}>  
+                  {selectionMode ? "Cancel" : "Select People"}
+                </Button>
+              </div>
             )}
             <AccordionTrigger className="flex items-center justify-between gap-2 w-full" />
           </div>
@@ -136,12 +169,20 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
             <Tooltip key={person.id} delayDuration={0} content={(person.name || "No Name")}>
               <div className='relative'>
                 <LazyImage
-                  onClick={() => onSelect(person.id)}
+                  onClick={() => {
+                    if (selectionMode) {
+                      handleBulkSelect(person.id)
+                    } else {
+                      onSelect(person.id)
+                    }
+                  }}
                   role="button"
                   className={
                     cn("cursor-pointer h-16 w-16 min-w-16  rounded border-2",
                       !!person.name ? "border-blue-500" : "border-gray-500",
-                      selectedPerson?.id === person.id ? "border-green-500" : ""
+                      selectedPerson?.id === person.id ? "border-green-500" : "",
+                      selectionMode ? "border-blue-500" : "",
+                      selectedPeople.includes(person.id) ? "border-green-500" : ""
                     )
                   }
                   src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
