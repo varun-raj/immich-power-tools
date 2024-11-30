@@ -2,17 +2,18 @@ import { CHART_COLORS, PIE_CONFIG } from "@/config/constants/chart.constant";
 import React, { useMemo } from "react";
 import { Label, Pie, PieChart as PieChartRoot } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart";
-import { int } from "drizzle-orm/mysql-core";
+import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 
-export interface IPieChartData { label: string; value: number }
+export interface IPieChartData { label: string; value: number; valueLabel?: string }
 
 interface ChartProps {
   data: IPieChartData[];
   topLabel?: string;
   loading?: boolean;
   errorMessage?: string | null;
+  tooltipValueFormatter?: (value: number | string | undefined | ValueType) => string;
 }
-export default function PieChart({ data: _data, topLabel, loading, errorMessage }: ChartProps) {
+export default function PieChart({ data: _data, topLabel, loading, errorMessage, tooltipValueFormatter }: ChartProps) {
   const topItem = _data[0];
 
   const data = useMemo(() => _data.map((item, index) => ({
@@ -45,7 +46,12 @@ export default function PieChart({ data: _data, topLabel, loading, errorMessage 
     <PieChartRoot accessibilityLayer>
       <ChartTooltip
         cursor={false}
-        content={<ChartTooltipContent hideLabel />}
+        content={<ChartTooltipContent 
+          hideLabel
+          nameKey="value"
+          labelKey="valueLabel"
+          valueFormatter={tooltipValueFormatter}
+          />}
       />
       <Pie
         dataKey="value"
@@ -71,7 +77,7 @@ export default function PieChart({ data: _data, topLabel, loading, errorMessage 
                       y={viewBox.cy}
                       className="fill-foreground text-3xl font-bold"
                     >
-                      {topItem.value.toLocaleString()}
+                      {(topItem.valueLabel || topItem.value).toLocaleString()}
                     </tspan>
                     <tspan
                       x={viewBox.cx}

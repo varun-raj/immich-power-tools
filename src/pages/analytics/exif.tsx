@@ -7,18 +7,22 @@ import EXIFDistribution, {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import AssetHeatMap from "@/components/analytics/exif/AssetHeatMap";
 import { useEffect, useState } from "react";
 import { getAssetStatistics, getLivePhotoStatistics } from "@/handlers/api/analytics.handler";
+import { humanizeBytes } from "@/helpers/string.helper";
 
-const inter = Inter({ subsets: ["latin"] });
 
 const exifCharts: IEXIFDistributionProps[] = [
+  {
+    column: "storage",
+    title: "Storage",
+    description: "Distribution of storage",
+    tooltipValueFormatter: (value) => humanizeBytes(value as number * 1000000),
+  },
   {
     column: "make",
     title: "Make",
@@ -132,6 +136,7 @@ export default function ExifDataAnalytics() {
             column={chart.column}
             title={chart.title}
             description={chart.description}
+            tooltipValueFormatter={chart.tooltipValueFormatter}
           />
         ))}
 

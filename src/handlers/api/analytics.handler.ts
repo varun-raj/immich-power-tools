@@ -2,7 +2,7 @@ import { ASSET_STATISTICS, EXIF_DISTRIBUTION_PATH, HEATMAP_DATA, LIVE_PHOTO_STAT
 import API from "@/lib/api";
 
 export type ISupportedEXIFColumns = 
-  "make" | "model" | "focal-length" | "city" | "state" | "country" | "iso" | "exposureTime" | 'lensModel' | "projectionType";
+  "make" | "model" | "focal-length" | "city" | "state" | "country" | "iso" | "exposureTime" | 'lensModel' | "projectionType" | "storage";
 
 export const getExifDistribution = async (column: ISupportedEXIFColumns) => {
   return API.get(EXIF_DISTRIBUTION_PATH(column));
