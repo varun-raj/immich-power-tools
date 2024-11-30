@@ -6,13 +6,13 @@ export interface IAlbum {
   updatedAt:                  Date;
   id:                         string;
   ownerId:                    string;
-  owner:                      IAlbumOwner;
-  albumUsers:                 any[];
-  shared:                     boolean;
-  hasSharedLink:              boolean;
-  startDate:                  Date;
-  endDate:                    Date;
-  assets:                     any[];
+  owner?:                      IAlbumOwner;
+  albumUsers?:                 any[];
+  shared?:                     boolean;
+  hasSharedLink?:              boolean;
+  startDate?:                  Date;
+  endDate?:                    Date;
+  assets?:                     any[];
   assetCount:                 number;
   isActivityEnabled:          boolean;
   order:                      string;
@@ -20,6 +20,7 @@ export interface IAlbum {
   firstPhotoDate:             Date;
   lastPhotoDate:              Date;
   faceCount:                  number;
+  size:                       string;
 }
 
 export interface IAlbumOwner {

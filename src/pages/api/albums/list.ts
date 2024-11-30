@@ -4,7 +4,7 @@ import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiResponse } from "next";
 import { albums } from "@/schema/albums.schema";
-import { count, desc, eq, min, max, sql, and } from "drizzle-orm";
+import { count, desc, eq, min, max, sql, and, sum } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 import { users } from "@/schema/users.schema";
@@ -28,6 +28,15 @@ const sortAlbums = (albums: IAlbum[], sortBy: string, sortOrder: string) => {
   if (sortBy === 'assetCount') {
     return albums.sort((a, b) => sortOrder === 'asc' ? a.assetCount - b.assetCount : b.assetCount - a.assetCount);
   }
+  if (sortBy === 'albumName') {
+    return albums.sort((a, b) => sortOrder === 'asc' ? a.albumName.localeCompare(b.albumName) : b.albumName.localeCompare(a.albumName));
+  }
+  if (sortBy === 'albumSize') {
+    return albums.sort((a, b) => sortOrder === 'asc' ? parseInt(a.size) - parseInt(b.size) : parseInt(b.size) - parseInt(a.size));
+  }
+  if (sortBy === 'faceCount') {
+    return albums.sort((a, b) => sortOrder === 'asc' ? a.faceCount - b.faceCount : b.faceCount - a.faceCount);
+  }
   return albums;
 }
 export default async function handler(
@@ -49,6 +58,12 @@ export default async function handler(
     assetCount: count(assets.id),
     firstPhotoDate: min(exif.dateTimeOriginal),
     lastPhotoDate: max(exif.dateTimeOriginal),
+    size: sum(exif.fileSizeInByte),
+    order: albums.order,
+    isActivityEnabled: albums.isActivityEnabled,
+    ownerId: albums.ownerId,
+    description: albums.description,
+    lastModifiedAssetTimestamp: max(exif.dateTimeOriginal),
     faceCount: count(sql<string>`DISTINCT ${assetFaces.personId}`), // Ensure unique personId
   })
     .from(albums)

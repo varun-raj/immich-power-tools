@@ -23,8 +23,8 @@ export const listPotentialAlbumsAssets = async (filters: IPotentialAlbumsDatesFi
   return API.get(LIST_POTENTIAL_ALBUMS_ASSETS_PATH, filters).then((assets) => assets.map(cleanUpAsset));
 }
 
-export const listAlbums = async () => {
-return API.get(LIST_ALBUMS_PATH);
+export const listAlbums = async (filters?: { sortBy?: string, sortOrder?: string }) => {
+  return API.get(LIST_ALBUMS_PATH, filters);
 }
 export const getAlbumInfo = async (id: string) => {
   return API.get(ALBUM_INFO_PATH(id));

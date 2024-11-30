@@ -22,7 +22,7 @@ export const sidebarNavs = [
     icon: <MapPinX className="h-4 w-4" />,
   },
   {
-    title: "Albums",
+    title: "Manage Albums",
     link: "/albums",
     icon: <GalleryHorizontal className="h-4 w-4" />,
   },
