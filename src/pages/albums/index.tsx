@@ -8,12 +8,15 @@ import { IAlbum } from '@/types/album'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
+import AlbumThumbnail from '@/components/albums/list/AlbumThumbnail'
+import { Button } from '@/components/ui/button'
 
 export default function AlbumListPage() {
-const { exImmichUrl } = useConfig()
+  const { exImmichUrl } = useConfig()
   const [albums, setAlbums] = useState<IAlbum[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [selectedAlbums, setSelectedAlbums] = useState<string[]>([])
 
   const fetchAlbums = async () => {
     setLoading(true)
@@ -31,8 +34,16 @@ const { exImmichUrl } = useConfig()
     fetchAlbums()
   }, [])
 
+  const handleSelect = (checked: boolean, albumId: string) => {
+    if (checked) {
+      setSelectedAlbums([...selectedAlbums, albumId])
+    } else {
+      setSelectedAlbums(selectedAlbums.filter((id) => id !== albumId))
+    }
+  }
+
   const renderContent = () => {
-   
+
     if (loading) {
       return <Loader />
     }
@@ -42,22 +53,7 @@ const { exImmichUrl } = useConfig()
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
         {albums.map((album) => (
-          <div key={album.id} className="border rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src={ASSET_THUMBNAIL_PATH(album.albumThumbnailAssetId)} // Assuming this is a URL to the thumbnail
-              alt={album.albumName}
-              width={300}
-              height={300}
-              loading='lazy'
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <Link href={`${exImmichUrl}/albums/${album.id}`} target="_blank">  
-                <h2 className="text-md font-semibold truncate">{album.albumName}</h2>
-              </Link>
-              <p className="text-sm text-gray-700 dark:text-gray-500">{album.assetCount} assets</p>
-            </div>
-          </div>
+          <AlbumThumbnail album={album} key={album.id} onSelect={(checked) => handleSelect(checked, album.id)} />
         ))}
       </div>
     )

@@ -1,4 +1,4 @@
-import { ADD_ASSETS_ALBUMS_PATH, CREATE_ALBUM_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH } from "@/config/routes";
+import { ADD_ASSETS_ALBUMS_PATH, ALBUM_ASSETS_PATH, ALBUM_INFO_PATH, ALBUM_PEOPLE_PATH, CREATE_ALBUM_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
 import { IAlbumCreate } from "@/types/album";
@@ -24,7 +24,18 @@ export const listPotentialAlbumsAssets = async (filters: IPotentialAlbumsDatesFi
 }
 
 export const listAlbums = async () => {
-  return API.get(LIST_ALBUMS_PATH);
+return API.get(LIST_ALBUMS_PATH);
+}
+export const getAlbumInfo = async (id: string) => {
+  return API.get(ALBUM_INFO_PATH(id));
+}
+
+export const getAlbumPeople = async (id: string) => {
+  return API.get(ALBUM_PEOPLE_PATH(id));
+}
+
+export const listAlbumAssets = async (id: string, filters: { faceId?: string }) => {
+  return API.get(ALBUM_ASSETS_PATH(id), filters).then((assets) => assets.map(cleanUpAsset));
 }
 
 export const addAssetToAlbum = async (albumId: string, assetIds: string[]) => {

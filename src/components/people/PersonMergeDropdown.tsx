@@ -36,11 +36,13 @@ import ErrorBlock from "../shared/ErrorBlock";
 interface PersonMergeDropdownProps {
   person: IPerson;
   onRemove?: (person: IPerson) => void;
+  onComplete?: (mergedPerson: IPerson) => void;
 }
 
 export function PersonMergeDropdown({
   person,
   onRemove,
+  onComplete,
 }: PersonMergeDropdownProps) {
   const [searchedPeople, setSearchedPeople] = useState<IPerson[] | null>(null);
   const [similarPeople, setSimilarPeople] = useState<IPerson[]>([]);
@@ -127,6 +129,7 @@ export function PersonMergeDropdown({
           description: "People merged successfully",
         });
         setMerging(false);
+        onComplete?.(primaryPerson);
         return;
       }
 
@@ -158,6 +161,11 @@ export function PersonMergeDropdown({
   useEffect(() => {
     if (open && !similarPeople.length) fetchSuggestions();
   }, [open, person.id, similarPeople]);
+
+  useEffect(() => {
+    setPrimaryPerson(person);
+    setSelectedPeople([]);
+  }, [person]);
 
   const renderPeopleList = (people: IPerson[], title: string) => {
     return (

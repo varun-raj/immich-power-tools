@@ -20,11 +20,11 @@ export default function PageLayout({ children, className }: IProps) {
     : children;
 
   return (
-    <>
+    <div>
       {header}
       <main
         className={cn(
-          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto",
+          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto mx-auto",
           {
             "mb-14": !!header,
           },
@@ -33,6 +33,6 @@ export default function PageLayout({ children, className }: IProps) {
       >
         {childrenWithoutHeader}
       </main>
-    </>
+    </div>
   );
 }

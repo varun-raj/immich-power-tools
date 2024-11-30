@@ -17,6 +17,9 @@ export interface IAlbum {
   isActivityEnabled:          boolean;
   order:                      string;
   lastModifiedAssetTimestamp: Date;
+  firstPhotoDate:             Date;
+  lastPhotoDate:              Date;
+  faceCount:                  number;
 }
 
 export interface IAlbumOwner {
