@@ -32,17 +32,20 @@ import {
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import FaceThumbnail from "./merge/FaceThumbnail";
 import ErrorBlock from "../shared/ErrorBlock";
+import { cn } from "@/lib/utils";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
   onRemove?: (person: IPerson) => void;
   onComplete?: (mergedPerson: IPerson) => void;
+  triggerClassName?: string;
 }
 
 export function PersonMergeDropdown({
   person,
   onRemove,
   onComplete,
+  triggerClassName,
 }: PersonMergeDropdownProps) {
   const [searchedPeople, setSearchedPeople] = useState<IPerson[] | null>(null);
   const [similarPeople, setSimilarPeople] = useState<IPerson[]>([]);
@@ -222,113 +225,111 @@ export function PersonMergeDropdown({
   };
 
   return (
-    <div className="flex items-center space-x-4">
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7">
-            Merge
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Merge {person.name ? person.name : "Untagged Person"}
-            </DialogTitle>
-            <DialogDescription>
-              <div className="flex items-center gap-2">
-                <p>
-                  {selectedPeople.length > 0
-                    ? `Merging ${selectedPeople.length} people to ${person.name}`
-                    : "Search and select people to merge with"}
-                </p>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="flex gap-1 items-center">
-                    <Avatar
-                      src={primaryPerson.thumbnailPath}
-                      alt={primaryPerson.name}
-                      className="w-4 h-4"
-                    />
-                    <p>{primaryPerson?.name || "Untagged Person"}</p>
-                    <CaretDownIcon />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {[person, ...selectedPeople].map((person) => (
-                      <DropdownMenuItem
-                        key={person.id}
-                        onSelect={() => setPrimaryPerson(person)}
-                        className="flex gap-1"
-                      >
-                        <Avatar
-                          src={person.thumbnailPath}
-                          alt={person.name}
-                          className="w-6 h-6"
-                        />
-                        <span>{person.name || "Untagged Person"}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <Input
-            placeholder="Search people..."
-            onChange={(e) => {
-              handleSearch(e.target.value);
-            }}
-          />
-
-          {selectedPeople.length > 0 ? (
-            <div className="flex flex-nowrap overflow-x-auto gap-2 py-2">
-              {selectedPeople.map((person) => (
-                <div
-                  key={person.id}
-                  className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
-                >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}>
+          Merge
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            Merge {person.name ? person.name : "Untagged Person"}
+          </DialogTitle>
+          <DialogDescription>
+            <div className="flex items-center gap-2">
+              <p>
+                {selectedPeople.length > 0
+                  ? `Merging ${selectedPeople.length} people to ${person.name}`
+                  : "Search and select people to merge with"}
+              </p>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex gap-1 items-center">
                   <Avatar
-                    src={person.thumbnailPath}
-                    alt={person.name}
-                    className="w-6 h-6"
+                    src={primaryPerson.thumbnailPath}
+                    alt={primaryPerson.name}
+                    className="w-4 h-4"
                   />
-                  <p className="text-xs text-nowrap">
-                    {person.name ? person.name : <span>Untagged person</span>}
-                  </p>
-                  <button
-                    className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
-                    onClick={() => handleRemove(person)}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                  <p>{primaryPerson?.name || "Untagged Person"}</p>
+                  <CaretDownIcon />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {[person, ...selectedPeople].map((person) => (
+                    <DropdownMenuItem
+                      key={person.id}
+                      onSelect={() => setPrimaryPerson(person)}
+                      className="flex gap-1"
+                    >
+                      <Avatar
+                        src={person.thumbnailPath}
+                        alt={person.name}
+                        className="w-6 h-6"
+                      />
+                      <span>{person.name || "Untagged Person"}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          ) : (
-            <div>
-              <p className="py-4 text-sm text-zinc-500">No Selections Yet</p>
-            </div>
-          )}
+          </DialogDescription>
+        </DialogHeader>
+        <Input
+          placeholder="Search people..."
+          onChange={(e) => {
+            handleSearch(e.target.value);
+          }}
+        />
 
-          {renderContent()}
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                setSelectedPeople([]);
-                setPrimaryPerson(person);
-              }}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleMerge}
-              disabled={selectedPeople.length === 0 || merging}
-            >
-              Merge {selectedPeople.length + 1} People
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        {selectedPeople.length > 0 ? (
+          <div className="flex flex-nowrap overflow-x-auto gap-2 py-2">
+            {selectedPeople.map((person) => (
+              <div
+                key={person.id}
+                className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
+              >
+                <Avatar
+                  src={person.thumbnailPath}
+                  alt={person.name}
+                  className="w-6 h-6"
+                />
+                <p className="text-xs text-nowrap">
+                  {person.name ? person.name : <span>Untagged person</span>}
+                </p>
+                <button
+                  className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
+                  onClick={() => handleRemove(person)}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p className="py-4 text-sm text-zinc-500">No Selections Yet</p>
+          </div>
+        )}
+
+        {renderContent()}
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              setOpen(false);
+              setSelectedPeople([]);
+              setPrimaryPerson(person);
+            }}
+            variant="outline"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleMerge}
+            disabled={selectedPeople.length === 0 || merging}
+          >
+            Merge {selectedPeople.length + 1} People
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

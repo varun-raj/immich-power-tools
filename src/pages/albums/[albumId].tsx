@@ -78,7 +78,7 @@ export default function AlbumListPage() {
       return <div>{errorMessage}</div>
     }
     return (
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex divide-y">
         {albumInfo && (
           <>
             <AlbumPeople album={albumInfo} key={albumInfo.id} onSelect={handleSelectPerson} />

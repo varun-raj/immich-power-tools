@@ -4,7 +4,7 @@ import { useConfig } from '@/contexts/ConfigContext';
 import { IAlbum } from '@/types/album'
 import { IAsset } from '@/types/asset'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Hourglass } from 'lucide-react';
+import { ExternalLink, Hourglass } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { CalendarArrowUp } from 'lucide-react';
 import Lightbox from 'yet-another-react-lightbox';
@@ -12,6 +12,7 @@ import Captions from 'yet-another-react-lightbox/plugins/captions';
 import LazyImage from '@/components/ui/lazy-image';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface AlbumImagesProps {
   album: IAlbum
@@ -116,7 +117,7 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
     );
 
   return (
-    <>
+    <div>
       <Lightbox
         slides={slides}
         plugins={[Captions]}
@@ -124,23 +125,32 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
         index={index}
         close={() => setIndex(-1)}
       />
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-2">
         {images.map((image) => (
-          <div key={image.id} className="w-full h-[200px] overflow-hidden">
-            <Image
+          <div
+            key={image.id}
+            className="w-full h-[200px] overflow-hidden relative"
+            >
+            <LazyImage
               loading="lazy"
               key={image.id}
               src={image.original}
               alt={image.originalFileName}
-              width={image.width}
-              height={image.height}
               className='overflow-hidden'
               style={{
                 objectPosition: 'center',
-                objectFit: 'contain',
+                objectFit: 'cover',
+                height: '100%',
               }}
               onClick={() => handleClick(images.indexOf(image))}
             />
+            <Link
+                className="absolute top-2 right-2 bg-white dark:bg-zinc-900 p-1 py-0.5 rounded-md flex items-center gap-1 text-xs"
+                target="_blank"
+                href={`${exImmichUrl}/photos/${image.id}`}>
+                <ExternalLink className="w-3 h-3" />
+                Open In Immich
+              </Link> 
           </div>
         ))}
       </div>
@@ -154,6 +164,6 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
       >
         Load More
       </Button>}
-    </>
+    </div>
   );
 }

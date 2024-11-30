@@ -16,6 +16,7 @@ import Image from 'next/image'
 import { PersonMergeDropdown } from '@/components/people/PersonMergeDropdown'
 import { Button } from '@/components/ui/button'
 import { updatePerson } from '@/handlers/api/people.handler'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface AlbumPeopleProps {
   album: IAlbum
@@ -98,104 +99,112 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
   }
 
   return (
-    <Accordion type="multiple">
-      <AccordionItem value="people">
-        <div className='flex justify-between gap-2 w-full sticky top-0 z-10 bg-white dark:bg-black'>
-          <AccordionTrigger noIcon>
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              <p className="text-sm font-medium">People</p>
-            </div>
-          </AccordionTrigger>
-          <div className="flex items-center gap-2">
-            {selectedPerson ? (
-              <>
-                <Tooltip content={"Open in Immich"} delayDuration={0}>
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <Image
-                        src={PERSON_THUBNAIL_PATH(selectedPerson.id)}
-                        alt={selectedPerson.name}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                    </div>
-                    <Link target="_blank" href={`${exImmichUrl}/people/${selectedPerson.id}`} className="text-sm font-medium">{selectedPerson.name}</Link>
-                  </div>
-                </Tooltip>
-                <PersonMergeDropdown person={{
-                  ...selectedPerson,
-                  assetCount: selectedPerson.numberOfPhotos,
-                  birthDate: null,
-                  thumbnailPath: PERSON_THUBNAIL_PATH(selectedPerson.id),
-                  isHidden: false,
-                  updatedAt: new Date()
-                }} onComplete={(mergedPerson) => {
-                  router.push({
-                    pathname,
-                    query: {
-                      ...query,
-                      faceId: mergedPerson.id
-                    }
-                  })
-                }} />
-                <div>
-                  <Button disabled={hidingPerson} className="!py-0.5 !px-2 text-xs h-7" variant="outline" onClick={() => handleHidePerson(selectedPerson.id)}>
-                    Hide
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                {selectedPeople.length > 0 && (
-                  <>
-                    <p className="text-sm font-medium">{selectedPeople.length} people selected</p>
-                    <Button variant="outline" size="sm" onClick={handleHideSelectedPeople}>
-                      Hide
-                    </Button>
-                  </>
-                )}
-                <Button variant="outline" size="sm" onClick={() => setSelectionMode(!selectionMode)}>  
-                  {selectionMode ? "Cancel" : "Select People"}
-                </Button>
-              </div>
-            )}
-            <AccordionTrigger className="flex items-center justify-between gap-2 w-full" />
+    <div className="overflow-y-auto min-w-[200px] sticky top-0 py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
+
+      {selectedPerson && (
+        <div className='flex flex-col gap-2 bg-white dark:bg-zinc-900 p-2 rounded-md'>
+          <div className='flex items-center gap-2'>
+            <Image
+              src={PERSON_THUBNAIL_PATH(selectedPerson.id)}
+              alt={selectedPerson.name}
+              width={20}
+              height={20}
+              className="rounded-full"
+            />
+
+            <Link target="_blank" href={`${exImmichUrl}/people/${selectedPerson.id}`}
+              className="text-sm font-medium">
+              {selectedPerson.name || "No Name"}
+            </Link>
+          </div>
+          <div className='flex items-center gap-2'>
+            <PersonMergeDropdown
+              person={{
+                ...selectedPerson,
+                assetCount: selectedPerson.numberOfPhotos,
+                birthDate: null,
+                thumbnailPath: PERSON_THUBNAIL_PATH(selectedPerson.id),
+                isHidden: false,
+                updatedAt: new Date()
+              }}
+              triggerClassName='w-full flex-1'
+              onComplete={(mergedPerson) => {
+                router.push({
+                  pathname,
+                  query: {
+                    ...query,
+                    faceId: mergedPerson.id
+                  }
+                })
+              }} />
+            <Button disabled={hidingPerson} className="!py-0.5 !px-2 text-xs h-7 flex-1" variant="outline" onClick={() => handleHidePerson(selectedPerson.id)}>
+              Hide
+            </Button>
           </div>
         </div>
-        <AccordionContent className="flex items-center flex-wrap overflow-x-hidden gap-1">
-          {people.map((person) => (
-            <Tooltip key={person.id} delayDuration={0} content={(person.name || "No Name")}>
-              <div className='relative'>
-                <LazyImage
-                  onClick={() => {
-                    if (selectionMode) {
-                      handleBulkSelect(person.id)
-                    } else {
-                      onSelect(person.id)
-                    }
-                  }}
-                  role="button"
-                  className={
-                    cn("cursor-pointer h-16 w-16 min-w-16  rounded border-2",
-                      !!person.name ? "border-blue-500" : "border-gray-500",
-                      selectedPerson?.id === person.id ? "border-green-500" : "",
-                      selectionMode ? "border-blue-500" : "",
-                      selectedPeople.includes(person.id) ? "border-green-500" : ""
-                    )
-                  }
-                  src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
-                <p className={
-                  cn("text-xs text-black absolute top-0 right-0 left-0 text-center bg-white/50",
-                    selectedPerson?.id === person.id ? "bg-green-500" : ""
-                  )
-                }>{person.numberOfPhotos}</p>
-              </div>
-            </Tooltip>
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+      )}
+
+
+      <div className="flex items-center gap-2 justify-between">
+        <p className="text-sm font-medium">People</p>
+
+        {!selectedPerson && (
+          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
+            setSelectionMode(!selectionMode)
+            setSelectedPeople([])
+          }}>
+            {selectionMode ? "Cancel" : "Select"}
+          </Button>
+        )}
+        {selectedPeople.length > 0 && (
+          <div className='absolute mx-auto bottom-0 w-full py-2 dark:bg-white bg-black -mx-2 px-2'>
+            <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
+              Hide {selectedPeople.length} people
+            </Button>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col overflow-x-hidden gap-2">
+        {people.map((person) => (
+          <div
+            className={cn(
+              'flex items-center gap-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md p-1',
+              selectedPerson?.id === person.id ? "bg-gray-300 dark:bg-gray-700" : ""
+            )}
+            key={person.id}
+            onClick={() => {
+              if (selectionMode) {
+                handleBulkSelect(person.id)
+              } else {
+                onSelect(person.id)
+              }
+            }}
+          >
+            {selectionMode && (
+              <Checkbox
+                id={person.id + "_checkbox"}
+                checked={selectedPeople.includes(person.id)}
+                onCheckedChange={() => handleBulkSelect(person.id)}
+              />
+            )}
+            <LazyImage
+
+              role="button"
+              className={
+                cn("cursor-pointer h-10 w-10 min-w-10 rounded-full border-2",
+                  !!person.name ? "border-green-500" : "border-gray-500",
+                )
+              }
+              src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
+            <div className='flex flex-col'>
+              <p>{person.name || "No Name"}</p>
+              <p className={
+                cn("text-xs text-gray-500 dark:text-gray-400")
+              }>{person.numberOfPhotos} photos</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
