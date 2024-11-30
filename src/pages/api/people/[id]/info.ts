@@ -30,10 +30,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     name: albums.albumName,
     thumbnail: albums.albumThumbnailAssetId,
     assetCount: sql<number>`count(${assets.id})`,
+    lastAssetDate: sql<Date>`max(${exif.dateTimeOriginal})`,
   })
   .from(albums)
   .leftJoin(assetFaces, eq(assetFaces.personId, personRecord.id))
   .leftJoin(assets, eq(assets.id, assetFaces.assetId))
+  .leftJoin(exif, eq(exif.assetId, assets.id))
   .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetsId, assets.id))
     .where(eq(albumsAssetsAssets.albumsId, albums.id))
     .groupBy(albums.id);
@@ -57,7 +59,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   return res.status(200).json({
     ...personRecord,
-    albums: dbPersonAlbums.sort((a, b) => b.assetCount - a.assetCount),
+    albums: dbPersonAlbums.sort((a, b) => b.assetCount - a.assetCount).map((album) => ({
+      ...album,
+      lastAssetYear: album.lastAssetDate ? new Date(album.lastAssetDate).getFullYear() : null,
+    })),
     cities: dbPersonCities,
+    citiesCount: dbPersonCities.length,
+    countriesCount: dbPersonCities.map((city) => city.country).filter((country, index, self) => self.indexOf(country) === index).length,
   });
 }

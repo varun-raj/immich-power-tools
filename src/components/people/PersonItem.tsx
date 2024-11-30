@@ -4,11 +4,9 @@ import { Avatar } from "../ui/avatar";
 import { updatePerson } from "@/handlers/api/people.handler";
 import { PersonMergeDropdown } from "./PersonMergeDropdown";
 import PersonBirthdayCell from "./PersonBirthdayCell";
-import PersonHideCell from "./PersonHideCell";
 import clsx from "clsx";
 import Link from "next/link";
-import { ENV } from "@/config/environment";
-import { ArrowUpRight, Search } from "lucide-react";
+import { ArrowUpRight, Info, Search } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
@@ -107,7 +105,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
             className="bg-gray-300 block rounded-lg px-2 py-1 text-sm dark:text-gray-900"
             href={`/people/${person.id}`}
           >
-            <Search size={16} />
+            <Info size={16} />
           </Link>
         </div>
         <div className="absolute top-2 right-2 ">

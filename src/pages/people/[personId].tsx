@@ -1,4 +1,5 @@
 import PageLayout from '@/components/layouts/PageLayout';
+import PersonAlbumList from '@/components/people/info/PersonAlbumList';
 import PersonCityList from '@/components/people/info/PersonCityList';
 import Header from '@/components/shared/Header';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,10 @@ interface IPersonFullInfo extends IPerson {
     name: string;
     assetCount: number;
     thumbnail: string;
+    lastAssetYear: number;
   }[];
+  citiesCount: number;
+  countriesCount: number;
   cities: {
     city: string;
     country: string;
@@ -29,7 +33,6 @@ interface IPersonFullInfo extends IPerson {
 }
 
 export default function PersonPage() {
-  const { exImmichUrl } = useConfig();
   const router = useRouter();
   const { pathname, query } = router;
   const { personId } = router.query as { personId: string };
@@ -56,8 +59,9 @@ export default function PersonPage() {
     if (query.tab === "cities") {
       return (
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-center gap-2">
             <span className="text-lg font-medium">Cities</span>
+            <span className="text-sm text-gray-500">{person?.citiesCount} Cities, {person?.countriesCount} Countries</span>
           </div>
             <PersonCityList cities={person?.cities || []} personId={personId} />
         </div>
@@ -66,24 +70,12 @@ export default function PersonPage() {
 
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">Albums {person?.albums.length}</span>
+        <div className="flex justify-between items-center gap-2">
+          <span className="text-lg font-medium">Albums</span>
+          <span className="text-sm text-gray-500">{person?.albums.length} Albums</span>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 w-full">
-          {person?.albums.map((album) => (
-            <div key={album.id} className="flex flex-col gap-2 w-full">
-              <div className="relative w-full h-[200px]">
-                <Image src={ASSET_THUMBNAIL_PATH(album.thumbnail)}
-                  alt={album.name}
-                  width={100}
-                  height={100}
-                  className="rounded-md w-full h-full object-cover" />
-              </div>
-              <Link href={`${exImmichUrl}/albums/${album.id}`} target="_blank" className="text-sm font-medium truncate">{album.name}</Link>
-              <span className="text-sm text-gray-500 truncate">{album.assetCount} Occurences</span>
-            </div>
-          ))}
-        </div>
+
+        <PersonAlbumList albums={person?.albums || []} personId={personId} />
       </div>
     )
   }
