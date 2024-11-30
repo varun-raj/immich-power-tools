@@ -20,6 +20,11 @@ RUN npm run build
 # Production image, copy all the files and run next
 FROM node:18-alpine AS runner
 WORKDIR /app
+# Define a build argument
+ARG VERSION=dev
+
+# Set the build argument as an environment variable
+ENV VERSION=$VERSION
 
 ENV NODE_ENV=production
 
