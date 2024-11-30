@@ -13,8 +13,11 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/router'
 import AlbumPeople from '@/components/albums/info/AlbumPeople'
 import AlbumImages from '@/components/albums/info/AlbumImages'
+import { Camera, ExternalLink, LinkIcon, Users } from 'lucide-react'
+import { humanizeNumber, pluralize } from '@/helpers/string.helper'
 
 export default function AlbumListPage() {
+  const { exImmichUrl } = useConfig()
   const router = useRouter()
   const { pathname } = router
   const { albumId, faceId } = router.query as { albumId: string, faceId: string }
@@ -92,8 +95,23 @@ export default function AlbumListPage() {
         rightComponent={
           !loading && (
             <div className="flex items-center gap-2">
-              <p className="text-sm text-gray-700 dark:text-gray-500">{albumInfo?.assetCount} photos</p>
-              <p className="text-sm text-gray-700 dark:text-gray-500">{albumInfo?.faceCount} faces</p>
+              <p className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-500">
+                {humanizeNumber(albumInfo?.assetCount || 0)}
+                {' '}
+                <Camera className="w-4 h-4" />
+              </p>
+              <p className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-500">
+                {humanizeNumber(albumInfo?.faceCount || 0)}
+                {' '}
+                <Users className="w-4 h-4" />
+              </p>
+              <Link
+                className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-500"
+                target="_blank"
+                href={`${exImmichUrl}/albums/${albumId}`}>
+                <ExternalLink className="w-4 h-4" />
+                Open In Immich
+              </Link> 
             </div>
           )
         }

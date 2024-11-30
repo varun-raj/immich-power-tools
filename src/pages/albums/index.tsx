@@ -66,7 +66,6 @@ export default function AlbumListPage() {
 
 
   const renderContent = () => {
-
     if (loading) {
       return <Loader />
     }
@@ -84,7 +83,7 @@ export default function AlbumListPage() {
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
-        leftComponent="Albums"
+        leftComponent="Manage Albums"
         rightComponent={
           <div className="flex items-center gap-2">
             <Select
