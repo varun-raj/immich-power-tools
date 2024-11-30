@@ -35,16 +35,27 @@ jobs:
     if: needs.release.outputs.new-release-published == 'true'
     steps:
       - uses: actions/checkout@v3
+      - uses: docker/metadata-action@v5
+        name: Docker meta
+        id: meta
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker image
-        run: |
-          echo VERSION=${{ needs.release.outputs.new-release-version }} >> .env
-          docker build -t ghcr.io/${{ github.repository }}:${{ needs.release.outputs.new-release-version }} \
-          -t ghcr.io/${{ github.repository }}:latest .
-          docker push ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:${{ needs.release.outputs.new-release-version }}
+      - name: Build and push
+        id: docker-build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
