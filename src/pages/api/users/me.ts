@@ -20,7 +20,6 @@ export default async function handler(
   }
 
   try {
-
     if (!db) {
       return res.status(500).json({ message: "Database connection failed" });
     }
@@ -34,7 +33,7 @@ export default async function handler(
   } catch (error: any) {
     return res.status(500).json({
       message: error.message ||"Internal Server Error",
-      error: error,
+      error: error.error || "Internal Server Error",
     });
   }
 }

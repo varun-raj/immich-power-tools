@@ -4,18 +4,20 @@ import qs from 'qs'
 
 
 const handleErrors = (error: AxiosError | any) => {
-  if (error.code === "ERR_BAD_RESPONSE") {
+  
+  let errorObject = {}
+  if (error.response && error.response.data) {
+    return Promise.reject({
+      error: error.response.data.error,
+      message: error.response.data.message,
+      status: error.response.status,
+    })
+  } 
+  else if (error.code === "ERR_BAD_RESPONSE") {
     return Promise.reject({
       error: "Unable to process this request, please try again later",
       message: error.code,
     });
-  }
-  let errorObject = {}
-  if (error.response) {
-    return Promise.reject({
-      ...error.response.data,
-      status: error.response.status,
-    })
   }
   errorObject = {
     message: 'Network Error. Please check your connection and try again!',

@@ -34,7 +34,6 @@ export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }:
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(offsetData);
     setLoading(true);
     const promises = assets.map(async (asset) => {
       setAssetStatus({ [asset.id]: 'pending' });
