@@ -10,7 +10,7 @@ import { ArrowUpRight, Info, Search } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
-
+import { Button } from "@/components/ui/button";
 interface IProps {
   person: IPerson;
   onRemove: (person: IPerson) => void;
@@ -78,18 +78,11 @@ export default function PersonItem({ person, onRemove }: IProps) {
       )}
     >
       <div className="relative w-full h-auto group">
-        <div
-          onClick={() => {
-            handleHide(!formData.isHidden);
-          }}
-        >
           <Avatar
             className="w-full min-h-full h-auto rounded-lg"
             src={person.thumbnailPath}
             alt={person.name}
           />
-        </div>
-
         <div className="absolute bottom-2 w-full flex justify-center items-center">
           <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
         </div>
@@ -108,8 +101,13 @@ export default function PersonItem({ person, onRemove }: IProps) {
             <Info size={16} />
           </Link>
         </div>
-        <div className="absolute top-2 right-2 ">
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
           <PersonMergeDropdown person={person} onRemove={onRemove}/>
+          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
+            handleHide(!formData.isHidden);
+          }}>
+          Hide
+        </Button>
         </div>
       </div>
       {!editMode ? (

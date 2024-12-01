@@ -18,6 +18,7 @@ interface IQuery {
   minimumAssetCount: number;
   sort: ISortField;
   sortOrder: "asc" | "desc";
+  threshold?: number; 
 }
 export default async function handler(
   req: NextApiRequest,
@@ -26,9 +27,10 @@ export default async function handler(
   try {
     const {
       id,
+      threshold = 0.5, 
     } = req.query as any as IQuery;
 
-  const currentUser = await getCurrentUser(req);
+    const currentUser = await getCurrentUser(req);
     const personRecords = await db
       .select()
       .from(person)
@@ -92,7 +94,7 @@ export default async function handler(
         and(
           ne(person.id, id),
           eq(person.ownerId, currentUser.id),
-          gt(similarity, 0.5)
+          gt(similarity, threshold) 
         )
       )
       .limit(12);
