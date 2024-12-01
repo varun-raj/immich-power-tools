@@ -61,7 +61,7 @@ export default function MissingLocationAssets() {
           ),
         },
       ],
-    })).filter((p) => !p.original);
+    }));
   }, [assets, selectedIds]);
 
   const slides = useMemo(

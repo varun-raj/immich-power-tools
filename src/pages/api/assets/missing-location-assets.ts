@@ -53,7 +53,6 @@ export default async function handler(
         gte(exif.dateTimeOriginal, startDateDate),
         lte(exif.dateTimeOriginal, endDateDate),
         eq(assets.ownerId, currentUser.id), 
-        eq(assets.isVisible, true),
       ));
 
     return res.status(200).json(rows);

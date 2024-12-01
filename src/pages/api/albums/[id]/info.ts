@@ -21,7 +21,7 @@ export default async function handler(
   }
   const { id } = req.query as { id: string };
 
-  const dbAlbums = await db.selectDistinctOn([assets.id], {
+  const dbAlbums = await db.selectDistinctOn([albums.id], {
     id: albums.id,
     albumName: albums.albumName,
     createdAt: albums.createdAt,
@@ -35,7 +35,7 @@ export default async function handler(
     .from(albums)
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
     .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
-    .leftJoin(exif, eq(assets.id, exif.assetId))
+    .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.isVisible, true)))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
     .where(and(eq(albums.ownerId, currentUser.id), eq(albums.id, id)))
