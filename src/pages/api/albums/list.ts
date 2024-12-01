@@ -4,7 +4,7 @@ import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiResponse } from "next";
 import { albums } from "@/schema/albums.schema";
-import { count, desc, eq, min, max, sql, and, sum } from "drizzle-orm";
+import { count, desc, eq, min, max, sql, and, sum, isNotNull } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 import { users } from "@/schema/users.schema";
@@ -55,7 +55,7 @@ export default async function handler(
     createdAt: albums.createdAt,
     updatedAt: albums.updatedAt,
     albumThumbnailAssetId: albums.albumThumbnailAssetId,
-    assetCount: count(assets.id),
+    assetCount: count(sql<string>`DISTINCT ${assets.id}`),
     firstPhotoDate: min(exif.dateTimeOriginal),
     lastPhotoDate: max(exif.dateTimeOriginal),
     size: sum(exif.fileSizeInByte),
@@ -68,7 +68,11 @@ export default async function handler(
   })
     .from(albums)
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
-    .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
+    .leftJoin(assets, and(
+      eq(albumsAssetsAssets.assetsId, assets.id),
+      eq(assets.isVisible, true),
+      isNotNull(assets.isArchived),
+    ))
     .leftJoin(exif, eq(assets.id, exif.assetId))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))

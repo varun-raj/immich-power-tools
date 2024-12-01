@@ -14,6 +14,7 @@ import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/router'
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
 import { SortAsc, SortDesc } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 
 const SORT_BY_OPTIONS = [
   { value: 'lastPhotoDate', label: 'Last Photo Date' },
@@ -28,6 +29,7 @@ const SORT_BY_OPTIONS = [
 export default function AlbumListPage() {
   const { exImmichUrl } = useConfig()
   const router = useRouter()
+  const [search, setSearch] = useState('')
   const { query, pathname } = router
   const { sortBy, sortOrder } = query as { sortBy: string, sortOrder: string }
   const [albums, setAlbums] = useState<IAlbum[]>([])
@@ -37,6 +39,7 @@ export default function AlbumListPage() {
 
   const selectedSortBy = useMemo(() => SORT_BY_OPTIONS.find((option) => option.value === sortBy), [sortBy])
 
+  const searchedAlbums = useMemo(() => albums.filter((album) => album.albumName.toLowerCase().includes(search.toLowerCase())), [albums, search])  
   const fetchAlbums = async () => {
     setLoading(true)
     listAlbums({
@@ -74,7 +77,7 @@ export default function AlbumListPage() {
     }
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
-        {albums.map((album) => (
+        {searchedAlbums.map((album) => (
           <AlbumThumbnail album={album} key={album.id} onSelect={(checked) => handleSelect(checked, album.id)} />
         ))}
       </div>
@@ -86,6 +89,7 @@ export default function AlbumListPage() {
         leftComponent="Manage Albums"
         rightComponent={
           <div className="flex items-center gap-2">
+            <Input type="text" placeholder="Search" className="w-48" onChange={(e) => setSearch(e.target.value)} />
             <Select
               defaultValue={selectedSortBy?.value}
               onValueChange={(value) => router.push({

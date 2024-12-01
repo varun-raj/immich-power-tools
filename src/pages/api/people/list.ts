@@ -25,7 +25,7 @@ type ISortField = "assetCount" | "updatedAt" | "createdAt";
 interface IQuery {
   page: number;
   perPage: number;
-  nameLessOnly: boolean | string;
+  type: string;
   maximumAssetCount: number;
   sort: ISortField;
   sortOrder: "asc" | "desc";
@@ -38,10 +38,10 @@ export default async function handler(
     const {
       page = 1,
       perPage = 60,
-      nameLessOnly = false,
       maximumAssetCount: maxValue = 1000000,
       sort = "assetCount",
       sortOrder = "desc",
+      type = "all",
     } = req.query as any as IQuery;
 
     const currentUser = await getCurrentUser(req);
@@ -53,7 +53,7 @@ export default async function handler(
       eq(assets.isVisible, true),
       eq(assets.isArchived, false),
       eq(assets.ownerId, currentUser.id),
-      stringToBoolean(nameLessOnly) ? eq(person.name, "") : undefined
+      type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, ""))
     );
 
     let query = db

@@ -28,7 +28,7 @@ export default async function handler(
   if (!id) {
     return res.status(400).json({ error: "Album id is required" });
   }
-  const dbAssets = await db.select({
+  const dbAssets = await db.selectDistinctOn([assets.id], {
     id: assets.id,
     deviceId: assets.deviceId,
     type: assets.type,
@@ -53,6 +53,7 @@ export default async function handler(
     .where(and(
       eq(albumsAssetsAssets.albumsId, id), 
       eq(assets.isVisible, true),
+      isNotNull(assets.isArchived),
       faceId ? eq(assetFaces.personId, faceId) : undefined,
     ))
     .limit(100)

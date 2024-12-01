@@ -21,7 +21,7 @@ export default async function handler(
   }
   const { id } = req.query as { id: string };
 
-  const dbAlbums = await db.select({
+  const dbAlbums = await db.selectDistinctOn([assets.id], {
     id: albums.id,
     albumName: albums.albumName,
     createdAt: albums.createdAt,

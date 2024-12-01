@@ -15,10 +15,11 @@ import {
 import { Input } from "../ui/input";
 import { IPersonListFilters } from "@/handlers/api/people.handler";
 import AssetFilter from "../shared/common/AssetFilter";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 export function PeopleFilters() {
   const router = useRouter();
-  const { updateContext, page, maximumAssetCount } = usePeopleFilterContext();
+  const { updateContext, page, maximumAssetCount, type = "all" } = usePeopleFilterContext();
 
   const handleChange = (data: Partial<IPersonListFilters>) => {
     updateContext(data);
@@ -28,6 +29,7 @@ export function PeopleFilters() {
         ...router.query,
         ...data,
         page: data.page || undefined,
+        type: data.type || undefined,
       },
     });
   }
@@ -51,17 +53,17 @@ export function PeopleFilters() {
           }
         }}
       />
-      <div className="flex items-center gap-1">
-        <Switch
-          id="nameLessOnly"
-          onCheckedChange={(checked) => {
-            handleChange({ nameLessOnly: checked, page: 1 });
-          }}
-        />
-        <Label className="text-nowrap" htmlFor="nameLessOnly">
-          Show only Nameless
-        </Label>
-      </div>
+
+      <Select value={type} onValueChange={(value) => handleChange({ type: value })}>
+        <SelectTrigger>
+          <SelectValue placeholder="Person Type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="nameless">Nameless</SelectItem>
+          <SelectItem value="named">Named</SelectItem>
+        </SelectContent>
+      </Select>
 
       <Button
         disabled={prevPage < 1}
