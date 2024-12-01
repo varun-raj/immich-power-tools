@@ -1,12 +1,15 @@
 import React from "react";
 import Header from "../shared/Header";
 import { cn } from "@/lib/utils";
+import Head from "next/head";
+
 
 interface IProps {
   children: React.ReactNode[] | React.ReactNode;
   className?: string;
+  title?: string;
 }
-export default function PageLayout({ children, className }: IProps) {
+export default function PageLayout({ children, className, title }: IProps) {
   const header = Array.isArray(children)
     ? children.find(
         (child) => React.isValidElement(child) && child.type === Header
@@ -20,11 +23,11 @@ export default function PageLayout({ children, className }: IProps) {
     : children;
 
   return (
-    <>
+    <div>
       {header}
       <main
         className={cn(
-          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto",
+          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 overflow-y-auto mx-auto",
           {
             "mb-14": !!header,
           },
@@ -33,6 +36,6 @@ export default function PageLayout({ children, className }: IProps) {
       >
         {childrenWithoutHeader}
       </main>
-    </>
+    </div>
   );
 }

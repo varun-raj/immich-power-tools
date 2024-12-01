@@ -22,7 +22,6 @@ export const offsetDate = (date: string, offset: {
   minutes: number, 
   seconds: number 
 }): string => {
-  console.log(offset)
   const parsedDate = new Date(date);
   const result = addYears(parsedDate, offset.years || 0)
   const result2 = addDays(result, offset.days || 0)

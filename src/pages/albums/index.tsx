@@ -7,17 +7,45 @@ import { listAlbums } from '@/handlers/api/album.handler'
 import { IAlbum } from '@/types/album'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import AlbumThumbnail from '@/components/albums/list/AlbumThumbnail'
+import { Button } from '@/components/ui/button'
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useRouter } from 'next/router'
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
+import { SortAsc, SortDesc } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 
+const SORT_BY_OPTIONS = [
+  { value: 'lastPhotoDate', label: 'Last Photo Date' },
+  { value: 'firstPhotoDate', label: 'First Photo Date' },
+  { value: 'assetCount', label: 'Asset Count' },
+  { value: 'createdAt', label: 'Created At' },
+  { value: 'updatedAt', label: 'Updated At' },
+  { value: 'albumName', label: 'Album Name' },
+  { value: 'albumSize', label: 'Album Size' },
+  { value: 'faceCount', label: 'Number of People' },
+]
 export default function AlbumListPage() {
-const { exImmichUrl } = useConfig()
+  const { exImmichUrl } = useConfig()
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const { query, pathname } = router
+  const { sortBy, sortOrder } = query as { sortBy: string, sortOrder: string }
   const [albums, setAlbums] = useState<IAlbum[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [selectedAlbums, setSelectedAlbums] = useState<string[]>([])
 
+  const selectedSortBy = useMemo(() => SORT_BY_OPTIONS.find((option) => option.value === sortBy), [sortBy])
+
+  const searchedAlbums = useMemo(() => albums.filter((album) => album.albumName.toLowerCase().includes(search.toLowerCase())), [albums, search])  
   const fetchAlbums = async () => {
     setLoading(true)
-    listAlbums()
+    listAlbums({
+      sortBy,
+      sortOrder
+    })
       .then(setAlbums)
       .catch((error) => {
         setErrorMessage(error.message)
@@ -29,10 +57,18 @@ const { exImmichUrl } = useConfig()
 
   useEffect(() => {
     fetchAlbums()
-  }, [])
+  }, [sortBy, sortOrder])
+
+  const handleSelect = (checked: boolean, albumId: string) => {
+    if (checked) {
+      setSelectedAlbums([...selectedAlbums, albumId])
+    } else {
+      setSelectedAlbums(selectedAlbums.filter((id) => id !== albumId))
+    }
+  }
+
 
   const renderContent = () => {
-   
     if (loading) {
       return <Loader />
     }
@@ -41,23 +77,8 @@ const { exImmichUrl } = useConfig()
     }
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
-        {albums.map((album) => (
-          <div key={album.id} className="border rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src={ASSET_THUMBNAIL_PATH(album.albumThumbnailAssetId)} // Assuming this is a URL to the thumbnail
-              alt={album.albumName}
-              width={300}
-              height={300}
-              loading='lazy'
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <Link href={`${exImmichUrl}/albums/${album.id}`} target="_blank">  
-                <h2 className="text-md font-semibold truncate">{album.albumName}</h2>
-              </Link>
-              <p className="text-sm text-gray-700 dark:text-gray-500">{album.assetCount} assets</p>
-            </div>
-          </div>
+        {searchedAlbums.map((album) => (
+          <AlbumThumbnail album={album} key={album.id} onSelect={(checked) => handleSelect(checked, album.id)} />
         ))}
       </div>
     )
@@ -65,7 +86,40 @@ const { exImmichUrl } = useConfig()
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
-        leftComponent="Albums"
+        leftComponent="Manage Albums"
+        rightComponent={
+          <div className="flex items-center gap-2">
+            <Input type="text" placeholder="Search" className="w-48" onChange={(e) => setSearch(e.target.value)} />
+            <Select
+              defaultValue={selectedSortBy?.value}
+              onValueChange={(value) => router.push({
+                pathname,
+              query: {
+                ...query,
+                sortBy: value,
+              }
+              
+            })}>
+              <SelectTrigger className="px-2">
+                <SelectValue placeholder="Sort by">{selectedSortBy?.label || 'Sort by'}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_BY_OPTIONS.map((option) => (
+                  <SelectItem value={option.value} key={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button className="px-2" variant={"secondary"} onClick={() => router.push({
+              pathname,
+              query: {
+                ...query,
+                sortOrder: sortOrder === 'asc' ? 'desc' : 'asc',
+              }
+            })}>
+              {sortOrder === 'asc' ? <SortAsc /> : <SortDesc />}
+            </Button>
+          </div>
+        }
       />
       {renderContent()}
     </PageLayout>

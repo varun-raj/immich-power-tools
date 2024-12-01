@@ -1,4 +1,5 @@
 import { appConfig } from "@/config/app.config"
+import { connectDB, db } from "@/config/db"
 import { ENV } from "@/config/environment"
 import { getCookie } from "@/lib/cookie"
 import { NextApiRequest } from "next"
@@ -40,6 +41,7 @@ export const getCurrentUserFromAccessToken = (token: string) => {
 }
 
 export const getCurrentUser = async (req: NextApiRequest) => {
+  await connectDB(db);
   const session = getCookie(req, appConfig.sessionCookieName)
   
   if (session) {

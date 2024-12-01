@@ -21,9 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null,
     })
 
-    // Log response headers for debugging
-    console.log('Response Headers:', response.headers);
-
     // Forward the status code
     res.status(response.status)
 

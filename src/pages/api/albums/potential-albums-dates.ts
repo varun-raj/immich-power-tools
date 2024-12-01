@@ -1,11 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { IPotentialAlbumsDatesResponse } from "@/handlers/api/album.handler";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { parseDate } from "@/helpers/date.helper";
-import { exif } from "@/schema";
-import { count, desc, isNotNull, ne, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const SELECT_ORPHAN_PHOTOS = (ownerId: string) => sql`

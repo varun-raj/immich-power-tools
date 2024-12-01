@@ -1,5 +1,6 @@
 // pages/api/proxy.js
 
+import { db } from "@/config/db";
 import { ENV } from "@/config/environment";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -19,13 +20,20 @@ export default async function handler(
   }
 
   try {
-    const user = await getCurrentUser(req);
+    if (!db) {
+      return res.status(500).json({ message: "Database connection failed" });
+    }
 
+    const user = await getCurrentUser(req);
+    
     if (user) return res.status(200).json(user);
 
     return res.status(403).json({ message: "Forbidden" });
     
-  } catch (error) {
-    return res.status(500).json(error);
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message ||"Internal Server Error",
+      error: error.error || "Internal Server Error",
+    });
   }
 }

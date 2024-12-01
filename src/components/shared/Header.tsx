@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -27,9 +27,20 @@ import { useRouter } from "next/router";
 interface IProps {
   leftComponent?: React.ReactNode | string;
   rightComponent?: React.ReactNode | string;
+  title?: string;
 }
-export default function Header({ leftComponent, rightComponent }: IProps) {
+export default function Header({ leftComponent, rightComponent, title }: IProps) {
   const { pathname } = useRouter();
+  const pageTitle = useMemo(() => {
+    if (title && typeof title === "string") {
+      return title;
+    }
+    if (typeof leftComponent === "string") {  
+      return leftComponent;
+    }
+    return "";
+  }, [title, leftComponent]);
+  
   const renderLeftComponent = () => {
     if (typeof leftComponent === "string") {
       return <p className="font-semibold">{leftComponent}</p>;
@@ -46,9 +57,9 @@ export default function Header({ leftComponent, rightComponent }: IProps) {
 
   return (
     <>
-    {typeof leftComponent === "string" && (
+    {!!pageTitle && (
       <Head>
-        <title>{leftComponent} - Immich Power Tools</title>
+        <title>{pageTitle} - Immich Power Tools</title>
       </Head>
     )}
     <header key="header" className="sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b bg-white dark:bg-black px-4 lg:h-[60px] lg:px-6">

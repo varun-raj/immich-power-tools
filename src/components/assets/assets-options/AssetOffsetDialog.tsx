@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { formatDate, offsetDate } from '@/helpers/date.helper';
-import LazyImage from '@/components/ui/lazy-image';
 import Image from 'next/image';
 import { updateAssets } from '@/handlers/api/asset.handler';
 import { useToast } from '@/components/ui/use-toast';
@@ -35,7 +34,6 @@ export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }:
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(offsetData);
     setLoading(true);
     const promises = assets.map(async (asset) => {
       setAssetStatus({ [asset.id]: 'pending' });

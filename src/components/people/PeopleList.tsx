@@ -69,7 +69,7 @@ export default function PeopleList() {
           setFilters((prev) => ({ ...prev, ...newConfig })),
       }}
     >
-      <PageLayout>
+      <PageLayout  className="!p-0 !mb-0">
         <Header
           leftComponent="Manage People"
           rightComponent={<PeopleFilters />}

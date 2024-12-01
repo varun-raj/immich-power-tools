@@ -85,14 +85,16 @@ bun run dev
 
 - [x] Manage People
   - [x] Smart Merge
-- [ ] Manage Albums
+- [x] Manage Albums
   - [ ] Bulk Delete
   - [ ] Bulk Edit
   - [ ] Filters
   - [x] Potential Albums
-- [ ] Statistics
+  - [x] People in Album
+- [x] Missing Location
+- [x] Statistics
   - [x] EXIF Data
-  - [ ] Assets Overtime Chart
+  - [x] Assets Overtime Chart
 
 **Tech Related**
 

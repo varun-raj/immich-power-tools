@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { ImageProps } from 'next/image'
 import React, { useEffect } from 'react'
+import { Image, ImageExtended, ThumbnailImageProps } from 'react-grid-gallery'
 
-interface LazyImageProps extends ImageProps {}
+interface LazyImageProps extends ThumbnailImageProps<ImageExtended<Image>> {}
 
-export default function LazyImage(
+export default function LazyGridImage(
   props: LazyImageProps
 ) {
   const [isVisible, setIsVisible] = React.useState(false)
@@ -38,5 +38,7 @@ export default function LazyImage(
     <div style={{ height: props.height }} ref={imageRef}  />
   )
 
-  return <img {...props} src={props.src as string} alt={props.alt as string} />
+  return (
+    <img {...props.imageProps} alt={props.imageProps.alt || ""} title="" />
+  )
 }

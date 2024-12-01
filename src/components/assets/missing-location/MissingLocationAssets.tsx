@@ -18,7 +18,7 @@ import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
 import { formatDate, parseDate } from "@/helpers/date.helper";
 import { addDays } from "date-fns";
 import { useConfig } from "@/contexts/ConfigContext";
-import LazyImage from "@/components/ui/lazy-image";
+import LazyGridImage from "@/components/ui/lazy-grid-image";
 
 export default function MissingLocationAssets() {
   const { exImmichUrl } = useConfig();
@@ -61,7 +61,7 @@ export default function MissingLocationAssets() {
           ),
         },
       ],
-    }));
+    })).filter((p) => !p.original);
   }, [assets, selectedIds]);
 
   const slides = useMemo(
@@ -126,7 +126,7 @@ export default function MissingLocationAssets() {
           onClick={handleClick}
           enableImageSelection={true}
           onSelect={handleSelect}
-          thumbnailImageComponent={LazyImage}
+          thumbnailImageComponent={LazyGridImage}
           tagStyle={{
             color: "white",
             fontSize: "12px",
