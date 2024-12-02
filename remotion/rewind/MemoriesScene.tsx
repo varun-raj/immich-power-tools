@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react'
-import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { Img, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 
 interface MemoriesSceneProps {
   message: string;
@@ -11,60 +11,113 @@ interface MemoriesSceneProps {
 export default function MemoriesScene({ message, emoji, data }: MemoriesSceneProps) {
   const images = useMemo(() => data.images.map((image, index) => ({  
     src: image,
-    rotate: `${(index % 2 === 0 ? 1 : -1) * Math.random() * 10}deg`,
+    rotate: (index % 2 === 0 ? 1 : -1) * 8,
   })), [data.images]);
   
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const initialDelay = useRef(frame);
+
+  const messageOpacity = spring({
+    frame,
+    fps,
+    from: 0,
+    to: 1,
+    config: {
+      mass: 0.5,
+      damping: 20,
+      stiffness: 100
+    }
+  });
+
+  const messageY = spring({
+    frame,
+    fps,
+    from: -20,
+    to: 0,
+    config: {
+      mass: 0.5,
+      damping: 20,
+      stiffness: 100
+    }
+  });
+
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      animation: "zoomIn 1s ease forwards",
+      height: "100%",
+      padding: "20px 0"
     }}>
-      <p style={{
-        fontSize: 70,
-        padding: "0 70px",
-        color: "lightblue",
-        marginTop: 40,
-        textAlign: "center",
-        transition: "opacity 1s ease",
-      }}>
-        {message}
-      </p>
       <div style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: 10,
+        opacity: messageOpacity,
+        transform: `translateY(${messageY}px)`,
       }}>
-        {images.map((image, index) => {
-          const delay = (initialDelay.current) + (index * 0.1 * fps);
+        <span style={{
+          fontSize: 80,
+          display: "block",
+          textAlign: "center",
+          marginBottom: 20
+        }}>{emoji}</span>
+        <p style={{
+          fontSize: 50,
+          padding: "0 40px",
+          color: "white",
+          marginBottom: 40,
+          textAlign: "center",
+          textShadow: "2px 2px 4px rgba(0,0,0,0.2)"
+        }}>
+          {message}
+        </p>
+      </div>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(2, 1fr)",
+        gap: 30,
+        maxWidth: "90%",
+        placeItems: "center",
+      }}>
+        {images.slice(0, 4).map((image, index) => {
+          const delay = index * 5;
           const scale = spring({
             frame: frame - delay,
             fps,
             from: 0,
             to: 1,
             config: {
-              damping: 12,
+              mass: 0.8,
+              damping: 15,
+              stiffness: 100
+            },
+          });
+
+          const rotation = spring({
+            frame: frame - delay,
+            fps,
+            from: 0,
+            to: image.rotate, // Use the stable rotation value directly
+            config: {
+              mass: 0.5,
+              damping: 20,
+              stiffness: 80
             },
           });
 
           return (
-            <img 
+            <Img 
               key={index} 
               src={image.src} 
               alt="memory" 
               style={{ 
-                width: 200, 
-                height: 200, 
-                objectFit: "cover", 
-                borderRadius: 10,
-                margin: 10,
-                rotate: image.rotate,
-                transform: `scale(${scale})`,
+                width: 280,
+                height: 280,
+                objectFit: "cover",
+                borderRadius: 15,
+                transform: `scale(${scale}) rotate(${rotation}deg)`,
+                opacity: scale,
+                boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
+                border: "8px solid white"
               }} 
             />
           )
@@ -73,23 +126,3 @@ export default function MemoriesScene({ message, emoji, data }: MemoriesScenePro
     </div>
   )
 }
-
-// Add this CSS to your global styles or a CSS-in-JS solution
-const styles = `
-@keyframes zoomIn {
-  from {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-`;
-
-// Inject styles into the document
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);

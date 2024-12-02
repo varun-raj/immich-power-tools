@@ -3,7 +3,7 @@ import { Composition } from 'remotion';
 import { IntroComposition, Scene } from './Composition';
 
 const scenes: Scene[] = [
-  { message: "Welcome to Immich Replay Varun!",
+  { message: "Welcome Varun!",
     type: "WELCOME",
     emoji: "👋",
     data: {},
@@ -96,8 +96,8 @@ export const RemotionRoot: React.FC = () => {
         component={IntroComposition}
         durationInFrames={scenes.length * 120}
         fps={30}
-        width={1280}
-        height={720}
+        width={720}
+        height={1280}
       />
     </>
   );
