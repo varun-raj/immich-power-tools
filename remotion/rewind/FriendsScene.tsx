@@ -1,6 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { useMemo, useRef } from 'react'
-import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import React from 'react';
+import { Img, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 
 interface FriendsSceneProps {
   message: string;
@@ -12,100 +11,129 @@ interface FriendsSceneProps {
     }[];
   };
 }
+
 export default function FriendsScene({ message, emoji, data }: FriendsSceneProps) {
-  const friends = useMemo(() => data.friends.map((friend, index) => ({  
-    name: friend.name,
-    cover: friend.cover,
-  })), [data.friends]);
-  
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const initialDelay = useRef(frame);
+
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      animation: "zoomIn 1s ease forwards",
+      height: "100%",
+      padding: "20px"
     }}>
-      <p style={{
-        fontSize: 70,
-        padding: "0 70px",
-        color: "lightblue",
-        marginTop: 40,
-        textAlign: "center",
-        transition: "opacity 1s ease",
-      }}>
-        {message}
-      </p>
       <div style={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
+        alignItems: "center",
         gap: 20,
+        marginBottom: 40,
+        opacity: spring({
+          frame,
+          fps,
+          from: 0,
+          to: 1,
+          config: {
+            mass: 0.5,
+            damping: 20,
+          }
+        })
       }}>
-        {friends.map((friend, index) => {
-          const delay = (initialDelay.current) + (index * 0.1 * fps);
+        <span style={{ 
+          fontSize: 80,
+          transform: `translateY(${spring({
+            frame,
+            fps,
+            from: 0,
+            to: -10,
+            config: {
+              mass: 0.3,
+              damping: 10,
+              stiffness: 100
+            }
+          })}px)`
+        }}>{emoji}</span>
+        <h1 style={{
+          fontSize: 50,
+          color: "white",
+          textAlign: "center",
+          margin: 0,
+          maxWidth: "80%",
+          textShadow: "2px 2px 4px rgba(0,0,0,0.2)"
+        }}>
+          {message}
+        </h1>
+      </div>
+
+      <div style={{
+        display: "flex",
+        gap: 30,
+        justifyContent: "center",
+        width: "100%"
+      }}>
+        {data.friends.map((friend, index) => {
+          const delay = index * 5;
           const scale = spring({
             frame: frame - delay,
             fps,
             from: 0,
             to: 1,
             config: {
-              damping: 12,
+              mass: 0.8,
+              damping: 15,
+              stiffness: 100
+            },
+          });
+
+          const rotation = spring({
+            frame: frame - delay,
+            fps,
+            from: 0,
+            to: index % 2 === 0 ? 8 : -8,
+            config: {
+              mass: 0.5,
+              damping: 20,
+              stiffness: 80
             },
           });
 
           return (
-            <div key={index} style={{
-              borderRadius: 10,
-              padding: 10,
-            }}>
-            <img 
-              key={index} 
-              src={friend.cover} 
-              alt="memory" 
-              style={{ 
-                width: 200, 
-                height: 200, 
-                objectFit: "cover", 
-                borderRadius: "100%",
-                margin: 10,
-                transform: `scale(${scale})`,
-              }} 
-            />
-            <p style={{
-              fontSize: 20,
-              textAlign: "center",
-              marginTop: 10,  
-              color: "lightblue",
-            }}>
+            <div
+              key={friend.name}
+              style={{
+                transform: `scale(${scale}) rotate(${rotation}deg)`,
+                opacity: scale
+              }}
+            >
+              <Img
+                src={friend.cover}
+                alt={friend.name}
+                style={{
+                  width: 200,
+                  height: 200,
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                  border: "8px solid white",
+                  boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
+                }}
+              />
+              <p style={{
+                color: "white",
+                fontSize: 24,
+                textAlign: "center",
+                margin: "15px 0",
+                fontWeight: "bold",
+                textShadow: "1px 1px 2px rgba(0,0,0,0.2)"
+              }}>
                 {friend.name}
-            </p>
+              </p>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
-
-// Add this CSS to your global styles or a CSS-in-JS solution
-const styles = `
-@keyframes zoomIn {
-  from {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-`;
-
-// Inject styles into the document
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
