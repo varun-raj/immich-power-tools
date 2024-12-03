@@ -2,7 +2,7 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { IntroComposition, Scene } from './Composition';
 
-const scenes: Scene[] = [
+export const scenes: Scene[] = [
   { message: "Welcome Varun!",
     type: "WELCOME",
     emoji: "👋",
