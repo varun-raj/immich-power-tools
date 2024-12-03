@@ -1,55 +1,59 @@
-import React from 'react'
-import { spring, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+import React, { useMemo } from 'react';
+import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
 
 interface CountrySceneProps {
   message: string;
   emoji: string;
-  data: any;
+  data: {
+    countries: string[];
+  };
 }
 
 export default function CountryScene({ message, emoji, data }: CountrySceneProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const countries = data.countries as string[];
-
-  // Message animation (takes 1 second to appear)
-  const messageOpacity = interpolate(
-    frame,
-    [240, 260],
-    [0, 1],
-    { extrapolateRight: 'clamp' }
-  );
+  
+  const countries = useMemo(() => data.countries, [data.countries]);
 
   return (
     <div style={{
-      display: "flex",
+      display: "flex", 
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
+      height: "100%",
+      gap: 40
     }}>
-      <p style={{ 
-        fontSize: 40, 
-        color: "lightblue", 
-        marginTop: 40, 
-        textAlign: "center", 
-        padding: "0 20px",
-        opacity: messageOpacity,
-      }}>
-        {message}
-      </p>
       <div style={{
         display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        padding: 20,
-        gap: 10,
-        width: "70%",
+        gap: 20
       }}>
-        {countries.map((country: string, index: number) => {
-          // Start countries after message (1 second) with 0.3 second delay between each
-          const delay = (240) + (index * 0.1 * fps);
+        <span style={{
+          fontSize: 100
+        }}>
+          {emoji}
+        </span>
+        <h1 style={{
+          fontSize: 70,
+          color: "white", 
+          textAlign: "center",
+          margin: 0
+        }}>
+          {message}
+        </h1>
+      </div>
+
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 20,
+        justifyContent: "center",
+        maxWidth: "80%"
+      }}>
+        {countries.map((country, index) => {
+          const delay = index * 5;
           const scale = spring({
             frame: frame - delay,
             fps,
@@ -61,29 +65,21 @@ export default function CountryScene({ message, emoji, data }: CountrySceneProps
           });
 
           return (
-            <div key={country} style={{
-              borderColor: "lightblue",
-              borderRadius: "25px",
-              height: 50,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "lightblue",
-              padding: "0px 20px",
-              fontSize: 20,
-              textAlign: "center",
-              borderWidth: 1,
-              borderStyle: "solid",
-              transform: `scale(${scale})`,
-              opacity: scale,
-            }}>
-              <div>
-                <p style={{ margin: 0 }}>{country}</p>
-              </div>
+            <div
+              key={country}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.1)",
+                padding: "10px 20px",
+                borderRadius: 15,
+                transform: `scale(${scale})`,
+                opacity: scale,
+              }}
+            >
+              <span style={{ color: "white", fontSize: 24 }}>{country}</span>
             </div>
           );
         })}
       </div>
     </div>
-  )
+  );
 }
