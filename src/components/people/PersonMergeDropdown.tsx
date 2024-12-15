@@ -120,10 +120,10 @@ export function PersonMergeDropdown({
     if (selectedPeople.length === 0) {
       return;
     }
-
+  
     const personIds = selectedPeople.map((p) => p.id);
     setMerging(true);
-
+  
     const mergeInBatches = async (ids: string[], index: number = 0) => {
       if (index >= ids.length) {
         setOpen(false);
@@ -132,10 +132,13 @@ export function PersonMergeDropdown({
           description: "People merged successfully",
         });
         setMerging(false);
+        setSelectedPeople([]);
+        setSimilarPeople([]);
+        setSimilarLoading(true)
         onComplete?.(primaryPerson);
         return;
       }
-
+  
       const batch = ids.slice(index, index + 5);
       try {
         await mergePerson(person.id, batch);
@@ -148,7 +151,7 @@ export function PersonMergeDropdown({
         setMerging(false);
       }
     };
-
+  
     mergeInBatches(personIds);
   };
 
