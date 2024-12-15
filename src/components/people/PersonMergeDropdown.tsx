@@ -114,8 +114,6 @@ export function PersonMergeDropdown({
     }
   };
 
-
-
   const handleMerge = () => {
     if (selectedPeople.length === 0) {
       return;
@@ -227,7 +225,10 @@ export function PersonMergeDropdown({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}>
+        <Button
+          variant="outline"
+          className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}
+        >
           Merge
         </Button>
       </DialogTrigger>
@@ -312,6 +313,15 @@ export function PersonMergeDropdown({
 
         {renderContent()}
         <DialogFooter>
+          <Button
+            onClick={() => {
+              setSelectedPeople(similarPeople);
+            }}
+            variant="outline"
+          >
+            Select All
+          </Button>
+
           <Button
             onClick={() => {
               setOpen(false);
