@@ -8,25 +8,30 @@ import { useToast } from "@/components/ui/use-toast";
 import { searchPlaces } from "@/handlers/api/common.handler";
 import { cn } from "@/lib/utils";
 import { IPlace } from "@/types/common";
-import clsx from "clsx";
 import { Check } from "lucide-react";
 import React, { useMemo, useRef, useState } from "react";
 
 interface TagMissingLocationSearchLatLongProps {
   onSubmit: (place: IPlace) => Promise<any>;
   onOpenChange: (open: boolean) => void;
+  location: IPlace;
+  onLocationChange: (place: IPlace) => void;
 }
+
 export default function TagMissingLocationSearchLatLong(
   {
     onSubmit,
-    onOpenChange
+    onOpenChange,
+    location,
+    onLocationChange
   }: TagMissingLocationSearchLatLongProps
 ) {
   const { toast } = useToast();
+
   const [formData, setFormData] = useState<IPlace>({
-    latitude: 0,
-    longitude: 0,
-    name: "",
+    latitude: location.latitude,
+    longitude: location.longitude,
+    name: location.name,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,7 +46,8 @@ export default function TagMissingLocationSearchLatLong(
   }, [formData]);
 
   const handleChange = (key: string, value: string) => {
-    if (value.includes(",")) {
+    // if somebody pastes a combination of "lat, long"
+    if (key === "latitude" && value.includes(",")) {
       const latLong = value.split(",");
       if (latLong.length === 2) {
         setFormData({
@@ -51,7 +57,6 @@ export default function TagMissingLocationSearchLatLong(
         });
       }
     } else {
-
       setFormData({
         ...formData,
         [key]: value,
@@ -92,6 +97,16 @@ export default function TagMissingLocationSearchLatLong(
   };
 
 
+  const handleBlur = () => {
+    const place :IPlace = {
+      name: formData.name,
+      latitude: parseFloat(formData.latitude as unknown as string),
+      longitude: parseFloat(formData.longitude as unknown as string)
+    };
+
+    onLocationChange(place);
+  }
+
   return (
     <div className="flex flex-col gap-4 py-4 px-2">
       <div className="flex items-start gap-2">
@@ -103,6 +118,7 @@ export default function TagMissingLocationSearchLatLong(
             onChange={(e) => {
               handleChange("latitude", e.target.value);
             }}
+            onBlur={(e) => handleBlur()}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -115,10 +131,11 @@ export default function TagMissingLocationSearchLatLong(
             onChange={(e) => {
               handleChange("longitude", e.target.value);
             }}
+            onBlur={(e) => handleBlur()}
           />
         </div>
       </div>
-      
+
       <div className="self-end">
         <Button
           variant="outline"

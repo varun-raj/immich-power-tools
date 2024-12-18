@@ -13,6 +13,11 @@ import React, { useState } from "react";
 import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
 import { MapPinCheck } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const LazyMap = dynamic(() => import("./Map"), {
+  ssr: false
+});
 
 interface ITagMissingLocationDialogProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -22,6 +27,11 @@ export default function TagMissingLocationDialog({
 }: ITagMissingLocationDialogProps) {
   
   const [open, setOpen] = useState(false);
+  const [mapPosition,setMapPosition] = useState<IPlace>({
+    latitude: 48.0,
+    longitude: 16.0,
+    name: "home1"
+  });
  
   
   return (
@@ -43,18 +53,18 @@ export default function TagMissingLocationDialog({
               Latitude and Longitude
               
             </TabsTrigger>
-            <TabsTrigger value="google">Google Maps</TabsTrigger>
+            <TabsTrigger value="maps">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="search">
             <TagMissingLocationSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} />
           </TabsContent>
           <TabsContent value="latlong">
-            <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen} />
+            <TagMissingLocationSearchLatLong onSubmit={onSubmit}
+             onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
-          <TabsContent value="google">
+          <TabsContent value="maps">
             <div className="py-10 flex flex-col gap-6 items-center">
-              <MapPinCheck size={48}  className="text-gray-500"/>
-              <p>Google Maps Coming Soon...</p>
+              <LazyMap location={mapPosition} onLocationChange={setMapPosition} />
             </div>
           </TabsContent>
         </Tabs>
