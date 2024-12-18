@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
 import { MapPinCheck } from "lucide-react";
+import TagMissingLocationOSMSearchAndAdd from "./TagMissingLocationOSMSearchAndAdd";
 
 interface ITagMissingLocationDialogProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -23,6 +24,11 @@ export default function TagMissingLocationDialog({
   
   const [open, setOpen] = useState(false);
  
+  const [mapPosition,setMapPosition] = useState<IPlace>({
+    latitude: 48.0,
+    longitude: 16.0,
+    name: "home1"
+  });
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -38,18 +44,21 @@ export default function TagMissingLocationDialog({
         </DialogHeader>
         <Tabs defaultValue="search" className="border rounded-lg">
           <TabsList className="flex justify-between">
-            <TabsTrigger value="search">Search and Pick</TabsTrigger>
-            <TabsTrigger value="latlong">
+          <TabsTrigger value="search">Immich Search</TabsTrigger>
+          <TabsTrigger value="searchOsm">OSM Search</TabsTrigger>
+          <TabsTrigger value="latlong">
               Latitude and Longitude
-              
             </TabsTrigger>
             <TabsTrigger value="google">Google Maps</TabsTrigger>
           </TabsList>
           <TabsContent value="search">
             <TagMissingLocationSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} />
           </TabsContent>
+          <TabsContent value="searchOsm">
+            <TagMissingLocationOSMSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition}  />
+          </TabsContent>
           <TabsContent value="latlong">
-            <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen} />
+            <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen}  location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
           <TabsContent value="google">
             <div className="py-10 flex flex-col gap-6 items-center">
