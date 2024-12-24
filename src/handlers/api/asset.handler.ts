@@ -1,5 +1,6 @@
 import {
   ADD_ASSETS_ALBUMS_PATH,
+  FIND_ASSETS,
   LIST_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
@@ -46,3 +47,7 @@ export const updateAssets = async (params: IUpdateAssetsParams) => {
   return API.put(UPDATE_ASSETS_PATH, params);
 }
   
+
+export const findAssets = async (query: string) => {
+  return API.post(FIND_ASSETS, { query });
+}
