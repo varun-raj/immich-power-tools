@@ -7,6 +7,7 @@ import Header from '@/components/shared/Header';
 import { Button } from '@/components/ui/button';
 import { getRewindStats } from '@/handlers/api/common.handler';
 import { ASSET_PREVIEW_PATH, ASSET_THUMBNAIL_PATH, PERSON_THUBNAIL_PATH } from '@/config/routes';
+import Loader from '@/components/ui/loader';
 
 interface IStats {
   numberOfPhotos: number;
@@ -103,11 +104,11 @@ export default function RewindPage() {
     fetchStats();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loader />
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <PageLayout className="p-4">
+    <PageLayout>
       <Header leftComponent="Rewind 2024" />
       <div className="flex justify-center items-center w-full h-full">
         <Player

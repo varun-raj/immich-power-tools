@@ -1,4 +1,4 @@
-import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, MapPinX, User } from "lucide-react";
+import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, MapPinX, Rewind, User } from "lucide-react";
 
 export const sidebarNavs = [
   {
@@ -25,5 +25,10 @@ export const sidebarNavs = [
     title: "Manage Albums",
     link: "/albums",
     icon: <GalleryHorizontal className="h-4 w-4" />,
+  },
+  {
+    title: "Rewind 2024",
+    link: "/rewind",
+    icon: <Rewind className="h-4 w-4" />,
   },
 ];
