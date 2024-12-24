@@ -39,7 +39,7 @@ export default function TagMissingLocationDialog({
       <DialogTrigger asChild>
         <Button>Tag Missing Location</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="!w-[600px] !max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Tag Missing Location</DialogTitle>
           <DialogDescription>
@@ -63,7 +63,7 @@ export default function TagMissingLocationDialog({
              onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
           <TabsContent value="maps">
-            <div className="py-10 flex flex-col gap-6 items-center">
+            <div className="py-10 flex flex-col gap-6 items-center ">
               <LazyMap location={mapPosition} onLocationChange={setMapPosition} />
             </div>
           </TabsContent>
