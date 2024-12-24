@@ -111,6 +111,7 @@ export default function RewindPage() {
       <Header leftComponent="Rewind 2024" />
       <div className="flex justify-center items-center w-full h-full">
         <Player
+          className="rounded-lg"
           component={IntroComposition}
           inputProps={{ scenes: scenes }}
           durationInFrames={scenes.length * 120}
@@ -123,9 +124,6 @@ export default function RewindPage() {
           }}
           controls
         />
-      </div>
-      <div className="flex justify-center items-center w-full h-full">
-        <Button> Download Video</Button>
       </div>
     </PageLayout>
   )
