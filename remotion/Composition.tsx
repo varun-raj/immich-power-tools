@@ -43,7 +43,7 @@ export const IntroComposition = ({  scenes }: { scenes: Scene[] }) => {
         fontFamily: "sans-serif",
       }}
     >
-      <Sequence name="Logo Intro" from={0} durationInFrames={screenDuration}>
+      <Sequence name="Logo Intro" durationInFrames={screenDuration}>
         <div style={{
           width: "100%",
           height: "100%",

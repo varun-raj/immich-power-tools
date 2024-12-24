@@ -49,3 +49,6 @@ export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";
 
 // Person
 export const GET_PERSON_INFO = (personId: string) => BASE_API_ENDPOINT + "/people/" + personId + "/info";
+
+// Rewind
+export const REWIND_STATS = BASE_API_ENDPOINT + "/rewind/stats";
