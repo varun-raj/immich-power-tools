@@ -31,7 +31,6 @@ export default async function handler(
         isNull(exif.latitude),
         isNotNull(assets.createdAt),
         isNotNull(exif.dateTimeOriginal),
-        eq(assets.type, "VIDEO"),
         eq(assets.ownerId, currentUser.id),
         eq(assets.isVisible, true),
       ))

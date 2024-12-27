@@ -56,6 +56,7 @@ export function PersonMergeDropdown({
   const [selectedPeople, setSelectedPeople] = useState<IPerson[]>([]);
   const [primaryPerson, setPrimaryPerson] = useState<IPerson>(person);
   const [merging, setMerging] = useState(false);
+  const [threshold, setThreshold] = useState(0.5);
   const { toast } = useToast();
 
   const selectedIds = useMemo(
@@ -89,7 +90,7 @@ export function PersonMergeDropdown({
   };
 
   const fetchSuggestions = () => {
-    return listSimilarFaces(person.id)
+    return listSimilarFaces(person.id, threshold)
       .then(setSimilarPeople)
       .catch(() => {
         toast({
@@ -114,16 +115,14 @@ export function PersonMergeDropdown({
     }
   };
 
-
-
   const handleMerge = () => {
     if (selectedPeople.length === 0) {
       return;
     }
-
+  
     const personIds = selectedPeople.map((p) => p.id);
     setMerging(true);
-
+  
     const mergeInBatches = async (ids: string[], index: number = 0) => {
       if (index >= ids.length) {
         setOpen(false);
@@ -132,10 +131,13 @@ export function PersonMergeDropdown({
           description: "People merged successfully",
         });
         setMerging(false);
+        setSelectedPeople([]);
+        setSimilarPeople([]);
+        setSimilarLoading(true)
         onComplete?.(primaryPerson);
         return;
       }
-
+  
       const batch = ids.slice(index, index + 5);
       try {
         await mergePerson(person.id, batch);
@@ -148,7 +150,7 @@ export function PersonMergeDropdown({
         setMerging(false);
       }
     };
-
+  
     mergeInBatches(personIds);
   };
 
@@ -160,6 +162,13 @@ export function PersonMergeDropdown({
     }
     setSelectedPeople(newSelected);
   };
+
+  useEffect(() => {
+    if (open) {
+      setSimilarLoading(true);
+      fetchSuggestions();
+    }
+  }, [threshold, open]);
 
   useEffect(() => {
     if (open && !similarPeople.length) fetchSuggestions();
@@ -227,7 +236,10 @@ export function PersonMergeDropdown({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}>
+        <Button
+          variant="outline"
+          className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}
+        >
           Merge
         </Button>
       </DialogTrigger>
@@ -279,6 +291,21 @@ export function PersonMergeDropdown({
             handleSearch(e.target.value);
           }}
         />
+        <div>
+          <label htmlFor="threshold" className="block text-sm font-medium text-gray-300">
+            Threshold
+          </label>
+          <Input
+            type="number"
+            step="0.01"
+            min="0"
+            max="1"
+            value={threshold}
+            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+            placeholder="Threshold (0 to 1)"
+            className="mt-2"
+          />
+        </div>
 
         {selectedPeople.length > 0 ? (
           <div className="flex flex-nowrap overflow-x-auto gap-2 py-2">
@@ -312,6 +339,15 @@ export function PersonMergeDropdown({
 
         {renderContent()}
         <DialogFooter>
+          <Button
+            onClick={() => {
+              setSelectedPeople(similarPeople);
+            }}
+            variant="outline"
+          >
+            Select All
+          </Button>
+
           <Button
             onClick={() => {
               setOpen(false);
