@@ -40,7 +40,7 @@ export default function TagMissingLocationOSMSearchAndAdd(
           q: value,
           format: "json", // Response in JSON format
           addressdetails: 1, // Include address details
-          limit: 1, // Limit the results to 1
+          limit: 5, // Limit the results to 1
         },
       });
 
