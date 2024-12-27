@@ -153,9 +153,9 @@ export default function TagMissingLocationOSMSearchAndAdd(
                 key={place.name}
                 onClick={() => handleSelect(place)}
                 className={cn(
-                  "hover:bg-zinc-900 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
+                  "hover:bg-gray-300 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
                   {
-                    "bg-zinc-900":
+                    "bg-gray-300":
                       selectedPlace && selectedPlace.name === place.name,
                   }
                 )}
