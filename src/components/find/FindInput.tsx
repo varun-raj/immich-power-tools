@@ -32,7 +32,7 @@ export default function FindInput({ onSearch }: FindInputProps) {
         control: 'w-full border border-gray-200 rounded-md p-2',
         input: 'w-full border border-gray-200 rounded-md p-2 w-full',
       }}
-      placeholder='Search for people or tags'
+      placeholder='Search for photos, use @ to search for people'
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           onSearch(query);

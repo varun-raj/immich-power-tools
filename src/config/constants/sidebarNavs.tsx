@@ -2,6 +2,11 @@ import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, M
 
 export const sidebarNavs = [
   {
+    title: "Find",
+    link: "/find",
+    icon: <Search className="h-4 w-4" />,
+  },
+  {
     title: "Manage People",
     link: "/",
     icon: <User className="h-4 w-4" />,
@@ -26,9 +31,5 @@ export const sidebarNavs = [
     link: "/albums",
     icon: <GalleryHorizontal className="h-4 w-4" />,
   },
-  {
-    title: "Find",
-    link: "/find",
-    icon: <Search className="h-4 w-4" />,
-  },
+  
 ];

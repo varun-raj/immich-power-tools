@@ -3,14 +3,10 @@ import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
-import ConfigContext from "@/contexts/ConfigContext";
+import ConfigContext, { ConfigContextType } from "@/contexts/ConfigContext";
 import { useRef } from "react";
 interface AppPropsWithProps extends AppProps {
-  props: {
-    immichURL: string;
-    exImmichUrl: string;
-    version?: string;
-  };
+  props: ConfigContextType;
 }
 const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
   const intialData = useRef(props.props);
@@ -32,7 +28,8 @@ App.getInitialProps = async () => {
     props: {
       exImmichUrl: ENV.EXTERNAL_IMMICH_URL,
       immichURL: ENV.IMMICH_URL,
-      version: ENV.VERSION
+      version: ENV.VERSION,
+      geminiEnabled: !!ENV.GEMINI_API_KEY?.length,
     },
   };
 };
