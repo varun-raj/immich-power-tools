@@ -13,6 +13,7 @@ const ConfigContext = createContext<ConfigContextType>({
   exImmichUrl: "",
   version: "",
   geminiEnabled: false,
+  googleMapsApiKey: "",
 });
 
 export default ConfigContext;
