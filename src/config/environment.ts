@@ -7,6 +7,7 @@ export const ENV = {
   SECURE_COOKIE: process.env.SECURE_COOKIE === 'true',
   VERSION: process.env.VERSION,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY as string,
 };
 
 

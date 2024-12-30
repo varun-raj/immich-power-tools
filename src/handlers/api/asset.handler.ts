@@ -1,5 +1,6 @@
 import {
   ADD_ASSETS_ALBUMS_PATH,
+  ASSET_GEO_HEATMAP_PATH,
   FIND_ASSETS,
   LIST_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
@@ -50,4 +51,8 @@ export const updateAssets = async (params: IUpdateAssetsParams) => {
 
 export const findAssets = async (query: string) => {
   return API.post(FIND_ASSETS, { query });
+}
+
+export const getAssetGeoHeatmap = async () => {
+  return API.get(ASSET_GEO_HEATMAP_PATH);
 }

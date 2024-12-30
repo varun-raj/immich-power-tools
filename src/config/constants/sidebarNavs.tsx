@@ -1,4 +1,4 @@
-import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, MapPinX, Search, User } from "lucide-react";
+import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, MapPin, MapPinX, Search, User } from "lucide-react";
 
 export const sidebarNavs = [
   {
@@ -31,5 +31,10 @@ export const sidebarNavs = [
     link: "/albums",
     icon: <GalleryHorizontal className="h-4 w-4" />,
   },
+  {
+    title: "Geo Heatmap",
+    link: "/assets/geo-heatmap",
+    icon: <MapPin className="h-4 w-4" />,
+  }
   
 ];

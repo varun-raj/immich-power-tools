@@ -35,6 +35,7 @@
     "@types/cookie": "^0.6.0",
     "@types/qs": "^6.9.15",
     "@types/react-calendar-heatmap": "^1.6.7",
+    "@vis.gl/react-google-maps": "^1.4.2",
     "axios": "^1.7.4",
     "chrono-node": "^1.4.9",
     "class-variance-authority": "^0.7.0",

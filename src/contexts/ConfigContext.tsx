@@ -5,6 +5,7 @@ export interface ConfigContextType {
   exImmichUrl: string;
   version?: string;
   geminiEnabled: boolean;
+  googleMapsApiKey: string;
 }
 
 const ConfigContext = createContext<ConfigContextType>({

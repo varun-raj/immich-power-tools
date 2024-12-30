@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import ProfileInfo from "./ProfileInfo";
 
 const ThemeSwitcher = dynamic(() => import("@/components/shared/ThemeSwitcher"), {

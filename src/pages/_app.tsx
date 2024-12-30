@@ -30,6 +30,7 @@ App.getInitialProps = async () => {
       immichURL: ENV.IMMICH_URL,
       version: ENV.VERSION,
       geminiEnabled: !!ENV.GEMINI_API_KEY?.length,
+      googleMapsApiKey: ENV.GOOGLE_MAPS_API_KEY,
     },
   };
 };
