@@ -1,37 +1,42 @@
 const findInputStyle = {
   control: {
-    backgroundColor: '#fff',
-    fontSize: 14,
+    backgroundColor: 'hsl(var(--input))',
+    fontSize: 20,
     fontWeight: 'normal',
+    outline: 'none',
+    borderRadius: '15px',
+    
   },
 
-
   '&singleLine': {
-    display: 'inline-block',
+    // display: 'inline-block',
+    width: '100%',
     
     highlighter: {
-      padding: '10px',
-      border: '2px inset transparent',
+      padding: '10px 15px',
+      border: 'none',
+      outline: 'none',
     },
     input: {
-      width: "100%",
-      padding: '10px',
-      borderRadius: '4px',
-      border: '1px solid #e0e0e0',
+      padding: '10px 15px',
+      border: 'none',
+      outline: 'none',
     },
   },
 
   suggestions: {
+
     list: {
-      backgroundColor: 'white',
-      border: '1px solid rgba(0,0,0,0.15)',
+      backgroundColor: 'hsl(var(--background))',
       fontSize: 14,
+      border: '1px solid hsl(var(--border))',
+      overflow: 'hidden',
     },
     item: {
       padding: '5px 15px',
-      borderBottom: '1px solid rgba(0,0,0,0.15)',
+      border: 'none',
       '&focused': {
-        backgroundColor: '#cee4e5',
+        backgroundColor: 'hsl(var(--chart-2))',
       },
     },
   },

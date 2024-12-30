@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import style from './findInputStyle'
+import inputStyle from './findInputStyle'
 import { MentionsInput, Mention } from 'react-mentions'
 import { searchPeople } from '@/handlers/api/people.handler';
 import mentionStyle from './findMentionStyle';
-import { PERSON_THUBNAIL_PATH } from '@/config/routes';
-import Image from 'next/image';
+import classNames from './FindInput.module.css';
+
 
 interface FindInputProps {
   onSearch: (query: string) => void;
@@ -26,13 +26,8 @@ export default function FindInput({ onSearch }: FindInputProps) {
     <MentionsInput
       value={query}
       singleLine={true}
-      style={style}
-      className='w-full border border-gray-200 rounded-md p-2'
-      classNames={{
-        control: 'w-full border border-gray-200 rounded-md p-2',
-        input: 'w-full border border-gray-200 rounded-md p-2 w-full',
-      }}
       placeholder='Search for photos, use @ to search for people'
+      style={inputStyle}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           onSearch(query);
@@ -41,14 +36,13 @@ export default function FindInput({ onSearch }: FindInputProps) {
       onChange={(e) => setQuery(e.target.value)}>
       <Mention
         trigger="@"
-        data={handleSearchPeople}
         style={mentionStyle}
+        data={handleSearchPeople}
         renderSuggestion={(
           highlightedDisplay,
           focused
         ) => (
-          <div className={`user ${focused ? 'focused' : ''}`}>
-            
+          <div className={`user ${focused ? 'focused' : ''} `}>
             {highlightedDisplay.display}
           </div>
         )}

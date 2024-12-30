@@ -1,3 +1,4 @@
 export default {
-  backgroundColor: '#cee4e5',
+  backgroundColor: 'hsla(var(--chart-2) / 0.3)',
+  position: 'relative',
 }
