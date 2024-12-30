@@ -109,8 +109,10 @@ export default function RewindPage() {
 
   return (
     <PageLayout>
-      <Header leftComponent="Rewind 2024" />
-      <div className="flex justify-center items-center w-full h-full">
+      <div className="flex justify-center flex-col items-center w-full h-full gap-2">
+        <p className='text-2xl font-bold'>
+          Your 2024 Rewind 🚀
+        </p>
         <Player
           className="rounded-lg"
           component={IntroComposition}
