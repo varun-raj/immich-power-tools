@@ -34,6 +34,7 @@ export const UPDATE_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/assets";
 export const ASSET_THUMBNAIL_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id;
 export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id + "?size=preview";
 export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/video/" + id;
+export const ASSET_GEO_HEATMAP_PATH = BASE_API_ENDPOINT + "/assets/geo-heatmap";
 
 // Location
 
@@ -52,3 +53,5 @@ export const GET_PERSON_INFO = (personId: string) => BASE_API_ENDPOINT + "/peopl
 
 // Rewind
 export const REWIND_STATS = BASE_API_ENDPOINT + "/rewind/stats";
+// Find
+export const FIND_ASSETS = BASE_API_ENDPOINT + "/find/search";

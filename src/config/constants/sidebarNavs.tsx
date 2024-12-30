@@ -1,6 +1,16 @@
-import { Album, GalleryHorizontal, GalleryVerticalEnd, Home, Image, LocateOff, MapPinX, Rewind, User } from "lucide-react";
+import { GalleryHorizontal, GalleryVerticalEnd, Image as ImageIcon, MapPin, MapPinX, Rewind, Search, User } from "lucide-react";
 
 export const sidebarNavs = [
+  {
+    title: "Rewind 2024",
+    link: "/rewind",
+    icon: <Rewind className="h-4 w-4" />,
+  },
+  {
+    title: "Find",
+    link: "/find",
+    icon: <Search className="h-4 w-4" />,
+  },
   {
     title: "Manage People",
     link: "/",
@@ -9,7 +19,7 @@ export const sidebarNavs = [
   {
     title: "Analytics",
     link: "/analytics/exif",
-    icon: <Image className="h-4 w-4" />,
+    icon: <ImageIcon className="h-4 w-4" />,
   },
   {
     title: "Potential Albums",
@@ -26,9 +36,11 @@ export const sidebarNavs = [
     link: "/albums",
     icon: <GalleryHorizontal className="h-4 w-4" />,
   },
+
   {
-    title: "Rewind 2024",
-    link: "/rewind",
-    icon: <Rewind className="h-4 w-4" />,
-  },
+    title: "Geo Heatmap",
+    link: "/assets/geo-heatmap",
+    icon: <MapPin className="h-4 w-4" />,
+  }
+  
 ];
