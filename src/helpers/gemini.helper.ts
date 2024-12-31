@@ -57,9 +57,9 @@ const responseSchema = {
 export const parseFindQuery = async (query: string): Promise<FindQuery>  => {
 
   const prompt = `
-  Parse the following query and return the query and tags: ${query}
-  Additional Information For Parsing:
-  today's date is ${new Date().toISOString().split('T')[0]}
+    Parse the following query and return the query and tags: ${query}
+    Additional Information For Parsing:
+    today's date is ${new Date().toISOString().split('T')[0]}
   `;
 
   const { response } = await model.generateContent({

@@ -39,6 +39,10 @@ Add the Immich API Key and immich url's to the env file (which you already have 
 IMMICH_API_KEY= # your_immich_api_key
 IMMICH_URL = "http://local-ip-of-immich:port" # Your immich instace ip address and port
 EXTERNAL_IMMICH_URL = "https://external-address" # External address of immich
+
+# Optional
+GOOGLE_MAPS_API_KEY= # Google Maps API Key
+GEMINI_API_KEY= # Gemini API Key
 ```
 Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 
@@ -100,7 +104,7 @@ bun run dev
 
 - [x] Dark Mode
 - [x] Dockerize
-- [ ] Authentication
+- [x] Authentication
 - [x] Push to github packages
 
 ## Tech Stack
@@ -109,6 +113,20 @@ bun run dev
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Shadcn](https://shadcn.com/) for UI Components
 - [Axios](https://axios-http.com/) for API calls
+
+## External Services
+These services are completely optional and you can use the tool without them. Just that they are used for some of the features. But we dont send any personal data to these services.
+
+- [Google Maps](https://maps.google.com/) for heatmap
+Google Maps Javascript API Key is used to render the maps layer for heatmap. When rendering the heatmap, we only send the location data to Google Maps and not any other data.
+
+  > Code where heatmap data is plotted: [src/pages/assets/geo-heatmap.tsx:32](./src/pages/assets/geo-heatmap.tsx#L32-L35)
+
+- [Gemini](https://gemini.google.com/) for rewind video generation
+Google Gemini 1.5 Flash model is used for parsing your search query in "Find" page. We do not send any personal data to Gemini, only data that is sent to Gemini is your search query and rest of the querying happes using [Immich's Smart Search API](https://immich.app/docs/api/search-smart)
+
+  > Code where Gemini is used: [src/helpers/gemini.helper.ts](./src/helpers/gemini.helper.ts)
+
 
 ## Contributing
 
