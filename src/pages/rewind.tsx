@@ -3,13 +3,12 @@ import { Player } from '@remotion/player';
 
 import { IntroComposition } from '../../remotion/Composition';
 import PageLayout from '@/components/layouts/PageLayout';
-import Header from '@/components/shared/Header';
-import { Button } from '@/components/ui/button';
 import { getRewindStats } from '@/handlers/api/common.handler';
-import { ASSET_PREVIEW_PATH, ASSET_THUMBNAIL_PATH, PERSON_THUBNAIL_PATH } from '@/config/routes';
+import { ASSET_THUMBNAIL_PATH, PERSON_THUBNAIL_PATH } from '@/config/routes';
 import Loader from '@/components/ui/loader';
 
 interface IStats {
+  name: string;
   numberOfPhotos: number;
   countriesInYear: any[];
   countOfCities: number;
@@ -20,7 +19,7 @@ interface IStats {
 
 const getScenes = (stats: IStats) => [
   {
-    message: "Welcome Varun!",
+    message: `Welcome ${stats.name}!`,
     type: "WELCOME",
     emoji: "👋",
     data: {},

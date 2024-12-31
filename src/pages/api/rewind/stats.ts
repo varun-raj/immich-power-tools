@@ -115,6 +115,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .limit(4); 
 
   return res.status(200).json({
+    name: user.name,
     numberOfPhotos: numberOfPhotos[0].count,
     countriesInYear: countries,
     countOfCities: cities.length,
