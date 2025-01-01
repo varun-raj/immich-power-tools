@@ -51,7 +51,7 @@ export default function MissingLocations() {
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>
-            {config.selectedIds.length === config.assets.length ? (
+            {config.selectedIds.length > 0 ? (
               <Button
                 variant={"outline"}
                 onClick={() =>
