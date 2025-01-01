@@ -13,6 +13,7 @@ import MissingLocationContext, {
 import { updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { SortDesc, SortAsc } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 
@@ -25,9 +26,11 @@ export default function MissingLocations() {
     startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
+    sort: "fileOriginalDate",
+    sortOrder: "asc",
   });
 
-  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
+  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
 
   const handleSubmit = (place: IPlace) => {
     return updateAssets({
@@ -41,6 +44,10 @@ export default function MissingLocations() {
       });
     })
   };
+
+  const handleChange = (e: {sortOrder: "asc"|"desc"}) => {
+    setConfig({ ...config, sortOrder:e.sortOrder });
+  }
 
   return (
     <PageLayout className="!p-0 !mb-0">
@@ -77,6 +84,13 @@ export default function MissingLocations() {
               </Button>
             )}
             <TagMissingLocationDialog onSubmit={handleSubmit} />
+
+            <div>
+              <Button variant="default" size="sm" onClick={() => handleChange({ sortOrder: config.sortOrder === "asc" ? "desc" : "asc" })}>
+                {config.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
+              </Button>
+            </div>
+
             <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
           </>
         }
