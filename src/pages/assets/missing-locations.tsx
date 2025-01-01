@@ -29,17 +29,20 @@ export default function MissingLocations() {
 
   const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
 
-  const handleSubmit = (place: IPlace) => {
-    return updateAssets({
+  const handleSubmit = async (place: IPlace) => {
+    await updateAssets({
       ids: config.selectedIds,
       latitude: place.latitude,
       longitude: place.longitude,
-    }).then(() => {
-      setConfig({
-        ...config,
-        selectedIds: [],
-      });
-    })
+    });
+
+    const newAssets = config.assets.filter(asset => !config.selectedIds.includes(asset.id));
+
+    setConfig({
+      ...config,
+      selectedIds: [],
+      assets: newAssets
+    });
   };
 
   return (
