@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import PeopleFilterContext from "@/contexts/PeopleFilterContext";
 import PageLayout from "../layouts/PageLayout";
 import Header from "../shared/Header";
+import { Button } from "@/components/ui/button";
 
 export default function PeopleList() {
   const router = useRouter();
@@ -18,9 +19,10 @@ export default function PeopleList() {
   const [filters, setFilters] = useState<IPersonListFilters>({
     ...router.query,
     page: 1,
+    perPage: 20,
   });
+  const [selectedPeople, setSelectedPeople] = useState<IPerson[]>([]);
 
-  
   const fetchData = async () => {
     setLoading(true);
     setErrorMessage(null);
@@ -43,6 +45,19 @@ export default function PeopleList() {
     }));
   }
 
+  const handleSelect = (person: IPerson) => {
+    const isSelected = selectedPeople.some((p) => p.id === person.id);
+    if (isSelected) {
+      setSelectedPeople(selectedPeople.filter((p) => p.id !== person.id));
+    } else {
+      setSelectedPeople([...selectedPeople, person]);
+    }
+  };
+
+  const handleMerge = () => {
+    // Implement the merge logic here
+  };
+
   useEffect(() => {
     if (!router.isReady) return;
     fetchData();
@@ -56,11 +71,14 @@ export default function PeopleList() {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1 p-2">
         {people.map((person) => (
-          <PersonItem person={person} key={person.id} onRemove={handleRemove}/>
+          <div key={person.id} onClick={() => handleSelect(person)}>
+            <PersonItem person={person} onRemove={handleRemove}/>
+          </div>
         ))}
       </div>
     );
   };
+
   return (
     <PeopleFilterContext.Provider
       value={{
@@ -74,6 +92,11 @@ export default function PeopleList() {
           leftComponent="Manage People"
           rightComponent={<PeopleFilters />}
         />
+        <div className="flex justify-end p-2">
+          <Button onClick={handleMerge} disabled={selectedPeople.length === 0}>
+            Merge Selected People
+          </Button>
+        </div>
         {renderContent()}
       </PageLayout>
     </PeopleFilterContext.Provider>

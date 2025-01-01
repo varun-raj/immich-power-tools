@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 export function PeopleFilters() {
   const router = useRouter();
-  const { updateContext, page, maximumAssetCount, type = "all" } = usePeopleFilterContext();
+  const { updateContext, page, maximumAssetCount, type = "all", perPage = 20 } = usePeopleFilterContext();
 
   const handleChange = (data: Partial<IPersonListFilters>) => {
     updateContext(data);
@@ -30,6 +30,7 @@ export function PeopleFilters() {
         ...data,
         page: data.page || undefined,
         type: data.type || undefined,
+        perPage: data.perPage || undefined,
       },
     });
   }
@@ -62,6 +63,18 @@ export function PeopleFilters() {
           <SelectItem value="all">All</SelectItem>
           <SelectItem value="nameless">Nameless</SelectItem>
           <SelectItem value="named">Named</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select value={perPage.toString()} onValueChange={(value) => handleChange({ perPage: parseInt(value, 10) })}>
+        <SelectTrigger>
+          <SelectValue placeholder="Per Page" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="10">10</SelectItem>
+          <SelectItem value="20">20</SelectItem>
+          <SelectItem value="50">50</SelectItem>
+          <SelectItem value="100">100</SelectItem>
         </SelectContent>
       </Select>
 
