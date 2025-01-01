@@ -9,22 +9,19 @@ import { Button } from "@/components/ui/button";
 import { SortAsc, SortDesc } from "lucide-react";
 
 export default function MissingLocationDates() {
-  const { updateContext } = useMissingLocationContext();
+  const { dates, updateContext } = useMissingLocationContext();
   const router = useRouter();
-  const [dateRecords, setDateRecords] = React.useState<
-    IMissingLocationDatesResponse[]
-  >([]);
   const [filters, setFilters] = useState<{ sortBy: string, sortOrder: string }>({ sortBy: "date", sortOrder: "desc" });
   const [loading, setLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = () => {
     return listMissingLocationDates({
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder,
     })
-      .then(setDateRecords)
+      .then((r) => updateContext({dates: r}))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
   };
@@ -68,7 +65,7 @@ export default function MissingLocationDates() {
         </div>
       </div>
 
-      {dateRecords.map((record) => (
+      {dates.map((record) => (
         <MissingLocationDateItem
           key={record.date}
           record={record}
