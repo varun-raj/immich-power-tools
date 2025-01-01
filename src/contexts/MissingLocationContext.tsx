@@ -5,6 +5,8 @@ export interface IMissingLocationConfig {
   startDate?: string;
   selectedIds: string[];
   assets: IAsset[];
+  sort: "fileOriginalDate";
+  sortOrder: "asc"|"desc";
 }
 
 export interface MissingLocationContext extends IMissingLocationConfig {
@@ -15,6 +17,8 @@ const MissingLocationContext = createContext<MissingLocationContext>({
   selectedIds: [],
   assets: [],
   updateContext: () => { },
+  sort:"fileOriginalDate",
+  sortOrder: "asc"
 });
 
 export default MissingLocationContext;
