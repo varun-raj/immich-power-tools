@@ -13,6 +13,7 @@ import MissingLocationContext, {
 import { updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { isSameDay } from "date-fns";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 
@@ -25,6 +26,7 @@ export default function MissingLocations() {
     startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
+    dates: []
   });
 
   const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
@@ -37,6 +39,22 @@ export default function MissingLocations() {
     });
 
     const newAssets = config.assets.filter(asset => !config.selectedIds.includes(asset.id));
+
+    if (config.startDate) {
+      const dayRecord = config.dates.filter(f => isSameDay(new Date(f.date), new Date(config.startDate!)));
+
+      if (dayRecord.length === 1) {
+        if (newAssets.length > 0)
+          dayRecord[0].asset_count = newAssets.length;
+        else {
+          const indexToRemove = config.dates.findIndex(v=>isSameDay(v.date, dayRecord[0].date));
+
+          if (indexToRemove !== -1) {
+            config.dates.splice(indexToRemove, 1);
+          }
+        }
+      }
+    }
 
     setConfig({
       ...config,
