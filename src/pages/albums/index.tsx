@@ -1,20 +1,17 @@
-import { ASSET_THUMBNAIL_PATH } from '@/config/routes'
 import PageLayout from '@/components/layouts/PageLayout'
 import Header from '@/components/shared/Header'
 import Loader from '@/components/ui/loader'
 import { useConfig } from '@/contexts/ConfigContext'
 import { listAlbums } from '@/handlers/api/album.handler'
 import { IAlbum } from '@/types/album'
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import AlbumThumbnail from '@/components/albums/list/AlbumThumbnail'
 import { Button } from '@/components/ui/button'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter } from 'next/router'
-import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
-import { SortAsc, SortDesc } from 'lucide-react'
+import { Share, SortAsc, SortDesc } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import AlbumShareDialog, { IAlbumShareDialogRef } from '@/components/albums/share/AlbumShareDialog'
 
 const SORT_BY_OPTIONS = [
   { value: 'lastPhotoDate', label: 'Last Photo Date' },
@@ -27,7 +24,6 @@ const SORT_BY_OPTIONS = [
   { value: 'faceCount', label: 'Number of People' },
 ]
 export default function AlbumListPage() {
-  const { exImmichUrl } = useConfig()
   const router = useRouter()
   const [search, setSearch] = useState('')
   const { query, pathname } = router
@@ -35,7 +31,8 @@ export default function AlbumListPage() {
   const [albums, setAlbums] = useState<IAlbum[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [selectedAlbums, setSelectedAlbums] = useState<string[]>([])
+  const [selectedAlbumsIds, setSelectedAlbumsIds] = useState<string[]>([])
+  const albumShareDialogRef = useRef<IAlbumShareDialogRef>(null);
 
   const selectedSortBy = useMemo(() => SORT_BY_OPTIONS.find((option) => option.value === sortBy), [sortBy])
 
@@ -55,15 +52,18 @@ export default function AlbumListPage() {
       })
   }
 
+  const selectedAlbums = useMemo(() => albums.filter((album) => selectedAlbumsIds.includes(album.id)), [albums, selectedAlbumsIds])
+
   useEffect(() => {
     fetchAlbums()
   }, [sortBy, sortOrder])
 
+
   const handleSelect = (checked: boolean, albumId: string) => {
     if (checked) {
-      setSelectedAlbums([...selectedAlbums, albumId])
+      setSelectedAlbumsIds([...selectedAlbumsIds, albumId])
     } else {
-      setSelectedAlbums(selectedAlbums.filter((id) => id !== albumId))
+      setSelectedAlbumsIds(selectedAlbumsIds.filter((id) => id !== albumId))
     }
   }
 
@@ -78,7 +78,12 @@ export default function AlbumListPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
         {searchedAlbums.map((album) => (
-          <AlbumThumbnail album={album} key={album.id} onSelect={(checked) => handleSelect(checked, album.id)} />
+          <AlbumThumbnail 
+            album={album}
+            key={album.id} 
+            selected={selectedAlbumsIds.includes(album.id)}
+            onSelect={(checked) => handleSelect(checked, album.id)} 
+          />
         ))}
       </div>
     )
@@ -89,6 +94,16 @@ export default function AlbumListPage() {
         leftComponent="Manage Albums"
         rightComponent={
           <div className="flex items-center gap-2">
+            {!!selectedAlbumsIds.length && (
+              <Button 
+                variant={"secondary"} 
+                className="flex items-center gap-2"
+                onClick={() => {
+                  albumShareDialogRef.current?.open(selectedAlbums)
+                }}>
+                <Share size={16} /> Share {selectedAlbumsIds.length} albums
+              </Button>
+            )}
             <Input type="text" placeholder="Search" className="w-48" onChange={(e) => setSearch(e.target.value)} />
             <Select
               defaultValue={selectedSortBy?.value}
@@ -122,6 +137,9 @@ export default function AlbumListPage() {
         }
       />
       {renderContent()}
+      <AlbumShareDialog 
+        ref={albumShareDialogRef}
+      />
     </PageLayout>
   )
 }

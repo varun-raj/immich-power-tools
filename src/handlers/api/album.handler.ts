@@ -1,4 +1,4 @@
-import { ADD_ASSETS_ALBUMS_PATH, ALBUM_ASSETS_PATH, ALBUM_INFO_PATH, ALBUM_PEOPLE_PATH, CREATE_ALBUM_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH } from "@/config/routes";
+import { ADD_ASSETS_ALBUMS_PATH, ALBUM_ASSETS_PATH, ALBUM_INFO_PATH, ALBUM_PEOPLE_PATH, CREATE_ALBUM_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH, SHARE_ALBUMS_PATH } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
 import { IAlbumCreate } from "@/types/album";
@@ -44,4 +44,8 @@ export const addAssetToAlbum = async (albumId: string, assetIds: string[]) => {
 
 export const createAlbum = async (albumData: IAlbumCreate) => {
   return API.post(CREATE_ALBUM_PATH, albumData);
+}
+
+export const shareAlbums = async (albums: { albumId: string, allowDownload: boolean, allowUpload: boolean, showMetadata: boolean }[]) => {
+  return API.post(SHARE_ALBUMS_PATH, { albums });
 }

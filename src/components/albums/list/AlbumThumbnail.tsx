@@ -1,23 +1,23 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Link from 'next/link';
-import { useConfig } from '@/contexts/ConfigContext';
 import { humanizeBytes, humanizeNumber, pluralize } from '@/helpers/string.helper';
 import LazyImage from '@/components/ui/lazy-image';
 import { ASSET_THUMBNAIL_PATH } from '@/config/routes';
 import { IAlbum } from '@/types/album';
-import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/helpers/date.helper';
 import { Checkbox } from '@/components/ui/checkbox';
 import { differenceInDays } from 'date-fns';
-import { FaceIcon } from '@radix-ui/react-icons';
-import { Calendar, Camera, Image, User } from 'lucide-react';
+import { Calendar, Camera } from 'lucide-react';
 
 interface IAlbumThumbnailProps {
   album: IAlbum;
   onSelect: (checked: boolean) => void;
+  selected: boolean;
 }
-export default function AlbumThumbnail({ album, onSelect }: IAlbumThumbnailProps) {
+export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThumbnailProps) {
+  const [isSelected, setIsSelected] = useState(selected);
+
   const numberOfDays = useMemo(() => {
     return differenceInDays(album.lastPhotoDate, album.firstPhotoDate);
   }, [album.firstPhotoDate, album.lastPhotoDate]);
@@ -39,6 +39,7 @@ export default function AlbumThumbnail({ album, onSelect }: IAlbumThumbnailProps
           {formatDate(album.firstPhotoDate.toString(), 'MMM d, yyyy')} - {formatDate(album.lastPhotoDate.toString(), 'MMM d, yyyy')}
         </div>
         <Checkbox
+          defaultChecked={isSelected}
           onCheckedChange={onSelect}
           className="absolute top-2 left-2 w-6 h-6 rounded-full border-gray-300 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         />
