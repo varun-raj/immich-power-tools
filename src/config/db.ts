@@ -5,9 +5,15 @@ import { ENV } from "./environment";
 import * as schema from "@/schema";
 import { sql } from 'drizzle-orm';
 
-const pool = new Pool({
+const pool = ENV.DATABASE_URL ? new Pool({
   connectionString: ENV.DATABASE_URL,
   keepAlive: true,
+}) : new Pool({
+  user: ENV.DB_USERNAME,
+  password: ENV.DB_PASSWORD,
+  host: ENV.DB_HOST,
+  port: parseInt(ENV.DB_PORT),
+  database: ENV.DB_DATABASE_NAME,
 });
 
 class DatabaseConnectionError extends Error {
