@@ -1,10 +1,10 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { IMissingLocationDatesResponse } from "@/handlers/api/asset.handler";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { parseDate } from "@/helpers/date.helper";
 import { assets, exif } from "@/schema";
+import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
+import { albums } from "@/schema/albums.schema";
 import { and, count, desc, eq, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -23,32 +23,29 @@ export default async function handler(
     const rows = await db
       .select({
         asset_count: desc(count(assets.id)),
-        label: sql`DATE(${exif.dateTimeOriginal})`,
-        value: sql`DATE(${exif.dateTimeOriginal})`,
+        label: albums.albumName,
+        value: albums.id,
       })
       .from(assets)
       .leftJoin(exif, eq(exif.assetId, assets.id))
-      .where(and(
-        isNull(exif.latitude),
-        isNotNull(assets.createdAt),
-        isNotNull(exif.dateTimeOriginal),
-        eq(assets.ownerId, currentUser.id),
-        eq(assets.isVisible, true),
+      .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetsId, assets.id))
+      .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumsId))
+      .where(
+        and(
+          isNull(exif.latitude),
+          isNotNull(assets.createdAt),
+          isNotNull(exif.dateTimeOriginal),
+          eq(assets.ownerId, currentUser.id),
+          eq(assets.isVisible, true),
+          isNotNull(albums.id)
       ))
-      .groupBy(sql`DATE(${exif.dateTimeOriginal})`)
+      .groupBy(albums.id)
       .orderBy(desc(count(assets.id))) as IMissingLocationDatesResponse[];
 
-    if (sortBy === "date") {
-      rows.sort((a, b) => {
-        const aDate = parseDate(a.label, "yyyy-MM-dd");
-        const bDate = parseDate(b.label, "yyyy-MM-dd");
-        return sortOrder === "asc" ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime();
-      });
-    } else if (sortBy === "asset_count") {
-      rows.sort((a, b) => {
-        return sortOrder === "asc" ? a.asset_count - b.asset_count : b.asset_count - a.asset_count;
-      });
-    }
+  
+    rows.sort((a, b) => {
+      return sortOrder === "asc" ? a.asset_count - b.asset_count : b.asset_count - a.asset_count;
+    });
     return res.status(200).json(rows);
   } catch (error: any) {
     res.status(500).json({

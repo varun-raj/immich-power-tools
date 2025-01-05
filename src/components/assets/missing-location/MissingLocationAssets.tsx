@@ -20,10 +20,13 @@ import { addDays } from "date-fns";
 import { useConfig } from "@/contexts/ConfigContext";
 import LazyGridImage from "@/components/ui/lazy-grid-image";
 
-export default function MissingLocationAssets() {
+interface IProps {
+  groupBy: "date" | "album";
+}
+export default function MissingLocationAssets({ groupBy }: IProps) {
   const { exImmichUrl } = useConfig();
 
-  const { startDate, selectedIds, assets, updateContext } =
+  const { startDate, albumId, selectedIds, assets, updateContext } =
     useMissingLocationContext();
 
   const [loading, setLoading] = useState(false);
@@ -32,12 +35,13 @@ export default function MissingLocationAssets() {
   const [index, setIndex] = useState(-1);
 
   const fetchAssets = async () => {
-    if (!startDate) return;
+    if (!startDate && !albumId) return;
     setLoading(true);
     updateContext({
       assets: [],
     });
-    return listMissingLocationAssets({ startDate })
+    const filters = groupBy === "date" ? { startDate } : { albumId }
+    return listMissingLocationAssets(filters)
       .then((assets) => updateContext({ assets }))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
@@ -88,8 +92,8 @@ export default function MissingLocationAssets() {
   };
 
   useEffect(() => {
-    if (startDate) fetchAssets();
-  }, [startDate]);
+    if (startDate || albumId) fetchAssets();
+  }, [startDate, albumId]);
 
   if (loading)
     return (
@@ -99,7 +103,7 @@ export default function MissingLocationAssets() {
       </div>
     );
 
-  if (!startDate)
+  if (!startDate && !albumId)
     return (
       <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
         <CalendarArrowUp />

@@ -29,6 +29,7 @@ export const SHARE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/share";
 
 // Assets
 export const LIST_MISSING_LOCATION_DATES_PATH = BASE_API_ENDPOINT + "/assets/missing-location-dates";
+export const LIST_MISSING_LOCATION_ALBUMS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-albums";
 export const LIST_MISSING_LOCATION_ASSETS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-assets";
 export const UPDATE_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/assets";
 

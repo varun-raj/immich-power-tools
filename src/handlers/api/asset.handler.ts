@@ -3,6 +3,7 @@ import {
   ASSET_GEO_HEATMAP_PATH,
   FIND_ASSETS,
   LIST_ALBUMS_PATH,
+  LIST_MISSING_LOCATION_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
   UPDATE_ASSETS_PATH,
@@ -18,14 +19,23 @@ interface IMissingAssetAlbumsFilters {
   sortOrder?: string;
 }
 export interface IMissingLocationDatesResponse {
-  date: string;
+  label: string;
   asset_count: number;
+  value: string;
+  createdAt?: string;
 }
+
 
 export const listMissingLocationDates = async (
   filters: IMissingAssetAlbumsFilters
 ): Promise<IMissingLocationDatesResponse[]> => {
   return API.get(LIST_MISSING_LOCATION_DATES_PATH, filters);
+};
+
+export const listMissingLocationAlbums = async (
+  filters: IMissingAssetAlbumsFilters
+): Promise<IMissingLocationDatesResponse[]> => {
+  return API.get(LIST_MISSING_LOCATION_ALBUMS_PATH, filters);
 };
 
 export const listMissingLocationAssets = async (

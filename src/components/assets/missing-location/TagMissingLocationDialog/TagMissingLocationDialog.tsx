@@ -30,14 +30,14 @@ export default function TagMissingLocationDialog({
   const [mapPosition,setMapPosition] = useState<IPlace>({
     latitude: 48.0,
     longitude: 16.0,
-    name: "home1"
+    name: "home"
   });
  
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Tag Missing Location</Button>
+        <Button size={"sm"}>Tag Missing Location</Button>
       </DialogTrigger>
       <DialogContent className="!w-[600px] !max-w-[600px]">
         <DialogHeader>
