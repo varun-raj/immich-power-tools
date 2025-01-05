@@ -78,7 +78,7 @@ export default function AlbumSelectorDialog({ onSelected }: IProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Select Album</Button>
+        <Button size={"sm"}>Select Album</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
