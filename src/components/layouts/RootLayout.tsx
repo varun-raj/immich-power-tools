@@ -1,6 +1,5 @@
 import { IUser } from "@/types/user";
 import Sidebar from "../shared/Sidebar";
-import { Toaster } from "../ui/toaster";
 import { ReactNode, useEffect, useState } from "react";
 import { getMe } from "@/handlers/api/user.handler";
 import UserContext from "@/contexts/CurrentUserContext";
@@ -12,6 +11,7 @@ import { LoginForm } from "../auth/LoginForm";
 import { useConfig } from "@/contexts/ConfigContext";
 import { queryClient } from "@/config/rQuery";
 import { QueryClientProvider } from "react-query";
+import { Toaster } from "react-hot-toast";
 
 type RootLayoutProps = {
   children: ReactNode;

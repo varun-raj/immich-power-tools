@@ -26,7 +26,7 @@ export const ALBUM_ASSETS_PATH = (id: string) => BASE_API_ENDPOINT + "/albums/" 
 export const CREATE_ALBUM_PATH = BASE_PROXY_ENDPOINT + "/albums";
 export const ADD_ASSETS_ALBUMS_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";
 export const SHARE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/share";
-
+export const DELETE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/delete";
 // Assets
 export const LIST_MISSING_LOCATION_DATES_PATH = BASE_API_ENDPOINT + "/assets/missing-location-dates";
 export const LIST_MISSING_LOCATION_ALBUMS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-albums";
