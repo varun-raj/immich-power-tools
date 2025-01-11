@@ -57,7 +57,8 @@ const responseSchema = {
 export const parseFindQuery = async (query: string): Promise<FindQuery>  => {
 
   const prompt = `
-    Parse the following query and return the query and tags: ${query}
+    Parse the following query and return the query and tags: ${query}.
+    Dont include any information that are not intentionally provided in the query.
     Additional Information For Parsing:
     today's date is ${new Date().toISOString().split('T')[0]}
   `;

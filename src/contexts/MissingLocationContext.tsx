@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 
 export interface IMissingLocationConfig {
   startDate?: string;
+  albumId?: string;
   selectedIds: string[];
   assets: IAsset[];
 }
@@ -12,6 +13,7 @@ export interface MissingLocationContext extends IMissingLocationConfig {
 }
 const MissingLocationContext = createContext<MissingLocationContext>({
   startDate: undefined,
+  albumId: undefined,
   selectedIds: [],
   assets: [],
   updateContext: () => { },

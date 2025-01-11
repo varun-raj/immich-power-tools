@@ -74,13 +74,14 @@ export default function PotentialAlbums() {
       <Header
         leftComponent="Potential Albums"
         rightComponent={
-          <>
+          <div className="flex gap-2 items-center">
             <Badge variant={"outline"}>
               {config.selectedIds.length} Selected
             </Badge>
             {config.selectedIds.length && config.selectedIds.length === config.assets.length ? (
               <Button
                 variant={"outline"}
+                size={"sm"}
                 onClick={() =>
                   setConfig({
                     ...config,
@@ -93,6 +94,7 @@ export default function PotentialAlbums() {
             ) : (
               <Button
                 variant={"outline"}
+                size={"sm"}
                 onClick={() =>
                   setConfig({
                     ...config,
@@ -106,7 +108,7 @@ export default function PotentialAlbums() {
             <AlbumSelectorDialog onSelected={handleSelect} />
             <AlbumCreateDialog onSubmit={handleCreate} assetIds={config.assets.map((a) => a.id)} />
             <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
-          </>
+          </div>
         }
       />
       <PotentialAlbumContext.Provider

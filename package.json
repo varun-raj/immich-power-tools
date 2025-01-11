@@ -16,6 +16,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "@radix-ui/react-accordion": "^1.2.1",
+    "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -60,6 +61,7 @@
     "react-day-picker": "9.0.8",
     "react-dom": "^18",
     "react-grid-gallery": "^1.0.1",
+    "react-hot-toast": "^2.5.1",
     "react-leaflet": "^4.2.1",
     "react-mentions": "^4.4.10",
     "react-query": "^3.39.3",
