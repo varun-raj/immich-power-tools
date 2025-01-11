@@ -1,8 +1,8 @@
 import "yet-another-react-lightbox/styles.css";
 import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
 import { listPotentialAlbumsAssets } from "@/handlers/api/album.handler";
-import { IAsset } from "@/types/asset";
-import React, { useEffect, useMemo, useState } from "react";
+import type { IAsset } from "@/types/asset";
+import React, { type MouseEvent, useEffect, useMemo, useState } from "react";
 import { Gallery } from "react-grid-gallery";
 import Lightbox, { SlideImage, SlideTypes } from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -20,6 +20,7 @@ export default function PotentialAlbumsAssets() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [index, setIndex] = useState(-1);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState(-1);
 
   const fetchAssets = async () => {
     setLoading(true);
@@ -44,14 +45,15 @@ export default function PotentialAlbumsAssets() {
         {
           title: "Immich Link",
           value: (
-            <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
+            <a href={`${exImmichUrl}/photos/${p.id}`} target="_blank" rel="noreferrer">
               Open in Immich
             </a>
           ),
         },
       ],
     }));
-  }, [assets, selectedIds]);
+  }, [assets, selectedIds, exImmichUrl]);
+
 
   const slides = useMemo(
     () =>
@@ -73,17 +75,31 @@ export default function PotentialAlbumsAssets() {
     [images]
   );
 
-  const handleClick = (idx: number) => setIndex(idx);
 
-  const handleSelect = (_idx: number, asset: IAsset) => {
+  const handleSelect = (_idx: number, asset: IAsset, event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     const isPresent = selectedIds.includes(asset.id);
     if (isPresent) {
       updateContext({
         selectedIds: selectedIds.filter((id) => id !== asset.id),
       });
     } else {
-      updateContext({ selectedIds: [...selectedIds, asset.id] });
+      const clickedIndex = images.findIndex((image) => {
+        return image.id === asset.id
+      });
+      if (event.shiftKey) {
+        const startIndex = Math.min(clickedIndex, lastSelectedIndex);
+        const endIndex = Math.max(clickedIndex, lastSelectedIndex);
+        const newSelectedIds = images.slice(startIndex, endIndex + 1).map((image) => image.id);
+        const allSelectedIds = [...selectedIds, ...newSelectedIds];
+        const uniqueSelectedIds = [...new Set(allSelectedIds)];
+        updateContext({ selectedIds: uniqueSelectedIds });
+      } else {
+        updateContext({ selectedIds: [...selectedIds, asset.id] });
+      }
+      setLastSelectedIndex(clickedIndex);
     }
+    
   };
 
   useEffect(() => {
@@ -121,7 +137,7 @@ export default function PotentialAlbumsAssets() {
       <div className="w-full overflow-y-auto max-h-[calc(100vh-60px)]">
         <Gallery
           images={images}
-          onClick={handleClick}
+          onClick={setIndex}
           enableImageSelection={true}
           onSelect={handleSelect}
           thumbnailImageComponent={LazyGridImage}
