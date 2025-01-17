@@ -12,6 +12,8 @@ import { useConfig } from "@/contexts/ConfigContext";
 import { queryClient } from "@/config/rQuery";
 import { QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
+import PageLayout from "./PageLayout";
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -20,6 +22,8 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const { immichURL, exImmichUrl } = useConfig();
+  const router = useRouter();
+  const { pathname } = router;
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<{
@@ -84,6 +88,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </div>
     );
 
+
+  if (pathname.startsWith("/s/")) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <div className="grid max-h-screen min-h-screen w-full">
+          <div className="flex flex-col">{children}</div>
+          <Toaster />
+        </div>
+      </QueryClientProvider>
+    )
+  }
   if (!user) return <LoginForm onLogin={handleLoginCompletion} />;
 
   return (

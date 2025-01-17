@@ -21,14 +21,16 @@ import { Checkbox } from '@/components/ui/checkbox'
 interface AlbumPeopleProps {
   album: IAlbum
   onSelect: (personId: string) => void
+  readOnly?: boolean
 }
 
 interface IAlbumPerson {
   id: string
   name: string
   numberOfPhotos: number
+  
 }
-export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
+export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeopleProps) {
   const { exImmichUrl } = useConfig()
   const router = useRouter()
   const { query, pathname } = router
@@ -117,51 +119,56 @@ export default function AlbumPeople({ album, onSelect }: AlbumPeopleProps) {
               {selectedPerson.name || "No Name"}
             </Link>
           </div>
-          <div className='flex items-center gap-2'>
-            <PersonMergeDropdown
-              person={{
-                ...selectedPerson,
-                assetCount: selectedPerson.numberOfPhotos,
-                birthDate: null,
-                thumbnailPath: PERSON_THUBNAIL_PATH(selectedPerson.id),
-                isHidden: false,
-                updatedAt: new Date()
-              }}
-              triggerClassName='w-full flex-1'
-              onComplete={(mergedPerson) => {
-                router.push({
-                  pathname,
-                  query: {
-                    ...query,
-                    faceId: mergedPerson.id
-                  }
-                })
-              }} />
-            <Button disabled={hidingPerson} className="!py-0.5 !px-2 text-xs h-7 flex-1" variant="outline" onClick={() => handleHidePerson(selectedPerson.id)}>
-              Hide
-            </Button>
-          </div>
+          {!readOnly && (
+            <div className='flex items-center gap-2'>
+              <PersonMergeDropdown
+                person={{
+                  ...selectedPerson,
+                  assetCount: selectedPerson.numberOfPhotos,
+                  birthDate: null,
+                  thumbnailPath: PERSON_THUBNAIL_PATH(selectedPerson.id),
+                  isHidden: false,
+                  updatedAt: new Date()
+                }}
+                triggerClassName='w-full flex-1'
+                onComplete={(mergedPerson) => {
+                  router.push({
+                    pathname,
+                    query: {
+                      ...query,
+                      faceId: mergedPerson.id
+                    }
+                  })
+                }} />
+              <Button disabled={hidingPerson} className="!py-0.5 !px-2 text-xs h-7 flex-1" variant="outline" onClick={() => handleHidePerson(selectedPerson.id)}>
+                Hide
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
 
       <div className="flex items-center gap-2 justify-between">
         <p className="text-sm font-medium">People</p>
-
-        {!selectedPerson && (
-          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
-            setSelectionMode(!selectionMode)
-            setSelectedPeople([])
-          }}>
-            {selectionMode ? "Cancel" : "Select"}
-          </Button>
-        )}
-        {selectedPeople.length > 0 && (
-          <div className='absolute mx-auto bottom-0 w-full py-2 bg-white darl:bg-black -mx-2 px-2'>
-            <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
-              Hide {selectedPeople.length} people
-            </Button>
-          </div>
+        {!readOnly && (
+          <>
+            {!selectedPerson && (
+              <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
+                setSelectionMode(!selectionMode)
+                setSelectedPeople([])
+              }}>
+                {selectionMode ? "Cancel" : "Select"}
+              </Button>
+            )}
+            {selectedPeople.length > 0 && (
+              <div className='absolute mx-auto bottom-0 w-full py-2 bg-white darl:bg-black -mx-2 px-2'>
+                <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
+                  Hide {selectedPeople.length} people
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
       <div className="flex flex-col overflow-x-hidden gap-2">

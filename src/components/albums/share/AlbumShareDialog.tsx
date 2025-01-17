@@ -1,8 +1,11 @@
+import { AlertDialog } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogTitle, DialogHeader, DialogContent } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { shareAlbums } from '@/handlers/api/album.handler';
+import { generateShareLink } from '@/handlers/api/shareLink.handler';
 import { IAlbum } from '@/types/album';
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react'
 
@@ -28,6 +31,10 @@ const AlbumShareDialog = forwardRef(({ }: IAlbumShareDialogProps, ref: Forwarded
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generated, setGenerated] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleGenerateShareLink = async () => {
     setGenerating(true);
@@ -52,8 +59,30 @@ const AlbumShareDialog = forwardRef(({ }: IAlbumShareDialogProps, ref: Forwarded
       });
   }
 
+  const handleGenerateGlobalShareLink = async () => {
+    setLoading(true);
+    return generateShareLink({
+      albumIds: selectedAlbums.map((album) => album.id),
+    }).then(({ link }) => {
+      setGeneratedLink(link);
+    }).catch((err) => {
+      setErrorMessage(err.message);
+    }).finally(() => {
+      setLoading(false);
+    });
+  }
   const handleAllowPropertyChange = (albumId: string, property: string, checked: boolean) => {
     setSelectedAlbums((prevAlbums) => prevAlbums.map((album) => album.id === albumId ? { ...album, [property]: checked } : album));
+  }
+
+  const handleCopy = () => {
+    if (generatedLink) {
+      navigator.clipboard.writeText(generatedLink);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    }
   }
 
 
@@ -109,23 +138,51 @@ const AlbumShareDialog = forwardRef(({ }: IAlbumShareDialogProps, ref: Forwarded
 
             ))}
           </ol>
+          {generatedLink && (
+            <div className="flex flex-col gap-2 items-center">
+              <p className="text-sm py-2 text-muted-foreground text-center">Share links all generated</p>
+              <div className="flex gap-2 w-full">
+                <Input value={generatedLink} readOnly />
+                <Button onClick={handleCopy} className='max-w-fit'>
+                  {copied ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+            </div>
+
+          )}
           {generated ? (
             <>
-            <p className="text-sm py-2 text-muted-foreground text-center">Share links all generated</p>
+              <p className="text-sm py-2 text-muted-foreground text-center">Share links all generated</p>
             </>
           ) : (
             <>
-            {generating ? <div className="flex justify-center gap-2">
-            <p className="text-sm py-2 text-muted-foreground">Generating share links...</p>
-          </div> : <div className="flex justify-center gap-2">
-            <Button onClick={handleGenerateShareLink} disabled={generating}>
-              Generate For {selectedAlbums.length} albums
-            </Button>
-
-          </div>}
-          </>
+              {generating ? <div className="flex justify-center gap-2">
+                <p className="text-sm py-2 text-muted-foreground">Generating share links...</p>
+              </div> : (
+                <div className="flex justify-center gap-2">
+                  <AlertDialog
+                    title="Generate Share Links"
+                    description="Generate share links for the selected albums."
+                    onConfirm={handleGenerateShareLink}
+                  >
+                    <Button disabled={generating}>
+                      Generate For {selectedAlbums.length} albums
+                    </Button>
+                  </AlertDialog>
+                  <AlertDialog
+                    title="Generate a single share link"
+                    description="Immich Power Tools will work like a proxy for all your albums using single share link."
+                    onConfirm={handleGenerateGlobalShareLink}
+                  >
+                    <Button disabled={generating}>
+                      Generate 1 Share Link
+                    </Button>
+                  </AlertDialog>
+                </div>
+              )}
+            </>
           )}
-          
+
         </div>
       </DialogContent>
     </Dialog>

@@ -1,7 +1,11 @@
 import { ENV } from "@/config/environment"
 import { IUser } from "@/types/user"
 
-export const getUserHeaders = (user: IUser, otherHeaders?: {
+export const getUserHeaders = (user: {
+  isUsingAPIKey?: boolean,
+  isUsingShareKey?: boolean,
+  accessToken?: string
+}, otherHeaders?: {
   'Content-Type': string
 }) => {
   let headers: {
@@ -11,11 +15,13 @@ export const getUserHeaders = (user: IUser, otherHeaders?: {
   } = {
     'Content-Type': 'application/json',
   }
-  if (user.isUsingAPIKey) {
+  if (user.isUsingShareKey) {
+    headers['x-api-key'] = ENV.IMMICH_SHARE_LINK_KEY
+  } else if (user.isUsingAPIKey) {
     headers['x-api-key'] = ENV.IMMICH_API_KEY
-  }
-  else {
+  } else {
     headers['Authorization'] = `Bearer ${user.accessToken}`
   }
+  
   return {...headers, ...otherHeaders}
 }

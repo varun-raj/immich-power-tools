@@ -56,6 +56,7 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
       width: p.exifImageWidth as number,
       height: p.exifImageHeight as number,
       isSelected: selectedIds.includes(p.id),
+      orientation: 1,
       tags: [
         {
           title: "Immich Link",
