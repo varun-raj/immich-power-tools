@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 export function PeopleFilters() {
   const router = useRouter();
-  const { updateContext, page, maximumAssetCount, type = "all" } = usePeopleFilterContext();
+  const { updateContext, page, maximumAssetCount, type = "all", query ="" } = usePeopleFilterContext();
 
   const handleChange = (data: Partial<IPersonListFilters>) => {
     updateContext(data);
@@ -40,6 +40,15 @@ export function PeopleFilters() {
 
   return (
     <div className="flex gap-2">
+      <Input
+        type="text"
+        placeholder="Search by name"
+        className="w-max"
+        defaultValue={query}
+        onChange={(e) => {
+          handleChange({ query: e.target.value });
+        }}
+      />
       <Input
         type="number"
         placeholder="Max Asset Count"
