@@ -6,6 +6,15 @@ A unofficial immich client to provide better tools to organize and manage your i
 
 [![Immich Power Tools](./screenshots/screenshot-1.png)](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
 
+### 🎒Features
+- **Manage people data in bulk 👫**: Options to update people data in bulk, and with advance filters
+- **People Merge Suggestion 🎭**: Option to bulk merge people with suggested faces based on similarity.
+- **Update Missing Locations 📍**: Find assets in your library those are without location and update them with the location of the asset.
+- **Potential Albums 🖼️**: Find albums that are potential to be created based on the assets and people in your library.
+- **Analytics 📈 **: Get analytics on your library like assets over time, exif data, etc.
+- **Smart Search 🔎**: Search your library with natural language, supports queries like "show me all my photos from 2024 of <person name>"
+- **Bulk Date Offset 📅**: Offset the date of selected assets by a given amount of time. Majorly used to fix the date of assets that are out of sync with the actual date.
+
 ### Support me 🙏
 
 If you find this tool useful, please consider supporting me by buying me a coffee.
