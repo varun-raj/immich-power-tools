@@ -5,6 +5,8 @@ import { ShareLinkFilters } from '@/types/shareLink';
 import { generateShareLink } from '@/handlers/api/shareLink.handler';
 import { Input } from '../ui/input';
 import { Label } from '@radix-ui/react-label';
+import { Checkbox } from '../ui/checkbox';
+import { Switch } from '../ui/switch';
 
 
 interface ShareAssetsTriggerProps {
@@ -17,10 +19,11 @@ export default function ShareAssetsTrigger({ filters, buttonProps }: ShareAssets
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [config, setConfig] = useState<Partial<ShareLinkFilters>>({});
 
   const handleGenerate = async () => {
     setLoading(true);
-    return generateShareLink(filters).then(({ link }) => {
+    return generateShareLink({ ...filters, ...config }).then(({ link }) => {
       setGeneratedLink(link);
     }).catch((err) => {
       setErrorMessage(err.message);
@@ -50,7 +53,7 @@ export default function ShareAssetsTrigger({ filters, buttonProps }: ShareAssets
           <DialogTitle>Share Assets</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Share your assets with your friends and family.
+          Generate a share link for the selected assets (either bunch of albums or bunch of people) and share it with your friends and family.
         </DialogDescription>
         {errorMessage && <div className="text-red-500">{errorMessage}</div>}
         {generatedLink ? <div className="flex flex-col gap-2">
@@ -59,9 +62,23 @@ export default function ShareAssetsTrigger({ filters, buttonProps }: ShareAssets
           <p className='text-xs text-muted-foreground'>
             This is a stateless link, it will not work if you leave the page. Which means it cannot be expired.
           </p>
-          <Button onClick={handleCopy}>{copied ? 'Copied' : 'Copy'}</Button>
+          <div className="flex gap-2">
+          <Button className="w-full" onClick={handleCopy}>{copied ? 'Copied' : 'Copy'}</Button>
+          <Button className="w-full" variant="outline" onClick={handleGenerate}>Generate New Link</Button>
+          </div>
         </div> : (
-          <Button onClick={handleGenerate} disabled={loading}>Generate Share Link</Button>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex flex-col gap-1">
+              <Label className="text-sm m-0">Show People</Label>
+              <p className="text-xs text-muted-foreground m-0">
+                Show the list of people in the shared photos
+              </p>
+              </div>
+              <Switch checked={config.p} onCheckedChange={(checked) => setConfig({ ...config, p: !!checked })} />
+            </div>
+            <Button onClick={handleGenerate} disabled={loading}>Generate Share Link</Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>

@@ -38,8 +38,6 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
     }));
   }, [assets]);
 
-  console.log(slides);
-
   const images = useMemo(() => {
     return assets.map((p) => ({
       ...p,

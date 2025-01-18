@@ -8,6 +8,7 @@ import { shareAlbums } from '@/handlers/api/album.handler';
 import { generateShareLink } from '@/handlers/api/shareLink.handler';
 import { IAlbum } from '@/types/album';
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react'
+import ShareAssetsTrigger from '@/components/shared/ShareAssetsTrigger';
 
 export interface IAlbumShareDialogProps {
 
@@ -169,15 +170,7 @@ const AlbumShareDialog = forwardRef(({ }: IAlbumShareDialogProps, ref: Forwarded
                       Generate For {selectedAlbums.length} albums
                     </Button>
                   </AlertDialog>
-                  <AlertDialog
-                    title="Generate a single share link"
-                    description="Immich Power Tools will work like a proxy for all your albums using single share link."
-                    onConfirm={handleGenerateGlobalShareLink}
-                  >
-                    <Button disabled={generating}>
-                      Generate 1 Share Link
-                    </Button>
-                  </AlertDialog>
+                  <ShareAssetsTrigger filters={{ albumIds: selectedAlbums.map((album) => album.id) }} />
                 </div>
               )}
             </>

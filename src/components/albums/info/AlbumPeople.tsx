@@ -195,7 +195,6 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
               />
             )}
             <LazyImage
-
               role="button"
               className={
                 cn("cursor-pointer h-10 w-10 min-w-10 rounded-full border-2",

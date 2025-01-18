@@ -40,7 +40,9 @@ export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/
 export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/video/" + id;
 export const ASSET_GEO_HEATMAP_PATH = BASE_API_ENDPOINT + "/assets/geo-heatmap";
 
-export const ASSET_SHARE_THUMBNAIL_PATH = (id: string, size: string = "thumbnail", token: string) => BASE_PROXY_ENDPOINT + "/asset/share-thumbnail/" + id + "?size=" + size + "&token=" + token;
+export const ASSET_SHARE_THUMBNAIL_PATH = (
+  { id, size, token, isPeople }: { id: string, size: string, token: string, isPeople: boolean }
+) => BASE_PROXY_ENDPOINT + "/asset/share-thumbnail/" + id + "?size=" + size + "&token=" + token + "&p=" + isPeople;
 
 // Location
 
@@ -67,3 +69,4 @@ export const FIND_ASSETS = BASE_API_ENDPOINT + "/find/search";
 export const SHARE_LINK_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token;
 export const SHARE_LINK_GENERATE_PATH = BASE_API_ENDPOINT + "/share-link/generate";
 export const SHARE_LINK_ASSETS_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/assets";
+export const SHARE_LINK_PEOPLE_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/people";

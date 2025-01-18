@@ -15,10 +15,10 @@ export const cleanUpAsset = (asset: IAsset): IAsset => {
 export const cleanUpShareAsset = (asset: IAsset, token: string): IAsset => {
   return {
     ...asset,
-    url: ASSET_SHARE_THUMBNAIL_PATH(asset.id, "thumbnail", token),
-    downloadUrl: ASSET_SHARE_THUMBNAIL_PATH(asset.id, "original", token),
-    previewUrl: ASSET_SHARE_THUMBNAIL_PATH(asset.id, "preview", token),
-    videoURL: ASSET_SHARE_THUMBNAIL_PATH(asset.id, "video", token),
+    url: ASSET_SHARE_THUMBNAIL_PATH({ id: asset.id, size: "thumbnail", token, isPeople: false }),
+    downloadUrl: ASSET_SHARE_THUMBNAIL_PATH({ id: asset.id, size: "original", token, isPeople: false }),
+    previewUrl: ASSET_SHARE_THUMBNAIL_PATH({ id: asset.id, size: "preview", token, isPeople: false }),
+    videoURL: ASSET_SHARE_THUMBNAIL_PATH({ id: asset.id, size: "video", token, isPeople: false }),
   }
 }
 

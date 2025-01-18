@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method Not Allowed' })
   }
   
-  const { id, size, token } = req.query;
+  const { id, size, token, p } = req.query;
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' })
   }
@@ -28,10 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: 'Token is invalid' })
   }
 
-  let targetUrl = `${ENV.IMMICH_URL}/api/assets/${id}/thumbnail?size=${size || 'thumbnail'}`;
-  if (size === "original") {
-    targetUrl = `${ENV.IMMICH_URL}/api/assets/${id}/original`;
-  }
+  const resource = p === "true" ? "people" : "assets";
+  const baseURL = `${ENV.IMMICH_URL}/api/${resource}/${id}`;
+  const version = size === "original" ? "original" : "thumbnail";
+  let targetUrl = `${baseURL}/${version}?size=${size}`;
 
   try {
     // Forward the request to the target API

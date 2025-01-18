@@ -2,7 +2,7 @@ import { db } from "@/config/db";
 import { ENV } from "@/config/environment";
 import { desc, gte, lte } from "drizzle-orm";
 import { eq, inArray } from "drizzle-orm";
-import { assetFaces, assets, exif } from "@/schema";
+import { assetFaces, assets, exif, person } from "@/schema";
 import { and } from "drizzle-orm";
 import { sign, verify } from "jsonwebtoken";
 import { NextApiResponse } from "next";
@@ -10,19 +10,21 @@ import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
 import { albums } from "@/schema/albums.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
-import { cleanUpAsset, cleanUpAssets, cleanUpShareAsset, isFlipped } from "@/helpers/asset.helper";
-import { IAsset } from "@/types/asset";
-import { parseDate } from "@/helpers/date.helper";
+import { cleanUpShareAsset, isFlipped } from "@/helpers/asset.helper";
+import { ShareLinkFilters } from "@/types/shareLink";
 
-interface ShareLinkFilters {
-  personIds: string[];
-  albumIds: string[];
-  startDate: string;
-  endDate: string;
+interface IQuery extends ShareLinkFilters {
+  token: string
+  ['personIds[]']?: string[]
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { token } = req.query;
+  const { token, ...rest } = req.query as any as IQuery
+
+  const filters = {
+    personIds: rest['personIds[]'] ?? rest.personIds ?? [],
+  }
+  
   if (!token) {
     return res.status(404).json({ message: "Token not found" });
   }
@@ -36,8 +38,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const newPreviewToken = sign({ token: token }, ENV.JWT_SECRET, {
     expiresIn: "2m"
   });
-  const { personIds, albumIds, startDate, endDate } = decoded as ShareLinkFilters;
+  
+  const { personIds = [], albumIds = [], startDate, endDate } = decoded as ShareLinkFilters;
+  let filteredPersonIds: string[] = personIds ?? [];
+  const queryPersonIds = filters.personIds ? (Array.isArray(filters.personIds) ? filters.personIds : [filters.personIds]) : [];
 
+ 
+  if (queryPersonIds.length > 0) {
+    
+    if (personIds.length === 0) {
+      filteredPersonIds = queryPersonIds;
+    } else {
+      filteredPersonIds = queryPersonIds.filter((id) => personIds.includes(id));
+    }
+  }
+  
   const dbAssets = await db.select({
     id: assets.id,
     deviceId: assets.deviceId,
@@ -64,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .innerJoin(albums, eq(albumsAssetsAssets.albumsId, albums.id))
   .innerJoin(exif, eq(exif.assetId, assets.id))
   .where(and(
-    personIds?.length > 0 ? inArray(assetFaces.personId, personIds) : undefined,
+    filteredPersonIds?.length > 0 ? inArray(assetFaces.personId, filteredPersonIds) : undefined,
     albumIds?.length > 0 ? inArray(albums.id, albumIds) : undefined,
     startDate ? gte(assets.createdAt, new Date(startDate)) : undefined,
     endDate ? lte(assets.createdAt, new Date(endDate)) : undefined,
@@ -85,5 +100,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }).map((asset) => cleanUpShareAsset(asset, newPreviewToken as string));
   
-  return res.status(200).json(cleanedAssets);
+  return res.status(200).json({
+    assets: cleanedAssets,
+    filters: decoded as ShareLinkFilters
+  });
 }

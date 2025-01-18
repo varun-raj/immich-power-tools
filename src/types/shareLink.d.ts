@@ -3,4 +3,5 @@ export interface ShareLinkFilters {
   albumIds?: string[];
   startDate?: string;
   endDate?: string;
+  p?: boolean;
 }

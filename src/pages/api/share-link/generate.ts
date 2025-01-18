@@ -10,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const currentUser = await getCurrentUser(req);
   const filters = req.body;
 
+  console.log(filters);
   if (!currentUser) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -18,7 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  console.log(filters);
   const token = sign(filters, ENV.JWT_SECRET);
   return res.status(200).json({ link: `${ENV.POWER_TOOLS_ENDPOINT_URL}/s/${token}` });
 }
