@@ -85,7 +85,7 @@ export default function MissingLocations() {
                 <SelectItem value="date">Date</SelectItem>
               </SelectContent>
             </Select>
-            <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
+            
           </div>
         }
       />
@@ -136,7 +136,8 @@ export default function MissingLocations() {
               {/* Seperator */}
 
               <TagMissingLocationDialog onSubmit={handleSubmit} />
-              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-800"></div>
+              <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
+              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
               <AlertDialog
                 title="Delete the selected assets?" 
                 description="This action will delete the selected assets and cannot be undone." 
