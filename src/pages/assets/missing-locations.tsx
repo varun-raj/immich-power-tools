@@ -10,13 +10,14 @@ import { useToast } from "@/components/ui/use-toast";
 import MissingLocationContext, {
   IMissingLocationConfig,
 } from "@/contexts/MissingLocationContext";
-import { updateAssets } from "@/handlers/api/asset.handler";
+import { deleteAssets, updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import FloatingBar from "@/components/shared/FloatingBar";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
@@ -41,6 +42,16 @@ export default function MissingLocations() {
       });
     })
   };
+
+  const handleDelete = () => {
+    return deleteAssets(config.selectedIds).then(() => {
+      setConfig({
+        ...config,
+        selectedIds: [],
+        assets: config.assets.filter((a) => !config.selectedIds.includes(a.id)),
+      });
+    })
+  }
 
   return (
     <PageLayout className="!p-0 !mb-0 relative">
@@ -115,7 +126,18 @@ export default function MissingLocations() {
                   Select all
                 </Button>
               )}
+              {/* Seperator */}
+
               <TagMissingLocationDialog onSubmit={handleSubmit} />
+              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-800"></div>
+              <AlertDialog
+                title="Delete the selected assets?" 
+                description="This action will delete the selected assets and cannot be undone." 
+                onConfirm={handleDelete}>
+                <Button variant={"destructive"} size={"sm"} >
+                  Delete
+                </Button>
+              </AlertDialog>
             </div>
           </div>
         </FloatingBar>

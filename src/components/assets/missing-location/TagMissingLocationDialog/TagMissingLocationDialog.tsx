@@ -36,7 +36,7 @@ export default function TagMissingLocationDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size={"sm"}>Tag Missing Location</Button>
+        <Button size={"sm"}>Tag Location</Button>
       </DialogTrigger>
       <DialogContent className="!w-[600px] !max-w-[600px]">
         <DialogHeader>
