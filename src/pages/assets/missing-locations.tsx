@@ -1,4 +1,3 @@
-import AssetsOptions from "@/components/assets/assets-options/AssetsOptions";
 import MissingLocationAssets from "@/components/assets/missing-location/MissingLocationAssets";
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
@@ -18,6 +17,7 @@ import React, { useMemo } from "react";
 import FloatingBar from "@/components/shared/FloatingBar";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { AlertDialog } from "@/components/ui/alert-dialog";
+import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDialog";
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
@@ -53,6 +53,13 @@ export default function MissingLocations() {
     })
   }
 
+  const handleOffsetComplete = () => {
+    setConfig({
+      ...config,
+      selectedIds: [],
+    });
+  }
+
   return (
     <PageLayout className="!p-0 !mb-0 relative">
       <Header
@@ -78,7 +85,7 @@ export default function MissingLocations() {
                 <SelectItem value="date">Date</SelectItem>
               </SelectContent>
             </Select>
-            <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
+            <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
           </div>
         }
       />

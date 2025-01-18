@@ -1,10 +1,11 @@
-import AlbumCreateDialog from "@/components/albums/AlbumCreateDialog";
 import AlbumSelectorDialog from "@/components/albums/AlbumSelectorDialog";
 import PotentialAlbumsAssets from "@/components/albums/potential-albums/PotentialAlbumsAssets";
 import PotentialAlbumsDates from "@/components/albums/potential-albums/PotentialAlbumsDates";
-import AssetsOptions from "@/components/assets/assets-options/AssetsOptions";
+import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDialog";
 import PageLayout from "@/components/layouts/PageLayout";
+import FloatingBar from "@/components/shared/FloatingBar";
 import Header from "@/components/shared/Header";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +14,7 @@ import PotentialAlbumContext, {
   IPotentialAlbumConfig,
 } from "@/contexts/PotentialAlbumContext";
 import { addAssetToAlbum, createAlbum } from "@/handlers/api/album.handler";
+import { deleteAssets } from "@/handlers/api/asset.handler";
 import { IAlbum, IAlbumCreate } from "@/types/album";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
@@ -29,7 +31,7 @@ export default function PotentialAlbums() {
     assets: [],
   });
 
-  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]) ;
+  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
 
   const handleSelect = (album: IAlbum) => {
     return addAssetToAlbum(album.id, config.selectedIds)
@@ -66,50 +68,46 @@ export default function PotentialAlbums() {
         role: "editor",
         userId: id,
       }]
+    }).then(() => {
+      toast({
+        title: "Album created",
+        description: "Album created successfully",
+      });
+      setConfig({ ...config, selectedIds: [], assets: config.assets.filter(a => !config.selectedIds.includes(a.id)) });
     })
   }
 
+  const handleDelete = () => {
+    return deleteAssets(config.selectedIds)
+      .then(() => {
+        setConfig({ ...config, selectedIds: [], assets: config.assets.filter(a => !config.selectedIds.includes(a.id)) });
+      })
+      .then(() => {
+        toast({
+          title: "Assets deleted",
+          description: "Assets deleted successfully",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to delete assets",
+          variant: "destructive",
+        });
+      });
+  }
+
+  const handleOffsetComplete = () => {
+    setConfig({
+      ...config,
+      selectedIds: [],
+    });
+  }
+
   return (
-    <PageLayout className="!p-0 !mb-0">
+    <PageLayout className="!p-0 !mb-0 relative">
       <Header
         leftComponent="Potential Albums"
-        rightComponent={
-          <div className="flex gap-2 items-center">
-            <Badge variant={"outline"}>
-              {config.selectedIds.length} Selected
-            </Badge>
-            {config.selectedIds.length && config.selectedIds.length === config.assets.length ? (
-              <Button
-                variant={"outline"}
-                size={"sm"}
-                onClick={() =>
-                  setConfig({
-                    ...config,
-                    selectedIds: [],
-                  })
-                }
-              >
-                Unselect all
-              </Button>
-            ) : (
-              <Button
-                variant={"outline"}
-                size={"sm"}
-                onClick={() =>
-                  setConfig({
-                    ...config,
-                    selectedIds: config.assets.map((a) => a.id),
-                  })
-                }
-              >
-                Select all
-              </Button>
-            )}
-            <AlbumSelectorDialog onSelected={handleSelect} />
-            <AlbumCreateDialog onSubmit={handleCreate} assetIds={config.assets.map((a) => a.id)} />
-            <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
-          </div>
-        }
       />
       <PotentialAlbumContext.Provider
         value={{
@@ -122,6 +120,55 @@ export default function PotentialAlbums() {
           <PotentialAlbumsDates />
           <PotentialAlbumsAssets />
         </div>
+        <FloatingBar>
+          <div className="flex items-center gap-2 justify-between w-full">
+            <p className="text-sm text-muted-foreground">
+              {config.selectedIds.length} Selected
+            </p>
+            <div className="flex items-center gap-2">
+              {config.selectedIds.length && config.selectedIds.length === config.assets.length ? (
+                <Button
+                  variant={"outline"}
+                  size={"sm"}
+                  onClick={() =>
+                    setConfig({
+                      ...config,
+                      selectedIds: [],
+                    })
+                  }
+                >
+                  Unselect all
+                </Button>
+              ) : (
+                <Button
+                  variant={"outline"}
+                  size={"sm"}
+                  onClick={() =>
+                    setConfig({
+                      ...config,
+                      selectedIds: config.assets.map((a) => a.id),
+                    })
+                  }
+                  
+                >
+                  Select all
+                </Button>
+              )}
+              <AlbumSelectorDialog onSelected={handleSelect} onSubmit={handleCreate}/>
+              <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
+              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-800"></div>
+
+              <AlertDialog
+                title="Delete the selected assets?" 
+                description="This action will delete the selected assets and cannot be undone." 
+                onConfirm={handleDelete}>
+                <Button variant={"destructive"} size={"sm"} >
+                  Delete
+                </Button>
+              </AlertDialog>
+            </div>
+          </div>
+        </FloatingBar>
       </PotentialAlbumContext.Provider>
     </PageLayout>
   );

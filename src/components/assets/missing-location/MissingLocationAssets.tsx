@@ -1,22 +1,15 @@
 import "yet-another-react-lightbox/styles.css";
-import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
-import { listPotentialAlbumsAssets } from "@/handlers/api/album.handler";
 import { IAsset } from "@/types/asset";
 import React, { useEffect, useMemo, useState, MouseEvent } from "react";
 import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import {
-  ArrowUpRight,
-  CalendarArrowDown,
   CalendarArrowUp,
   Hourglass,
-  Link,
 } from "lucide-react";
 import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
-import { formatDate, parseDate } from "@/helpers/date.helper";
-import { addDays } from "date-fns";
 import { useConfig } from "@/contexts/ConfigContext";
 import LazyGridImage from "@/components/ui/lazy-grid-image";
 
