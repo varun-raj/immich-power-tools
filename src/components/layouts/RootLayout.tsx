@@ -9,8 +9,6 @@ import { ArrowRight, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { LoginForm } from "../auth/LoginForm";
 import { useConfig } from "@/contexts/ConfigContext";
-import { queryClient } from "@/config/rQuery";
-import { QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import PageLayout from "./PageLayout";
@@ -91,18 +89,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   if (pathname.startsWith("/s/")) {
     return (
-      <QueryClientProvider client={queryClient}>
         <div className="grid max-h-screen min-h-screen w-full">
           <div className="flex flex-col">{children}</div>
           <Toaster />
         </div>
-      </QueryClientProvider>
     )
   }
   if (!user) return <LoginForm onLogin={handleLoginCompletion} />;
 
   return (
-    <QueryClientProvider client={queryClient}>
       <UserContext.Provider value={{
         ...user,
         updateContext: setUser,
@@ -113,6 +108,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Toaster />
         </div>
       </UserContext.Provider>
-    </QueryClientProvider>
   );
 }

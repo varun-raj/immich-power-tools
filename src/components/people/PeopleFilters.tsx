@@ -14,7 +14,6 @@ import {
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { IPersonListFilters } from "@/handlers/api/people.handler";
-import AssetFilter from "../shared/common/AssetFilter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 export function PeopleFilters() {
