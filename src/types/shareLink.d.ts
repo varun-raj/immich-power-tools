@@ -4,4 +4,5 @@ export interface ShareLinkFilters {
   startDate?: string;
   endDate?: string;
   p?: boolean;
+  expiresIn?: string;
 }

@@ -12,6 +12,7 @@ import { IPerson } from '@/types/person'
 import PeopleList from '@/components/shared/PeopleList'
 import { ShareLinkFilters } from '@/types/shareLink'
 import clsx from 'clsx'
+import { LinkBreak2Icon } from '@radix-ui/react-icons'
 
 export default function AlbumListPage() {
   const router = useRouter()
@@ -107,7 +108,10 @@ export default function AlbumListPage() {
 
   const renderContent = () => {
     if (loading) return <Loader />
-    else if (errorMessage) return <div>{errorMessage}</div>
+    else if (errorMessage) return <div className="flex flex-col gap-4 items-center justify-center h-full">
+      <LinkBreak2Icon className="w-10 h-10 text-zinc-500" />
+      <p className="text-zinc-500">{errorMessage}</p>
+    </div>
     return (
       <div className="flex gap-1 max-h-full">
         {config.p && (
@@ -132,7 +136,7 @@ export default function AlbumListPage() {
   return (
     <PageLayout className="!p-0 !mb-0">
       <Header
-        leftComponent={"Assets"}
+        leftComponent={"Shared Link"}
         rightComponent={
           !loading && (
             <div className="flex items-center gap-2">
