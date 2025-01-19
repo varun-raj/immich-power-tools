@@ -19,7 +19,7 @@ interface IProps {
 export default function MissingLocationAssets({ groupBy }: IProps) {
   const { exImmichUrl } = useConfig();
 
-  const { startDate, albumId, selectedIds, assets, updateContext } =
+  const { startDate, albumId, selectedIds, sortOrder, sort, assets, updateContext } =
     useMissingLocationContext();
 
   const [loading, setLoading] = useState(false);
@@ -42,26 +42,34 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
   };
 
   const images = useMemo(() => {
-    return assets.map((p) => ({
-      ...p,
-      src: p.url as string,
-      original: p.previewUrl as string,
-      width: p.exifImageWidth as number,
-      height: p.exifImageHeight as number,
-      isSelected: selectedIds.includes(p.id),
-      orientation: 1,
-      tags: [
-        {
-          title: "Immich Link",
-          value: (
-            <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
-              Open in Immich
-            </a>
-          ),
-        },
-      ],
-    }));
-  }, [assets, selectedIds]);
+    let sortedAssets: IAsset[];
+
+    if (sortOrder === "desc")
+      sortedAssets = assets.sort((a, b) => new Date(b.dateTimeOriginal).getTime() - new Date(a.dateTimeOriginal).getTime())
+    else
+      sortedAssets = assets.sort((a, b) => new Date(a.dateTimeOriginal).getTime() - new Date(b.dateTimeOriginal).getTime());
+
+    return sortedAssets.
+      map((p) => ({
+        ...p,
+        src: p.url as string,
+        original: p.previewUrl as string,
+        width: p.exifImageWidth as number,
+        height: p.exifImageHeight as number,
+        isSelected: selectedIds.includes(p.id),
+        orientation: 1,
+        tags: [
+          {
+            title: "Immich Link",
+            value: (
+              <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
+                Open in Immich
+              </a>
+            ),
+          },
+        ],
+      }));
+  }, [assets, selectedIds, sortOrder]);
 
   const slides = useMemo(
     () =>

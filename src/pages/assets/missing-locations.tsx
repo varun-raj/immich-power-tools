@@ -12,6 +12,7 @@ import MissingLocationContext, {
 import { deleteAssets, updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { SortDesc, SortAsc } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import FloatingBar from "@/components/shared/FloatingBar";
@@ -26,6 +27,8 @@ export default function MissingLocations() {
     startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
+    sort: "fileOriginalDate",
+    sortOrder: "asc",
   });
 
   const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
@@ -59,6 +62,9 @@ export default function MissingLocations() {
       selectedIds: [],
     });
   }
+  const handleChange = (e: { sortOrder: "asc" | "desc" }) => {
+    setConfig({ ...config, sortOrder: e.sortOrder });
+  }
 
   return (
     <PageLayout className="!p-0 !mb-0 relative">
@@ -85,7 +91,11 @@ export default function MissingLocations() {
                 <SelectItem value="date">Date</SelectItem>
               </SelectContent>
             </Select>
-            
+            <div>
+              <Button variant="default" size="sm" onClick={() => handleChange({ sortOrder: config.sortOrder === "asc" ? "desc" : "asc" })}>
+                {config.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
+              </Button>
+            </div>
           </div>
         }
       />
@@ -139,8 +149,8 @@ export default function MissingLocations() {
               <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
               <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
               <AlertDialog
-                title="Delete the selected assets?" 
-                description="This action will delete the selected assets and cannot be undone." 
+                title="Delete the selected assets?"
+                description="This action will delete the selected assets and cannot be undone."
                 onConfirm={handleDelete}
                 disabled={config.selectedIds.length === 0}
               >
