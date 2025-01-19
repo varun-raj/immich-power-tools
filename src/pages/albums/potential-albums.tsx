@@ -126,7 +126,7 @@ export default function PotentialAlbums() {
               {config.selectedIds.length} Selected
             </p>
             <div className="flex items-center gap-2">
-              {config.selectedIds.length && config.selectedIds.length === config.assets.length ? (
+              {config.selectedIds.length && config.selectedIds.length > 0 ? (
                 <Button
                   variant={"outline"}
                   size={"sm"}
