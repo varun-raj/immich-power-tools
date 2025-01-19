@@ -1,8 +1,6 @@
 import {
-  ADD_ASSETS_ALBUMS_PATH,
   ASSET_GEO_HEATMAP_PATH,
   FIND_ASSETS,
-  LIST_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
@@ -66,3 +64,7 @@ export const findAssets = async (query: string) => {
 export const getAssetGeoHeatmap = async () => {
   return API.get(ASSET_GEO_HEATMAP_PATH);
 }
+
+export const deleteAssets = async (ids: string[]) => {
+  return API.delete(UPDATE_ASSETS_PATH, { ids });
+} 

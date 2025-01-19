@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
 import dynamic from "next/dynamic";
+import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 
 const LazyMap = dynamic(() => import("./Map"), {
   ssr: false
@@ -24,7 +25,7 @@ interface ITagMissingLocationDialogProps {
 export default function TagMissingLocationDialog({
   onSubmit,
 }: ITagMissingLocationDialogProps) {
-  
+  const {selectedIds} = useMissingLocationContext();
   const [open, setOpen] = useState(false);
   const [mapPosition,setMapPosition] = useState<IPlace>({
     latitude: 48.0,
@@ -35,8 +36,8 @@ export default function TagMissingLocationDialog({
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size={"sm"}>Tag Missing Location</Button>
+      <DialogTrigger asChild >
+        <Button size={"sm"} disabled={selectedIds.length === 0}>Tag Location</Button>
       </DialogTrigger>
       <DialogContent className="!w-[600px] !max-w-[600px]">
         <DialogHeader>

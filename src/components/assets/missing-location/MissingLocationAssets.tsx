@@ -1,22 +1,15 @@
 import "yet-another-react-lightbox/styles.css";
-import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
-import { listPotentialAlbumsAssets } from "@/handlers/api/album.handler";
 import { IAsset } from "@/types/asset";
 import React, { useEffect, useMemo, useState, MouseEvent } from "react";
 import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import {
-  ArrowUpRight,
-  CalendarArrowDown,
   CalendarArrowUp,
   Hourglass,
-  Link,
 } from "lucide-react";
 import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
-import { formatDate, parseDate } from "@/helpers/date.helper";
-import { addDays } from "date-fns";
 import { useConfig } from "@/contexts/ConfigContext";
 import LazyGridImage from "@/components/ui/lazy-grid-image";
 
@@ -26,7 +19,7 @@ interface IProps {
 export default function MissingLocationAssets({ groupBy }: IProps) {
   const { exImmichUrl } = useConfig();
 
-  const { startDate, albumId, selectedIds, assets, updateContext } =
+  const { startDate, albumId, selectedIds, sortOrder, sort, assets, updateContext } =
     useMissingLocationContext();
 
   const [loading, setLoading] = useState(false);
@@ -49,25 +42,34 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
   };
 
   const images = useMemo(() => {
-    return assets.map((p) => ({
-      ...p,
-      src: p.url as string,
-      original: p.previewUrl as string,
-      width: p.exifImageWidth as number,
-      height: p.exifImageHeight as number,
-      isSelected: selectedIds.includes(p.id),
-      tags: [
-        {
-          title: "Immich Link",
-          value: (
-            <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
-              Open in Immich
-            </a>
-          ),
-        },
-      ],
-    }));
-  }, [assets, selectedIds]);
+    let sortedAssets: IAsset[];
+
+    if (sortOrder === "desc")
+      sortedAssets = assets.sort((a, b) => new Date(b.dateTimeOriginal).getTime() - new Date(a.dateTimeOriginal).getTime())
+    else
+      sortedAssets = assets.sort((a, b) => new Date(a.dateTimeOriginal).getTime() - new Date(b.dateTimeOriginal).getTime());
+
+    return sortedAssets.
+      map((p) => ({
+        ...p,
+        src: p.url as string,
+        original: p.previewUrl as string,
+        width: p.exifImageWidth as number,
+        height: p.exifImageHeight as number,
+        isSelected: selectedIds.includes(p.id),
+        orientation: 1,
+        tags: [
+          {
+            title: "Immich Link",
+            value: (
+              <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
+                Open in Immich
+              </a>
+            ),
+          },
+        ],
+      }));
+  }, [assets, selectedIds, sortOrder]);
 
   const slides = useMemo(
     () =>

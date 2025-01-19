@@ -1,8 +1,8 @@
 // pages/api/proxy.js
 
 import { ENV } from '@/config/environment';
-import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
 import { getUserHeaders } from '@/helpers/user.helper';
+import { verify } from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const config = {
@@ -11,30 +11,40 @@ export const config = {
   },
 }
 
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method Not Allowed' })
   }
   
-  const { id, size } = req.query;
-  const targetUrl = `${ENV.IMMICH_URL}/api/assets/${id}/thumbnail?size=${size || 'thumbnail'}`;
-
-  const user = await getCurrentUser(req);
-  if (!user) {
-    return res.status(403).json({ message: 'Unauthorized' })
+  const { id, size, token, p } = req.query;
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' })
   }
+
+  try {
+    verify(token as string, ENV.JWT_SECRET);
+  } catch (error) {
+    return res.status(401).json({ message: 'Token is invalid' })
+  }
+
+  const resource = p === "true" ? "people" : "assets";
+  const baseURL = `${ENV.IMMICH_URL}/api/${resource}/${id}`;
+  const version = size === "original" ? "original" : "thumbnail";
+  let targetUrl = `${baseURL}/${version}?size=${size}`;
+
   try {
     // Forward the request to the target API
     const response = await fetch(targetUrl, {
       method: 'GET',
-      headers: getUserHeaders(user, {
+      headers: getUserHeaders({ isUsingShareKey: true }, {
         'Content-Type': 'application/octet-stream',
       }),
     })
 
     if (!response.ok) {
-      console.error('HTTP error:', response)
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const error = await response.json()
+      throw new Error("Error fetching thumbnail " + error.message)
     }
 
     // Get the image data from the response
@@ -46,7 +56,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Send the image data
     res.send(Buffer.from(imageBuffer))
-  } catch (error) {
-    res.status(500).json({ message: 'Internal Server Error' })
+  } catch (error: any) {
+    res.redirect("https://placehold.co/400")
+    console.error('Error:', error)
   }
 }

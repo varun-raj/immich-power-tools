@@ -6,6 +6,21 @@ A unofficial immich client to provide better tools to organize and manage your i
 
 [![Immich Power Tools](./screenshots/screenshot-1.png)](https://www.loom.com/embed/13aa90d8ab2e4acab0993bdc8703a750?sid=71498690-b745-473f-b239-a7bdbe6efc21)
 
+### 🎒Features
+- **Manage people data in bulk 👫**: Options to update people data in bulk, and with advance filters
+- **People Merge Suggestion 🎭**: Option to bulk merge people with suggested faces based on similarity.
+- **Update Missing Locations 📍**: Find assets in your library those are without location and update them with the location of the asset.
+- **Potential Albums 🖼️**: Find albums that are potential to be created based on the assets and people in your library.
+- **Analytics 📈**: Get analytics on your library like assets over time, exif data, etc.
+- **Smart Search 🔎**: Search your library with natural language, supports queries like "show me all my photos from 2024 of <person name>"
+- **Bulk Date Offset 📅**: Offset the date of selected assets by a given amount of time. Majorly used to fix the date of assets that are out of sync with the actual date.
+
+### Support me 🙏
+
+If you find this tool useful, please consider supporting me by buying me a coffee.
+
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/varunraj)
+
 ## 💭 Back story
 
 Recently I've migrated my entire Google photos library to Immich, I was able to successfully migrate all my assets along with its albums to immich. But there were few things like people match that was lacking. I loved Immich UI on the whole but for organizing content I felt its quite restricted and I had to do a lot of things in bulk instead of opening each asset and doing it. Hence I built this tool (continuing to itereate) to make my life and any other Immich user's life easier.
@@ -51,7 +66,11 @@ Refer here for obtaining Immich API Key: https://immich.app/docs/features/comman
 If you're using portainer, run the docker using `docker run` and add the power tools to the same network as immich.
 
 ```bash
+# Run the power tools from docker 
 docker run -d --name immich_power_tools -p 8001:3000 --env-file .env ghcr.io/varun-raj/immich-power-tools:latest
+
+# Add Power tools to the same network as immich
+docker network connect immich_default immich_power_tools
 ```
 
 
@@ -90,7 +109,8 @@ bun run dev
 - [x] Manage People
   - [x] Smart Merge
 - [x] Manage Albums
-  - [ ] Bulk Delete
+  - [x] Bulk Delete
+  - [x] Bulk Share
   - [ ] Bulk Edit
   - [ ] Filters
   - [x] Potential Albums
@@ -126,7 +146,6 @@ Google Maps Javascript API Key is used to render the maps layer for heatmap. Whe
 Google Gemini 1.5 Flash model is used for parsing your search query in "Find" page. We do not send any personal data to Gemini, only data that is sent to Gemini is your search query and rest of the querying happes using [Immich's Smart Search API](https://immich.app/docs/api/search-smart)
 
   > Code where Gemini is used: [src/helpers/gemini.helper.ts](./src/helpers/gemini.helper.ts)
-
 
 ## Contributing
 

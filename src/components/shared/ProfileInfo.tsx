@@ -44,7 +44,7 @@ export default function ProfileInfo() {
           </>
         )}
       </div>
-      <div className="border text-muted-foreground text-xs py-2 flex justify-between items-center px-2">
+      <div className="border-t text-muted-foreground text-xs py-2 flex justify-between items-center px-2">
         <p>
           Made with <span className="text-red-500">&hearts;</span> by{" "}
           <Link

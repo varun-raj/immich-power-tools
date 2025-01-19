@@ -1,4 +1,3 @@
-import AssetsOptions from "@/components/assets/assets-options/AssetsOptions";
 import MissingLocationAssets from "@/components/assets/missing-location/MissingLocationAssets";
 import MissingLocationDates from "@/components/assets/missing-location/MissingLocationDates";
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
@@ -10,13 +9,16 @@ import { useToast } from "@/components/ui/use-toast";
 import MissingLocationContext, {
   IMissingLocationConfig,
 } from "@/contexts/MissingLocationContext";
-import { updateAssets } from "@/handlers/api/asset.handler";
+import { deleteAssets, updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
+import { SortDesc, SortAsc } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import FloatingBar from "@/components/shared/FloatingBar";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { AlertDialog } from "@/components/ui/alert-dialog";
+import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDialog";
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
@@ -25,6 +27,8 @@ export default function MissingLocations() {
     startDate: startDate || undefined,
     selectedIds: [],
     assets: [],
+    sort: "fileOriginalDate",
+    sortOrder: "asc",
   });
 
   const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
@@ -41,6 +45,26 @@ export default function MissingLocations() {
       });
     })
   };
+
+  const handleDelete = () => {
+    return deleteAssets(config.selectedIds).then(() => {
+      setConfig({
+        ...config,
+        selectedIds: [],
+        assets: config.assets.filter((a) => !config.selectedIds.includes(a.id)),
+      });
+    })
+  }
+
+  const handleOffsetComplete = () => {
+    setConfig({
+      ...config,
+      selectedIds: [],
+    });
+  }
+  const handleChange = (e: { sortOrder: "asc" | "desc" }) => {
+    setConfig({ ...config, sortOrder: e.sortOrder });
+  }
 
   return (
     <PageLayout className="!p-0 !mb-0 relative">
@@ -67,7 +91,11 @@ export default function MissingLocations() {
                 <SelectItem value="date">Date</SelectItem>
               </SelectContent>
             </Select>
-            <AssetsOptions assets={selectedAssets} onAdd={() => { }} />
+            <div>
+              <Button variant="default" size="sm" onClick={() => handleChange({ sortOrder: config.sortOrder === "asc" ? "desc" : "asc" })}>
+                {config.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
+              </Button>
+            </div>
           </div>
         }
       />
@@ -115,7 +143,21 @@ export default function MissingLocations() {
                   Select all
                 </Button>
               )}
+              {/* Seperator */}
+
               <TagMissingLocationDialog onSubmit={handleSubmit} />
+              <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
+              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
+              <AlertDialog
+                title="Delete the selected assets?"
+                description="This action will delete the selected assets and cannot be undone."
+                onConfirm={handleDelete}
+                disabled={config.selectedIds.length === 0}
+              >
+                <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
+                  Delete
+                </Button>
+              </AlertDialog>
             </div>
           </div>
         </FloatingBar>

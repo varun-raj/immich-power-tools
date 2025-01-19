@@ -13,10 +13,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const currentUser = await getCurrentUser(req);
-  if (!currentUser) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+
   const { id } = req.query as { id: string };
 
   const dbAlbums = await db.selectDistinctOn([albums.id], {
@@ -36,7 +33,7 @@ export default async function handler(
     .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.isVisible, true)))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
-    .where(and(eq(albums.ownerId, currentUser.id), eq(albums.id, id)))
+    .where(and(eq(albums.id, id)))
     .groupBy(albums.id)
     .limit(1);
   

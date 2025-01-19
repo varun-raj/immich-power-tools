@@ -28,7 +28,6 @@ const HeatMap = () => {
     if (!heatmap) return;
 
     getAssetGeoHeatmap().then((data) => {
-      console.log(data);
       heatmap.setData(data.map(([lng, lat]: [number, number]) => ({
         location: new google.maps.LatLng(lat, lng),
         weight: 10

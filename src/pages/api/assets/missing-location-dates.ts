@@ -34,6 +34,8 @@ export default async function handler(
         isNotNull(exif.dateTimeOriginal),
         eq(assets.ownerId, currentUser.id),
         eq(assets.isVisible, true),
+        eq(assets.isArchived, false),
+        isNull(assets.deletedAt),
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)
       .orderBy(desc(count(assets.id))) as IMissingLocationDatesResponse[];

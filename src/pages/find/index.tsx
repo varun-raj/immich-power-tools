@@ -13,6 +13,9 @@ import React, { useMemo, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import AssetGrid from "@/components/shared/AssetGrid";
+import FloatingBar from "@/components/shared/FloatingBar";
+import AssetsBulkDeleteButton from "@/components/shared/AssetsBulkDeleteButton";
 
 interface IFindFilters {
   [key: string]: string;
@@ -30,7 +33,7 @@ const FILTER_KEY_MAP = {
 }
 export default function FindPage() {
 
-  const [index, setIndex] = useState(-1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { geminiEnabled, exImmichUrl } = useConfig();
   const [query, setQuery] = useState('');
   const [assets, setAssets] = useState<IAsset[]>([]);
@@ -52,7 +55,12 @@ export default function FindPage() {
     value: string;
   }[] = useMemo(() => {
     return Object.entries(filters)
-      .filter(([_key, value]) => value !== undefined)
+      .filter(([_key, value]) => {
+        if (Array.isArray(value)) {
+          return value.length > 0;
+        }
+        return value !== undefined && value !== null && value !== '';
+      })
       .map(([key, value]) => ({
         label: key,
         value: Array.isArray(value) ? value.join(', ') : value,
@@ -71,6 +79,16 @@ export default function FindPage() {
       .finally(() => {
         setLoading(false);
       });
+  }
+
+  const handleSelectionChange = (ids: string[]) => {
+    setSelectedIds(ids);
+  }
+
+  const handleDelete = (ids: string[]) => {
+    setSelectedIds([]);
+    setAssets(assets.filter((asset) => !ids.includes(asset.id))); 
+
   }
 
   const renderFilters = () => {
@@ -114,41 +132,25 @@ export default function FindPage() {
         <p className='text-sm text-muted-foreground'>
           {renderFilters()}
         </p>
-
       </div>
     }
+
     return (
       <>
-        <Lightbox
-          slides={slides}
-          open={index >= 0}
-          index={index}
-          close={() => setIndex(-1)}
-        />
         {renderFilters()}
-        <div className="grid grid-cols-5 gap-4 p-2">
-          {assets.map((asset, idx) => (
-            <div key={asset.id} className='group w-full h-[200px] rounded-md overflow-hidden relative'>
-              <Link href={`${exImmichUrl}/photos/${asset.id}`}
-                target="_blank"
-                className='absolute top-2 right-2 text-xs bg-white dark:bg-zinc-800 px-2 py-1 rounded-md flex gap-1 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                Open
-                <ArrowUpRight className='w-4 h-4' />
-              </Link>
-              <Image
-                src={ASSET_THUMBNAIL_PATH(asset.id)}
-                alt={asset.id}
-                style={{
-                  objectFit: 'cover',
-                  width: '100%',
-                  height: '100%',
-                }}
-                width={200}
-                height={200}
-                onClick={() => setIndex(idx)}
+        <div className="w-full">
+          <AssetGrid assets={assets} selectable onSelectionChange={handleSelectionChange} />
+          {selectedIds.length > 0 && (
+            <FloatingBar>
+              <p className="text-sm text-muted-foreground">
+                {selectedIds.length} Selected
+              </p>
+              <AssetsBulkDeleteButton
+                selectedIds={selectedIds}
+                onDelete={handleDelete}
               />
-            </div>
-          ))}
+            </FloatingBar>
+          )}
         </div>
       </>
     )

@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
+import { isFlipped } from "@/helpers/asset.helper";
 import { parseDate } from "@/helpers/date.helper";
 import { assets, exif } from "@/schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
@@ -28,6 +29,7 @@ const getRowsByDates = async (startDateDate: Date, endDateDate: Date, currentUse
       exifImageHeight: exif.exifImageHeight,
       ownerId: assets.ownerId,
       dateTimeOriginal: exif.dateTimeOriginal,
+      orientation: exif.orientation,
     })
     .from(assets)
     .leftJoin(exif, eq(exif.assetId, assets.id))
@@ -37,6 +39,9 @@ const getRowsByDates = async (startDateDate: Date, endDateDate: Date, currentUse
       gte(exif.dateTimeOriginal, startDateDate),
       lte(exif.dateTimeOriginal, endDateDate),
       eq(assets.ownerId, currentUser.id),
+      eq(assets.isVisible, true),
+      eq(assets.isArchived, false),
+      isNull(assets.deletedAt),
     ));
 }
 
@@ -57,6 +62,7 @@ const getRowsByAlbums = async (currentUser: IUser, albumId: string) => {
     exifImageHeight: exif.exifImageHeight,
     ownerId: assets.ownerId,
     dateTimeOriginal: exif.dateTimeOriginal,
+    orientation: exif.orientation,
   })
     .from(assets)
     .leftJoin(exif, eq(exif.assetId, assets.id))
@@ -66,7 +72,10 @@ const getRowsByAlbums = async (currentUser: IUser, albumId: string) => {
       isNull(exif.latitude),
       isNotNull(assets.createdAt),
       eq(assets.ownerId, currentUser.id),
-      eq(albums.id, albumId)
+      eq(albums.id, albumId),
+      eq(assets.isVisible, true),
+      eq(assets.isArchived, false),
+      isNull(assets.deletedAt),
     ));
 }
 
@@ -100,7 +109,13 @@ export default async function handler(
 
     try {
       const rows = await getRowsByDates(startDateDate, endDateDate, currentUser);
-      return res.status(200).json(rows);
+      const cleanedRows = rows.map((row) => ({
+        ...row,
+        exifImageWidth: isFlipped(row.orientation) ? row.exifImageHeight : row.exifImageWidth,
+        exifImageHeight: isFlipped(row.orientation) ? row.exifImageWidth : row.exifImageHeight,
+        orientation: row.orientation,
+      }));
+      return res.status(200).json(cleanedRows);
     } catch (error: any) {
       return res.status(500).json({
         error: error?.message,
@@ -113,6 +128,12 @@ export default async function handler(
       });
     }
     const rows = await getRowsByAlbums(currentUser, albumId);
-    return res.status(200).json(rows);
+    const cleanedRows = rows.map((row) => ({
+      ...row,
+      exifImageWidth: isFlipped(row.orientation) ? row.exifImageHeight : row.exifImageWidth,
+      exifImageHeight: isFlipped(row.orientation) ? row.exifImageWidth : row.exifImageHeight,
+      orientation: row.orientation,
+    }));
+    return res.status(200).json(cleanedRows);
   }
 }
