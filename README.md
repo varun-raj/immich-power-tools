@@ -19,7 +19,7 @@ A unofficial immich client to provide better tools to organize and manage your i
 
 If you find this tool useful, please consider supporting me by buying me a coffee.
 
-[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/varunraj)
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/varunraj){:target="_blank"}
 
 ## 💭 Back story
 
