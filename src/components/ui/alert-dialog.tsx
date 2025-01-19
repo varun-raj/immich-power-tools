@@ -139,6 +139,7 @@ interface AlertDialogProps extends AlertDialogPrimitive.AlertDialogProps {
   onCancel: () => void | Promise<void>
   variant?: ButtonProps['variant']
   asChild?: boolean
+  disabled?: boolean
 }
 
 const AlertDialog = React.forwardRef<INewChangelogButtonActions, Partial<AlertDialogProps>>(({
@@ -149,6 +150,7 @@ const AlertDialog = React.forwardRef<INewChangelogButtonActions, Partial<AlertDi
   onCancel,
   variant,
   asChild,
+  disabled,
   ...props
 }, ref) => {
   const [loading, setLoading] = useState(false)
@@ -169,7 +171,7 @@ const AlertDialog = React.forwardRef<INewChangelogButtonActions, Partial<AlertDi
 
   return (
     <AlertDialogRoot {...props} open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild={asChild}>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger disabled={disabled} asChild={asChild}>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -178,7 +180,7 @@ const AlertDialog = React.forwardRef<INewChangelogButtonActions, Partial<AlertDi
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={loading}
+            disabled={loading || disabled}
             onClick={handleConfirm}
             variant={variant}
           >

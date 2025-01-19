@@ -161,8 +161,10 @@ export default function PotentialAlbums() {
               <AlertDialog
                 title="Delete the selected assets?" 
                 description="This action will delete the selected assets and cannot be undone." 
-                onConfirm={handleDelete}>
-                <Button variant={"destructive"} size={"sm"} >
+                onConfirm={handleDelete}
+                disabled={config.selectedIds.length === 0}
+              >
+                <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
                   Delete
                 </Button>
               </AlertDialog>

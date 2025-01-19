@@ -68,7 +68,7 @@ export default function AssetOffsetDialog({ assets: _assets, onComplete }: IProp
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"default"} size={"sm"} onClick={() => setOpen(true)}>
+        <Button variant={"default"} size={"sm"} onClick={() => setOpen(true)} disabled={assets.length === 0}>
           Offset Dates
         </Button>
       </DialogTrigger>

@@ -55,7 +55,6 @@ export default function AlbumSelectorDialog({ onSelected, onCreated, onSubmit }:
 
   const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
     if (!onSubmit) return;
     setLoading(true);
     onSubmit(formData)

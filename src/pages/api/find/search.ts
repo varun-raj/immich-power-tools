@@ -1,6 +1,7 @@
 import { db } from '@/config/db';
 import { ENV } from '@/config/environment';
 import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
+import { cleanUpAsset, cleanUpAssets, isFlipped } from '@/helpers/asset.helper';
 import { parseFindQuery } from '@/helpers/gemini.helper';
 import { assetFaces, assets, person } from '@/schema';
 import { Person } from '@/schema/person.schema';
@@ -23,7 +24,7 @@ export default async function search(req: NextApiRequest, res: NextApiResponse) 
   
   return fetch(url, {
     method: 'POST',
-    body: JSON.stringify(parsedQuery),
+    body: JSON.stringify({...parsedQuery, withExif: true }),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${currentUser?.accessToken}`
@@ -40,8 +41,16 @@ export default async function search(req: NextApiRequest, res: NextApiResponse) 
     return response.json();
   })
   .then(data => {
+    const items = data.assets.items.map((item: any) => {
+      return {
+        ...item,
+        exifImageHeight: isFlipped(item?.exifInfo?.orientation) ? item?.exifInfo?.exifImageWidth : item?.exifInfo?.exifImageHeight,
+        exifImageWidth: isFlipped(item?.exifInfo?.orientation) ? item?.exifInfo?.exifImageHeight : item?.exifInfo?.exifImageWidth,
+        orientation: item?.exifInfo?.orientation,
+      }
+    }).map(cleanUpAsset)
     res.status(200).json({
-      assets: data.assets.items,
+      assets: items,
       filters: {
         ...parsedQuery,
         personIds: dbPeople.map((person) => person.name)

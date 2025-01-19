@@ -10,7 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const currentUser = await getCurrentUser(req);
   const filters = req.body;
 
-  console.log(filters);
   if (!currentUser) {
     return res.status(401).json({ message: "Unauthorized" });
   }
