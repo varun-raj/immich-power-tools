@@ -13,11 +13,15 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse) {
     return res.status(404).json({ message: "Token not found" });
   }
 
+  if (!ENV.IMMICH_SHARE_LINK_KEY) {
+    return res.status(401).json({ message: "Please check your link and try again. If you're the admin, check if you've enabled all the configurations in the Immich Power Tools in your environment variables" });
+  }
+
   const decoded = verify(token as string, ENV.JWT_SECRET);
-  console.log(decoded);
+
 
   if (!decoded) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Link is invalid. Please check your link and try again" });
   }
 
 
