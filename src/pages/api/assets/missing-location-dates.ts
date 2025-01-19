@@ -23,7 +23,8 @@ export default async function handler(
     const rows = await db
       .select({
         asset_count: desc(count(assets.id)),
-        date: sql`DATE(${exif.dateTimeOriginal})`,
+        label: sql`DATE(${exif.dateTimeOriginal})`,
+        value: sql`DATE(${exif.dateTimeOriginal})`,
       })
       .from(assets)
       .leftJoin(exif, eq(exif.assetId, assets.id))
@@ -33,14 +34,16 @@ export default async function handler(
         isNotNull(exif.dateTimeOriginal),
         eq(assets.ownerId, currentUser.id),
         eq(assets.isVisible, true),
+        eq(assets.isArchived, false),
+        isNull(assets.deletedAt),
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)
       .orderBy(desc(count(assets.id))) as IMissingLocationDatesResponse[];
 
     if (sortBy === "date") {
       rows.sort((a, b) => {
-        const aDate = parseDate(a.date, "yyyy-MM-dd");
-        const bDate = parseDate(b.date, "yyyy-MM-dd");
+        const aDate = parseDate(a.label, "yyyy-MM-dd");
+        const bDate = parseDate(b.label, "yyyy-MM-dd");
         return sortOrder === "asc" ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime();
       });
     } else if (sortBy === "asset_count") {

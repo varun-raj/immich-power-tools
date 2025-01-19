@@ -7,21 +7,38 @@ import { ASSET_PREVIEW_PATH, ASSET_THUMBNAIL_PATH } from '@/config/routes';
 import { useConfig } from '@/contexts/ConfigContext';
 import { findAssets } from '@/handlers/api/asset.handler';
 import { IAsset } from '@/types/asset';
-import { Captions, Megaphone, Search, Speaker, TriangleAlert, WandSparkles } from 'lucide-react';
+import { ArrowUpRight, Captions, Megaphone, Search, Speaker, TriangleAlert, WandSparkles } from 'lucide-react';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import AssetGrid from "@/components/shared/AssetGrid";
+import FloatingBar from "@/components/shared/FloatingBar";
+import AssetsBulkDeleteButton from "@/components/shared/AssetsBulkDeleteButton";
 
+interface IFindFilters {
+  [key: string]: string;
+}
 
+const FILTER_KEY_MAP = {
+  "city": "City",
+  "state": "State",
+  "country": "Country",
+  "takenAfter": "Taken After",
+  "takenBefore": "Taken Before",
+  "size": "Size",
+  "model": "Model",
+  "personIds": "People",
+}
 export default function FindPage() {
 
-  const [index, setIndex] = useState(-1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { geminiEnabled, exImmichUrl } = useConfig();
   const [query, setQuery] = useState('');
   const [assets, setAssets] = useState<IAsset[]>([]);
   const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState<IFindFilters>({});
 
   const slides = useMemo(
     () =>
@@ -33,17 +50,59 @@ export default function FindPage() {
     [assets]
   );
 
-  
+  const appliedFilters: {
+    label: string;
+    value: string;
+  }[] = useMemo(() => {
+    return Object.entries(filters)
+      .filter(([_key, value]) => {
+        if (Array.isArray(value)) {
+          return value.length > 0;
+        }
+        return value !== undefined && value !== null && value !== '';
+      })
+      .map(([key, value]) => ({
+        label: key,
+        value: Array.isArray(value) ? value.join(', ') : value,
+      }))
+      .filter((filter) => filter.label !== "query");
+  }, [filters]);
+
   const handleSearch = (query: string) => {
     setQuery(query);
     setLoading(true);
     findAssets(query)
-      .then(({ assets }) => {
+      .then(({ assets, filters: _filters }) => {
         setAssets(assets);
+        setFilters(_filters);
       })
       .finally(() => {
         setLoading(false);
       });
+  }
+
+  const handleSelectionChange = (ids: string[]) => {
+    setSelectedIds(ids);
+  }
+
+  const handleDelete = (ids: string[]) => {
+    setSelectedIds([]);
+    setAssets(assets.filter((asset) => !ids.includes(asset.id))); 
+
+  }
+
+  const renderFilters = () => {
+    if (appliedFilters.length === 0) return null;
+    return (
+      <div className="flex gap-2 flex-wrap px-2">
+        {appliedFilters.map((filter) => (
+          <div key={filter.label} className="flex gap-2 items-center divide-x divide-gray-400 dark:divide-zinc-800 bg-zinc-100 dark:bg-zinc-800 border border-gray-400 dark:border-zinc-800 rounded-md px-2">
+            <p className="text-sm text-gray-500 dark:text-zinc-400">{FILTER_KEY_MAP[filter.label as keyof typeof FILTER_KEY_MAP] || filter.label}</p>
+            <p className="text-sm text-gray-500 dark:text-zinc-400 pl-1.5">{filter.value}</p>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   const renderContent = () => {
@@ -53,52 +112,45 @@ export default function FindPage() {
       </div>
     }
     else if (query.length === 0) {
-      return <div className="flex justify-center flex-col gap-2 items-center h-full">
-        <Search className='w-10 h-10 text-muted-foreground' />
-        <p className='text-lg font-bold'>Search for photos in natural language</p>
-        <p className='text-sm text-muted-foreground'>
-          Example: Sunset photos from last week. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
-        </p>
-        <p className='text-xs text-muted-foreground text-center flex gap-1 items-center'>
-          <span>Power tools uses Google Gemini only for parsing your query. None of your data is sent to Gemini.</span>
-        </p>
-      </div>
+      return (
+        <div className="flex justify-center flex-col gap-2 items-center h-full">
+          <Search className='w-10 h-10 text-muted-foreground' />
+          <p className='text-lg font-bold'>Search for photos in natural language</p>
+          <p className='text-sm text-muted-foreground'>
+            Example: Sunset photos from last week. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
+          </p>
+          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center'>
+            <span>Power tools uses Google Gemini only for parsing your query. None of your data is sent to Gemini.</span>
+          </p>
+        </div>
+      )
     }
     else if (assets.length === 0) {
-      return <div className="flex justify-center items-center h-full">
-        No results found
+      return <div className="flex justify-center items-center h-full flex-col gap-2">
+        <TriangleAlert className='w-10 h-10 text-muted-foreground' />
+        <p className='text-lg font-bold'>No results found for the below filters</p>
+        <p className='text-sm text-muted-foreground'>
+          {renderFilters()}
+        </p>
       </div>
     }
+
     return (
       <>
-       <Lightbox
-        slides={slides}
-        open={index >= 0}
-        index={index}
-        close={() => setIndex(-1)}
-      />
-        <div className="grid grid-cols-5 gap-4 p-2">
-          {assets.map((asset, idx) => (
-            <div key={asset.id} className='w-full h-[200px] rounded-md overflow-hidden relative'>
-              <Link href={`${exImmichUrl}/photos/${asset.id}`} 
-                target="_blank" 
-                className='absolute top-2 right-2 text-xs'>
-                Open in Immich
-              </Link>
-              <Image
-                src={ASSET_THUMBNAIL_PATH(asset.id)}
-                alt={asset.id}
-                style={{
-                  objectFit: 'cover',
-                  width: '100%',
-                  height: '100%',
-                }}
-                width={200}
-                height={200}
-                onClick={() => setIndex(idx)}
+        {renderFilters()}
+        <div className="w-full">
+          <AssetGrid assets={assets} selectable onSelectionChange={handleSelectionChange} />
+          {selectedIds.length > 0 && (
+            <FloatingBar>
+              <p className="text-sm text-muted-foreground">
+                {selectedIds.length} Selected
+              </p>
+              <AssetsBulkDeleteButton
+                selectedIds={selectedIds}
+                onDelete={handleDelete}
               />
-            </div>
-          ))}
+            </FloatingBar>
+          )}
         </div>
       </>
     )

@@ -12,3 +12,5 @@ export const person = pgTable("person", {
   birthDate: date("birthDate", { mode: "date" }),
   faceAssetId: uuid("faceAssetId"),
 });
+
+export type Person = typeof person.$inferSelect;

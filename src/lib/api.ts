@@ -2,6 +2,21 @@ import type { AxiosError, AxiosRequestConfig, Method } from 'axios'
 import axios from 'axios'
 import qs from 'qs'
 
+export class APIError extends Error {
+  status: number;
+  constructor({
+    message,
+    status,
+  }: {
+    message: string;
+    status: number;
+  }) {
+    super(message);
+    this.name = 'APIError';
+    this.message = message;
+    this.status = status;
+  }
+}
 
 const handleErrors = (error: AxiosError | any) => {
   
@@ -26,8 +41,6 @@ const handleErrors = (error: AxiosError | any) => {
 }
 
 export default class API {
-  
-
   static setBaseURL(url: string) {
     if (url) {
       axios.defaults.baseURL = url

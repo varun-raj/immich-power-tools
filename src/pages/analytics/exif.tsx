@@ -106,40 +106,42 @@ export default function ExifDataAnalytics() {
   }, []);
 
   return (
-    <PageLayout className="p-4">
+    <PageLayout className="!p-0 !mb-0 relative">
       <Header leftComponent="Exif Data" />
-      <div className="grid grid-cols-4 gap-4">
-        {["Total", "Images", "Videos"].map((type, i) => (
-          <Card key={i}>
+      <div className="p-4">
+        <div className="grid grid-cols-4 gap-4">
+          {["Total", "Images", "Videos"].map((type, i) => (
+            <Card key={i}>
+              <CardHeader>
+                <CardTitle className="text-center text-lg font-mono">{type}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-3xl font-mono">
+                {loading ? "Loading..." : statistics[type.toLowerCase() as keyof typeof statistics].toLocaleString()}
+              </CardContent>
+            </Card>
+          ))}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-center text-lg font-mono">{type}</CardTitle>
+              <CardTitle className="text-center text-lg font-mono">Live Photos</CardTitle>
             </CardHeader>
             <CardContent className="text-center text-3xl font-mono">
-              {loading ? "Loading..." : statistics[type.toLowerCase() as keyof typeof statistics].toLocaleString()}
+              {loading ? "Loading..." : livePhotoStatistics.total.toLocaleString()}
             </CardContent>
           </Card>
-        ))}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-lg font-mono">Live Photos</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center text-3xl font-mono">
-            {loading ? "Loading..." : livePhotoStatistics.total.toLocaleString()}
-          </CardContent>
-        </Card>
-      </div>
-      <AssetHeatMap />
-      <div className="grid grid-cols-3 gap-4">
-        {exifCharts.map((chart) => (
-          <EXIFDistribution
-            key={chart.column}
-            column={chart.column}
-            title={chart.title}
-            description={chart.description}
-            tooltipValueFormatter={chart.tooltipValueFormatter}
-          />
-        ))}
+        </div>
+        <AssetHeatMap />
+        <div className="grid grid-cols-3 gap-4">
+          {exifCharts.map((chart) => (
+            <EXIFDistribution
+              key={chart.column}
+              column={chart.column}
+              title={chart.title}
+              description={chart.description}
+              tooltipValueFormatter={chart.tooltipValueFormatter}
+            />
+          ))}
 
+        </div>
       </div>
     </PageLayout>
   );

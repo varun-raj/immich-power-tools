@@ -18,3 +18,8 @@ export const removeNullOrUndefinedProperties = (obj: any) => {
     return v !== null && v !== undefined && v !== '' && v !== 'null' && v !== 'undefined' && v !== 'null' && v !== 'undefined'
   }));
 }
+
+export const findMissingKeys = (obj: any, keys: string[]) => {
+
+  return keys.filter((key) => !(key in obj) || obj[key] === '' || obj[key] === null || obj[key] === undefined);
+}
