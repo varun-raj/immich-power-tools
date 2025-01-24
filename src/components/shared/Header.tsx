@@ -23,6 +23,7 @@ import Head from "next/head";
 import { sidebarNavs } from "@/config/constants/sidebarNavs";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
+import clsx from "clsx";
 
 interface IProps {
   leftComponent?: React.ReactNode | string;
@@ -62,7 +63,9 @@ export default function Header({ leftComponent, rightComponent, title }: IProps)
         <title>{pageTitle} - Immich Power Tools</title>
       </Head>
     )}
-    <header key="header" className="sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b bg-white dark:bg-black px-4 lg:h-[60px] lg:px-6">
+    <header key="header" className={
+      clsx("sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b bg-white dark:bg-black px-4 lg:h-[60px] lg:px-6")
+    }>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0 md:hidden">

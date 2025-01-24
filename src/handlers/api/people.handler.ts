@@ -13,6 +13,7 @@ export interface IPersonListFilters {
   sort?: ISortField;
   sortOrder?: "asc" | "desc";
   type?: string;
+  query?: string;
 }
 export const listPeople = (filters: IPersonListFilters): Promise<IPeopleListResponse> => {
   return API.get(LIST_PEOPLE_PATH, filters).then((response) => {

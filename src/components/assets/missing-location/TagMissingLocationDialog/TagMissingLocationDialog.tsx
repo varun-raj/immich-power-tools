@@ -12,8 +12,8 @@ import { IPlace } from "@/types/common";
 import React, { useState } from "react";
 import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
-import { MapPinCheck } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 
 const LazyMap = dynamic(() => import("./Map"), {
   ssr: false
@@ -25,19 +25,19 @@ interface ITagMissingLocationDialogProps {
 export default function TagMissingLocationDialog({
   onSubmit,
 }: ITagMissingLocationDialogProps) {
-  
+  const {selectedIds} = useMissingLocationContext();
   const [open, setOpen] = useState(false);
   const [mapPosition,setMapPosition] = useState<IPlace>({
     latitude: 48.0,
     longitude: 16.0,
-    name: "home1"
+    name: "home"
   });
  
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Tag Missing Location</Button>
+      <DialogTrigger asChild >
+        <Button size={"sm"} disabled={selectedIds.length === 0}>Tag Location</Button>
       </DialogTrigger>
       <DialogContent className="!w-[600px] !max-w-[600px]">
         <DialogHeader>
@@ -46,12 +46,11 @@ export default function TagMissingLocationDialog({
             Tagging a location will add the location to the selected assets.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="search" className="border rounded-lg">
-          <TabsList className="flex justify-between">
+        <Tabs defaultValue="search">
+          <TabsList className="flex justify-center">
             <TabsTrigger value="search">Search and Pick</TabsTrigger>
             <TabsTrigger value="latlong">
-              Latitude and Longitude
-              
+              Lat & Long
             </TabsTrigger>
             <TabsTrigger value="maps">Map</TabsTrigger>
           </TabsList>
@@ -63,7 +62,7 @@ export default function TagMissingLocationDialog({
              onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
           <TabsContent value="maps">
-            <div className="py-10 flex flex-col gap-6 items-center ">
+            <div className="flex flex-col gap-6 items-center ">
               <LazyMap location={mapPosition} onLocationChange={setMapPosition} />
             </div>
           </TabsContent>

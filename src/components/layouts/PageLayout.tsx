@@ -23,11 +23,11 @@ export default function PageLayout({ children, className, title }: IProps) {
     : children;
 
   return (
-    <div>
+    <div className="flex flex-col w-full h-full">
       {header}
       <main
         className={cn(
-          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 overflow-y-auto mx-auto",
+          "flex flex-1 max-h-[calc(100vh-60px)] flex-col gap-4 overflow-y-auto mx-auto w-full",
           {
             "mb-14": !!header,
           },

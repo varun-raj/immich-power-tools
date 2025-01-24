@@ -20,7 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const targetUrl = `${ENV.IMMICH_URL}/api/assets/${id}/thumbnail?size=${size || 'thumbnail'}`;
 
   const user = await getCurrentUser(req);
-  
   if (!user) {
     return res.status(403).json({ message: 'Unauthorized' })
   }

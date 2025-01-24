@@ -1,15 +1,19 @@
 import { createContext, useContext } from "react";
 
-interface ConfigContextType {
+export interface ConfigContextType {
   immichURL: string;
   exImmichUrl: string;
   version?: string;
+  geminiEnabled: boolean;
+  googleMapsApiKey: string;
 }
 
 const ConfigContext = createContext<ConfigContextType>({
   immichURL: "",
   exImmichUrl: "",
   version: "",
+  geminiEnabled: false,
+  googleMapsApiKey: "",
 });
 
 export default ConfigContext;
