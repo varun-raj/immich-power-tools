@@ -111,7 +111,7 @@ export default function TagMissingLocationSearchLatLong(
   return (
     <div className="flex flex-col gap-4 py-4 px-2">
       <div className="flex items-start gap-2">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 flex-1">
           <Label>Latitude</Label>
           <Input
             placeholder="Latitude"
@@ -122,7 +122,7 @@ export default function TagMissingLocationSearchLatLong(
             onBlur={(e) => handleBlur()}
           />
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 flex-1">
           <Label>
             Longitude
           </Label>

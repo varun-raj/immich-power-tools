@@ -1,6 +1,7 @@
 import {
-  ADD_ASSETS_ALBUMS_PATH,
-  LIST_ALBUMS_PATH,
+  ASSET_GEO_HEATMAP_PATH,
+  FIND_ASSETS,
+  LIST_MISSING_LOCATION_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
   UPDATE_ASSETS_PATH,
@@ -16,14 +17,23 @@ interface IMissingAssetAlbumsFilters {
   sortOrder?: string;
 }
 export interface IMissingLocationDatesResponse {
-  date: string;
+  label: string;
   asset_count: number;
+  value: string;
+  createdAt?: string;
 }
+
 
 export const listMissingLocationDates = async (
   filters: IMissingAssetAlbumsFilters
 ): Promise<IMissingLocationDatesResponse[]> => {
   return API.get(LIST_MISSING_LOCATION_DATES_PATH, filters);
+};
+
+export const listMissingLocationAlbums = async (
+  filters: IMissingAssetAlbumsFilters
+): Promise<IMissingLocationDatesResponse[]> => {
+  return API.get(LIST_MISSING_LOCATION_ALBUMS_PATH, filters);
 };
 
 export const listMissingLocationAssets = async (
@@ -46,3 +56,15 @@ export const updateAssets = async (params: IUpdateAssetsParams) => {
   return API.put(UPDATE_ASSETS_PATH, params);
 }
   
+
+export const findAssets = async (query: string) => {
+  return API.post(FIND_ASSETS, { query });
+}
+
+export const getAssetGeoHeatmap = async () => {
+  return API.get(ASSET_GEO_HEATMAP_PATH);
+}
+
+export const deleteAssets = async (ids: string[]) => {
+  return API.delete(UPDATE_ASSETS_PATH, { ids });
+} 

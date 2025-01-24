@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,18 +9,28 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { listAlbums } from "@/handlers/api/album.handler";
-import { IAlbum } from "@/types/album";
+import { IAlbum, IAlbumCreate } from "@/types/album";
 import { Input } from "../ui/input";
+import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import toast from "react-hot-toast";
+import { Label } from "../ui/label";
 
 interface IProps {
   onSelected: (album: IAlbum) => Promise<void>;
+  onCreated?: (album: IAlbum) => Promise<void>;
+  onSubmit?: (data: IAlbumCreate) => Promise<any>;
 }
-export default function AlbumSelectorDialog({ onSelected }: IProps) {
+export default function AlbumSelectorDialog({ onSelected, onCreated, onSubmit }: IProps) {
   const [open, setOpen] = useState(false);
   const [albums, setAlbums] = useState<IAlbum[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const { selectedIds, assets } = usePotentialAlbumContext();
+  const [formData, setFormData] = useState({
+    albumName: "",
+  });
 
   const fetchData = () => {
     return listAlbums()
@@ -42,11 +52,31 @@ export default function AlbumSelectorDialog({ onSelected }: IProps) {
     });
   }
 
+
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!onSubmit) return;
+    setLoading(true);
+    onSubmit(formData)
+      .then(() => {
+        toast.success("Album created successfully");
+        setFormData({ albumName: "" });
+        setOpen(false);
+      })
+      .catch((e) => {
+        toast.error("Failed to create album");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [onSubmit, formData]);
+
+
   useEffect(() => {
     if (open && !albums.length) fetchData();
   }, [open]);
 
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     if (loading) return <p>Loading...</p>;
     if (errorMessage) return <p>{errorMessage}</p>;
     return (
@@ -73,12 +103,36 @@ export default function AlbumSelectorDialog({ onSelected }: IProps) {
         </div>
       </div>
     );
-  };
+  }, [albums, filteredAlbums, handleSelect, loading, errorMessage]);
+
+  const renderCreateContent = useCallback(() => { 
+    return (
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-h-[500px] min-h-[500px]">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Create a new album and add the selected assets to it
+        </p>
+          <div className="flex flex-col gap-2">
+            <Label>Album Name</Label>
+            <Input
+              placeholder="Album Name"
+              onChange={(e) => {
+                setFormData({ ...formData, albumName: e.target.value });
+              }}
+            />
+          </div>
+          <div className="self-end">
+            <Button disabled={loading} type="submit">
+              {loading ? "Creating Album" : "Create Album"}
+            </Button>
+          </div>
+        </form>
+    )
+  }, [loading, formData, handleSubmit]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Select Album</Button>
+        <Button size={"sm"} disabled={!selectedIds.length}>Add to Album</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -87,7 +141,18 @@ export default function AlbumSelectorDialog({ onSelected }: IProps) {
             Select the albums you want to add the selected assets to
           </DialogDescription>
         </DialogHeader>
-        {renderContent()}
+        <Tabs defaultValue="albums" className="w-full">   
+          <TabsList className="w-full"> 
+            <TabsTrigger className="w-full" value="albums">Albums</TabsTrigger>
+            <TabsTrigger className="w-full" value="create">Create</TabsTrigger>
+          </TabsList>
+          <TabsContent value="albums">
+            {renderContent()}
+          </TabsContent>
+          <TabsContent value="create">
+            {renderCreateContent()}
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

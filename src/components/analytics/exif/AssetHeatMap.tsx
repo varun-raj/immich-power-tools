@@ -58,7 +58,7 @@ export default function AssetHeatMap() {
     const threshold2 = minCount + range * 0.4;
     const threshold3 = minCount + range * 0.6;
     const threshold4 = minCount + range * 0.8;
-    if (count === 0) return "bg-zinc-800";
+    if (count === 0) return "bg-zinc-200 dark:bg-zinc-800";
     if (count <= threshold1) return "bg-green-200";
     if (count <= threshold2) return "bg-green-400";
     if (count <= threshold3) return "bg-green-500";

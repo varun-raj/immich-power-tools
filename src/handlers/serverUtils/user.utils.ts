@@ -1,6 +1,7 @@
 import { appConfig } from "@/config/app.config"
 import { connectDB, db } from "@/config/db"
 import { ENV } from "@/config/environment"
+import { APIError } from "@/lib/api"
 import { getCookie } from "@/lib/cookie"
 import { NextApiRequest } from "next"
 
@@ -22,7 +23,19 @@ export const getCurrentUserFromAPIKey = () => {
         }
       })
     }
-    return null
+    throw new APIError({
+      message: "Invalid API key. Please check your API key variable `IMMICH_API_KEY` in the .env file",
+      status: 403,
+    });
+  })
+  .catch((error) => {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    throw new APIError({
+      message: "Failed to connect to Immich API: " + ENV.IMMICH_URL,
+      status: 500,
+    });
   })
 }
 
@@ -37,6 +50,11 @@ export const getCurrentUserFromAccessToken = (token: string) => {
       return res.json()
     }
     return null
+  }).catch((error) => {
+    throw new APIError({
+      message: "Failed to connect to Immich API: " + ENV.IMMICH_URL,
+      status: 500,
+    });
   })
 }
 
