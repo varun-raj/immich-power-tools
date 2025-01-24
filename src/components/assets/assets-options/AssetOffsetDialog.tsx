@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IAsset } from '@/types/asset';
-import { Dialog, DialogTitle, DialogHeader, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogTitle, DialogHeader, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,12 +11,12 @@ import { useToast } from '@/components/ui/use-toast';
 
 interface IProps {
   assets: IAsset[];
-  open: boolean;
-  toggleOpen: (open: boolean) => void;
+  onComplete: () => void;
 }
 
-export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }: IProps) {
+export default function AssetOffsetDialog({ assets: _assets, onComplete }: IProps) {
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
   const [assets, setAssets] = useState<IAsset[]>(_assets);
   const [offsetData, setOffsetData] = useState<{ days: number, hours: number, minutes: number, seconds: number, years: number }>({
     days: 0,
@@ -43,7 +43,7 @@ export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }:
       })
         .then(() => {
           setLoading(false);
-          toggleOpen(false);
+          setOpen(false);
         })
         .catch((error) => {
           setLoading(false);
@@ -52,7 +52,8 @@ export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }:
     });
     await Promise.all(promises);
     setLoading(false);
-    toggleOpen(false);
+    setOpen(false);
+    onComplete();
     toast({
       title: 'Asset dates offset',
       description: 'Asset dates have been offset',
@@ -65,12 +66,17 @@ export default function AssetOffsetDialog({ assets: _assets, open, toggleOpen }:
   }, [_assets]);
 
   return (
-    <Dialog open={open} onOpenChange={toggleOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant={"default"} size={"sm"} onClick={() => setOpen(true)} disabled={assets.length === 0}>
+          Offset Dates
+        </Button>
+      </DialogTrigger>
       <DialogContent className='max-w-[800px]'>
         <DialogHeader>
           <DialogTitle>Offset Asset Dates</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className='flex items-center gap-2'>
+        <form onSubmit={handleSubmit} className='flex items-end gap-2'>
           <div>
             <Label>Years</Label>
             <Input type="number" value={offsetData.years} onChange={(e) => handleChange("years", parseInt(e.target.value))} />

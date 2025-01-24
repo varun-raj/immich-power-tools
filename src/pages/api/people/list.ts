@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
-import { stringToBoolean } from "@/helpers/data.helper";
 import { assetFaces, assets, exif, person } from "@/schema";
 import {
   and,
@@ -11,6 +9,7 @@ import {
   desc,
   eq,
   gte,
+  ilike,
   isNotNull,
   isNull,
   lte,
@@ -29,6 +28,7 @@ interface IQuery {
   maximumAssetCount: number;
   sort: ISortField;
   sortOrder: "asc" | "desc";
+  query: string;
 }
 export default async function handler(
   req: NextApiRequest,
@@ -42,6 +42,7 @@ export default async function handler(
       sort = "assetCount",
       sortOrder = "desc",
       type = "all",
+      query = "",
     } = req.query as any as IQuery;
 
     const currentUser = await getCurrentUser(req);
@@ -53,10 +54,11 @@ export default async function handler(
       eq(assets.isVisible, true),
       eq(assets.isArchived, false),
       eq(assets.ownerId, currentUser.id),
-      type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, ""))
+      type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, "")),
+      query && query.length > 0 ? ilike(person.name, `%${query}%`) : undefined
     );
 
-    let query = db
+    let dbQuery = db
       .select({
         id: person.id,
         name: person.name,
@@ -74,17 +76,17 @@ export default async function handler(
 
     let sortedQuery;
     if (sort === "assetCount") {
-      sortedQuery = query.orderBy(
+      sortedQuery = dbQuery.orderBy(
         sortOrder === "asc"
           ? asc(count(assetFaces.id))
           : desc(count(assetFaces.id))
       );
     } else if (sort === "updatedAt") {
-      sortedQuery = query.orderBy(
+      sortedQuery = dbQuery.orderBy(
         sortOrder === "asc" ? asc(person.updatedAt) : desc(person.updatedAt)
       );
     }
-    const people = await query.limit(perPage).offset((page - 1) * perPage);
+    const people = await dbQuery.limit(perPage).offset((page - 1) * perPage);
 
     return res.status(200).json({
       people,

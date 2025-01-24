@@ -21,19 +21,27 @@ export const LIST_POTENTIAL_ALBUMS_DATES_PATH = BASE_API_ENDPOINT + "/albums/pot
 export const LIST_POTENTIAL_ALBUMS_ASSETS_PATH = BASE_API_ENDPOINT + "/albums/potential-albums-assets";
 export const LIST_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/list";
 export const ALBUM_INFO_PATH = (id: string) => BASE_API_ENDPOINT + "/albums/" + id + "/info";
+
 export const ALBUM_PEOPLE_PATH = (id: string) => BASE_API_ENDPOINT + "/albums/" + id + "/people";
 export const ALBUM_ASSETS_PATH = (id: string) => BASE_API_ENDPOINT + "/albums/" + id + "/assets";
+export const ALBUM_ASSETS_PATH_PUBLIC = (id: string) => BASE_API_ENDPOINT + "/albums/" + id + "/public-assets";
 export const CREATE_ALBUM_PATH = BASE_PROXY_ENDPOINT + "/albums";
 export const ADD_ASSETS_ALBUMS_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";
-
+export const SHARE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/share";
+export const DELETE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/delete";
 // Assets
 export const LIST_MISSING_LOCATION_DATES_PATH = BASE_API_ENDPOINT + "/assets/missing-location-dates";
+export const LIST_MISSING_LOCATION_ALBUMS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-albums";
 export const LIST_MISSING_LOCATION_ASSETS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-assets";
 export const UPDATE_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/assets";
-
 export const ASSET_THUMBNAIL_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id;
 export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id + "?size=preview";
 export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/video/" + id;
+export const ASSET_GEO_HEATMAP_PATH = BASE_API_ENDPOINT + "/assets/geo-heatmap";
+
+export const ASSET_SHARE_THUMBNAIL_PATH = (
+  { id, size, token, isPeople }: { id: string, size: string, token: string, isPeople: boolean }
+) => BASE_PROXY_ENDPOINT + "/asset/share-thumbnail/" + id + "?size=" + size + "&token=" + token + "&p=" + isPeople;
 
 // Location
 
@@ -49,3 +57,15 @@ export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";
 
 // Person
 export const GET_PERSON_INFO = (personId: string) => BASE_API_ENDPOINT + "/people/" + personId + "/info";
+
+// Rewind
+export const REWIND_STATS = BASE_API_ENDPOINT + "/rewind/stats";
+// Find
+export const FIND_ASSETS = BASE_API_ENDPOINT + "/find/search";
+
+
+// Share Link
+export const SHARE_LINK_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token;
+export const SHARE_LINK_GENERATE_PATH = BASE_API_ENDPOINT + "/share-link/generate";
+export const SHARE_LINK_ASSETS_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/assets";
+export const SHARE_LINK_PEOPLE_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/people";

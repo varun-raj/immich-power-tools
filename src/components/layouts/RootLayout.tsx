@@ -1,6 +1,5 @@
 import { IUser } from "@/types/user";
 import Sidebar from "../shared/Sidebar";
-import { Toaster } from "../ui/toaster";
 import { ReactNode, useEffect, useState } from "react";
 import { getMe } from "@/handlers/api/user.handler";
 import UserContext from "@/contexts/CurrentUserContext";
@@ -10,8 +9,9 @@ import { ArrowRight, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { LoginForm } from "../auth/LoginForm";
 import { useConfig } from "@/contexts/ConfigContext";
-import { queryClient } from "@/config/rQuery";
-import { QueryClientProvider } from "react-query";
+import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
+import PageLayout from "./PageLayout";
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -20,6 +20,8 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const { immichURL, exImmichUrl } = useConfig();
+  const router = useRouter();
+  const { pathname } = router;
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<{
@@ -84,10 +86,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </div>
     );
 
+
+  if (pathname.startsWith("/s/")) {
+    return (
+        <div className="grid max-h-screen min-h-screen w-full">
+          <div className="flex flex-col">{children}</div>
+          <Toaster />
+        </div>
+    )
+  }
   if (!user) return <LoginForm onLogin={handleLoginCompletion} />;
 
   return (
-    <QueryClientProvider client={queryClient}>
       <UserContext.Provider value={{
         ...user,
         updateContext: setUser,
@@ -98,6 +108,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Toaster />
         </div>
       </UserContext.Provider>
-    </QueryClientProvider>
   );
 }

@@ -5,19 +5,19 @@ export interface IAsset {
   type: string;
   originalPath: string;
   isFavorite: boolean;
-  duration: null;
-  encodedVideoPath: string;
+  duration: number | null;
+  encodedVideoPath: string | null;
   originalFileName: string;
-  sidecarPath: null;
-  thumbhash: IAssetThumbhash;
-  deletedAt: null;
-  localDateTime: string;
+  thumbhash?: IAssetThumbhash;
+  localDateTime: string | Date;
   exifImageWidth: number;
   exifImageHeight: number;
   url: string;
   previewUrl: string;
   videoURL?: string;
   dateTimeOriginal: string;
+  orientation?: number | null | string;
+  downloadUrl?: string;
 }
 
 export interface IAssetThumbhash {
