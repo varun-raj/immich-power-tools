@@ -132,15 +132,12 @@ export default function TagMissingLocationOSMSearchAndAdd(
 
   return (
     <div className="flex flex-col gap-4 py-4 px-2">
-      <div className="flex flex-col gap-2">
-        <Label>Search Location</Label>
         <Input
           placeholder="Search location"
           onChange={(e) => {
             handleSearch(e.target.value);
           }}
         />
-      </div>
       <div>
         {loading && <Loader />}
         {!loading && searchedPlaces && searchedPlaces.length === 0 && (
@@ -161,7 +158,7 @@ export default function TagMissingLocationOSMSearchAndAdd(
                 )}
               >
                 <div>
-                  <p>{place.name}</p>
+                  <p className="text-sm">{place.name}</p>
                   <span className="text-xs text-gray-600">
                     {place.latitude}, {place.longitude}
                   </span>
@@ -176,11 +173,11 @@ export default function TagMissingLocationOSMSearchAndAdd(
       </div>
       <div className="self-end">
         <Button
-          variant="outline"
+          variant="default"
           onClick={handleSubmit}
           disabled={!selectedPlace || submitting}
         >
-          Add New Location
+          Tag Location
         </Button>
       </div>
     </div>

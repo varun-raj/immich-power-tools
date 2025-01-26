@@ -46,18 +46,18 @@ export default function TagMissingLocationDialog({
             Tagging a location will add the location to the selected assets.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="search" className="border rounded-lg">
+        <Tabs defaultValue="searchOsm" className="border rounded-lg">
           <TabsList className="flex justify-between">
-            <TabsTrigger value="search">Immich Search</TabsTrigger>
-            <TabsTrigger value="searchOsm">OSM Search</TabsTrigger>
-            <TabsTrigger value="latlong">Lat &amp; Long</TabsTrigger>
-            <TabsTrigger value="maps">Map</TabsTrigger>
+            <TabsTrigger value="searchOsm" className="w-full">Open Street Map</TabsTrigger>
+            <TabsTrigger value="search" className="w-full">Immich Geo</TabsTrigger>
+            <TabsTrigger value="latlong" className="w-full">Lat &amp; Long</TabsTrigger>
+            <TabsTrigger value="maps" className="w-full">Map</TabsTrigger>
           </TabsList>
-          <TabsContent value="search">
-            <TagMissingLocationSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} />
-          </TabsContent>
           <TabsContent value="searchOsm">
             <TagMissingLocationOSMSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
+          </TabsContent>
+          <TabsContent value="search">
+            <TagMissingLocationSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} />
           </TabsContent>
           <TabsContent value="latlong">
             <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
