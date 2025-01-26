@@ -46,7 +46,7 @@ export default function PotentialAlbumsDates() {
   }, [filters]);
 
   return (
-    <div className="overflow-y-auto min-w-[200px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
+    <div className="min-w-[200px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-1">
       <div className="flex justify-between items-center gap-2">
         <Select
           defaultValue={filters.sortBy}
@@ -69,14 +69,15 @@ export default function PotentialAlbumsDates() {
           </Button>
         </div>
       </div>
-
-      {dateRecords.map((record) => (
-        <PotentialDateItem
-          key={record.date}
-          record={record}
-          onSelect={handleSelect}
-        />
-      ))}
+      <div className="overflow-y-auto">
+        {dateRecords.map((record) => (
+          <PotentialDateItem
+            key={record.date}
+            record={record}
+            onSelect={handleSelect}
+          />
+        ))}
+    </div>
     </div>
   );
 }

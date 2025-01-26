@@ -1,20 +1,16 @@
-import { ASSET_THUMBNAIL_PATH } from '@/config/routes'
 import PageLayout from '@/components/layouts/PageLayout'
 import Header from '@/components/shared/Header'
 import Loader from '@/components/ui/loader'
 import { useConfig } from '@/contexts/ConfigContext'
-import { getAlbumInfo, listAlbums } from '@/handlers/api/album.handler'
+import { getAlbumInfo } from '@/handlers/api/album.handler'
 import { IAlbum } from '@/types/album'
-import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import AlbumThumbnail from '@/components/albums/list/AlbumThumbnail'
-import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/router'
 import AlbumPeople from '@/components/albums/info/AlbumPeople'
 import AlbumImages from '@/components/albums/info/AlbumImages'
-import { Camera, ExternalLink, LinkIcon, Users } from 'lucide-react'
-import { humanizeNumber, pluralize } from '@/helpers/string.helper'
+import { Camera, ExternalLink, Users } from 'lucide-react'
+import { humanizeNumber } from '@/helpers/string.helper'
 
 export default function AlbumListPage() {
   const { exImmichUrl } = useConfig()

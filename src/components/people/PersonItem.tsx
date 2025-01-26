@@ -11,6 +11,7 @@ import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
+import ShareAssetsTrigger from "../shared/ShareAssetsTrigger";
 interface IProps {
   person: IPerson;
   onRemove: (person: IPerson) => void;
@@ -108,6 +109,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
           }}>
           Hide
         </Button>
+        <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ variant: "outline", className: "!py-0.5 !px-2 text-xs h-7" }} />
         </div>
       </div>
       {!editMode ? (

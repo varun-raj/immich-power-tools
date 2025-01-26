@@ -11,19 +11,22 @@ import { users } from "@/schema/users.schema";
 import { assetFaces, exif, person } from "@/schema";
 import { IAlbum } from "@/types/album";
 
+const getTime = (date: Date) => {
+  return date ? (date?.getTime() || 0) : 0;
+}
 
 const sortAlbums = (albums: IAlbum[], sortBy: string, sortOrder: string) => {
   if (sortBy === 'createdAt') {
-    return albums.sort((a, b) => sortOrder === 'asc' ? a?.createdAt?.getTime() - b?.createdAt?.getTime() : b?.createdAt?.getTime() - a?.createdAt?.getTime());
+    return albums.sort((a, b) => sortOrder === 'asc' ? getTime(a?.createdAt) - getTime(b?.createdAt) : getTime(b?.createdAt) - getTime(a?.createdAt));
   }
   if (sortBy === 'updatedAt') {
-    return albums.sort((a, b) => sortOrder === 'asc' ? a?.updatedAt?.getTime() - b?.updatedAt?.getTime() : b?.updatedAt?.getTime() - a?.updatedAt?.getTime());
+    return albums.sort((a, b) => sortOrder === 'asc' ? getTime(a?.updatedAt) - getTime(b?.updatedAt) : getTime(b?.updatedAt) - getTime(a?.updatedAt));
   }
   if (sortBy === 'firstPhotoDate') {
-    return albums.sort((a, b) => sortOrder === 'asc' ? a?.firstPhotoDate?.getTime() - b?.firstPhotoDate?.getTime() : b?.firstPhotoDate?.getTime() - a?.firstPhotoDate?.getTime());
+    return albums.sort((a, b) => sortOrder === 'asc' ? getTime(a?.firstPhotoDate) - getTime(b?.firstPhotoDate) : getTime(b?.firstPhotoDate) - getTime(a?.firstPhotoDate));
   }
   if (sortBy === 'lastPhotoDate') {
-    return albums.sort((a, b) => sortOrder === 'asc' ? a?.lastPhotoDate?.getTime() - b?.lastPhotoDate?.getTime() : b?.lastPhotoDate?.getTime() - a?.lastPhotoDate?.getTime());
+    return albums.sort((a, b) => sortOrder === 'asc' ? getTime(a?.lastPhotoDate) - getTime(b?.lastPhotoDate) : getTime(b?.lastPhotoDate) - getTime(a?.lastPhotoDate));
   }
   if (sortBy === 'assetCount') {
     return albums.sort((a, b) => sortOrder === 'asc' ? a?.assetCount - b?.assetCount : b?.assetCount - a?.assetCount);

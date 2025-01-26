@@ -125,22 +125,21 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
         index={index}
         close={() => setIndex(-1)}
       />
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-2">
+      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
         {images.map((image) => (
           <div
             key={image.id}
-            className="w-full h-[200px] overflow-hidden relative"
+            className="w-full h-[180px] overflow-hidden relative"
             >
             <LazyImage
               loading="lazy"
               key={image.id}
               src={image.original}
               alt={image.originalFileName}
-              className='overflow-hidden'
+              className='overflow-hidden max-h-[180px] max-w-[180px] min-h-[180px] min-w-[180px]'
               style={{
                 objectPosition: 'center',
-                objectFit: 'cover',
-                height: '100%',
+                objectFit: 'cover'
               }}
               onClick={() => handleClick(images.indexOf(image))}
             />
