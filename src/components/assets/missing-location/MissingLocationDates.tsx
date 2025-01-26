@@ -13,11 +13,8 @@ interface IMissingLocationDatesProps {
 
 }
 export default function MissingLocationDates({ groupBy }: IMissingLocationDatesProps) {
-  const { updateContext } = useMissingLocationContext();
+  const { dates, updateContext } = useMissingLocationContext();
   const router = useRouter();
-  const [dateRecords, setDateRecords] = React.useState<
-    IMissingLocationDatesResponse[]
-  >([]);
   const [filters, setFilters] = useState<{ sortBy: string, sortOrder: string }>({ sortBy: "date", sortOrder: "desc" });
   const [loading, setLoading] = useState(false);
 
@@ -25,12 +22,12 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
 
   const fetchData = async () => {
     const func = groupBy === "album" ? listMissingLocationAlbums : listMissingLocationDates
-    setDateRecords([])
+    updateContext({ dates: [] })
     return func({
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder,
     })
-      .then(setDateRecords)
+      .then((r) => updateContext({ dates: r }))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
   };
@@ -96,7 +93,7 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
         </div>
       </div>
       <div className="overflow-y-auto flex flex-col gap-2">
-        {dateRecords.map((record) => (
+        {dates.map((record) => (
           <MissingLocationDateItem
             key={record.value}
             record={record}

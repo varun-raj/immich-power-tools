@@ -13,13 +13,13 @@ import { deleteAssets, updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
 import { SortDesc, SortAsc } from "lucide-react";
+import { isSameDay } from "date-fns";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import FloatingBar from "@/components/shared/FloatingBar";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDialog";
-import { Input } from "@/components/ui/input";
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
@@ -30,21 +30,41 @@ export default function MissingLocations() {
     assets: [],
     sort: "fileOriginalDate",
     sortOrder: "asc",
+    dates: []
   });
 
   const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
 
-  const handleSubmit = (place: IPlace) => {
-    return updateAssets({
+  const handleSubmit = async (place: IPlace) => {
+    await updateAssets({
       ids: config.selectedIds,
-      latitude: place.latitude,
-      longitude: place.longitude,
-    }).then(() => {
-      setConfig({
-        ...config,
-        selectedIds: [],
-      });
-    })
+      latitude: Number(place.latitude),
+      longitude: Number(place.longitude),
+    });
+
+    const newAssets = config.assets.filter(asset => !config.selectedIds.includes(asset.id));
+
+    if (config.startDate) {
+      const dayRecord = config.dates.filter(f => isSameDay(new Date(f.value), new Date(config.startDate!)));
+
+      if (dayRecord.length === 1) {
+        if (newAssets.length > 0)
+          dayRecord[0].asset_count = newAssets.length;
+        else {
+          const indexToRemove = config.dates.findIndex(v=>isSameDay(v.value, dayRecord[0].value));
+
+          if (indexToRemove !== -1) {
+            config.dates.splice(indexToRemove, 1);
+          }
+        }
+      }
+    }
+
+    setConfig({
+      ...config,
+      selectedIds: [],
+      assets: newAssets
+    });
   };
 
   const handleDelete = () => {

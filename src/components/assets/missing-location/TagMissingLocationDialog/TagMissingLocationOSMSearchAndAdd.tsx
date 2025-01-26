@@ -96,7 +96,6 @@ export default function TagMissingLocationOSMSearchAndAdd(
       setSelectedPlace(null);
     } else {
       setSelectedPlace(place);
-      debugger;
       onLocationChange(place);
     }
   };
@@ -150,21 +149,21 @@ export default function TagMissingLocationOSMSearchAndAdd(
                 key={place.name}
                 onClick={() => handleSelect(place)}
                 className={cn(
-                  "hover:bg-gray-300 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
+                  "hover:bg-gray-300 dark:hover:bg-gray-700 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
                   {
-                    "bg-gray-300":
+                    "bg-gray-300 dark:bg-gray-700":
                       selectedPlace && selectedPlace.name === place.name,
                   }
                 )}
               >
                 <div>
                   <p className="text-sm">{place.name}</p>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {place.latitude}, {place.longitude}
                   </span>
                 </div>
                 {selectedPlace && selectedPlace.name === place.name && (
-                  <Check className="text-green-500" />
+                  <Check className="text-green-500 dark:text-green-400" />
                 )}
               </div>
             ))}
