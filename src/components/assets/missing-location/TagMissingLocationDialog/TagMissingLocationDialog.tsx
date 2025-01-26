@@ -12,6 +12,7 @@ import { IPlace } from "@/types/common";
 import React, { useState } from "react";
 import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
+import TagMissingLocationOSMSearchAndAdd from "./TagMissingLocationOSMSearchAndAdd";
 import dynamic from "next/dynamic";
 import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
 
@@ -25,15 +26,14 @@ interface ITagMissingLocationDialogProps {
 export default function TagMissingLocationDialog({
   onSubmit,
 }: ITagMissingLocationDialogProps) {
-  const {selectedIds} = useMissingLocationContext();
+  const { selectedIds } = useMissingLocationContext();
   const [open, setOpen] = useState(false);
-  const [mapPosition,setMapPosition] = useState<IPlace>({
-    latitude: 48.0,
-    longitude: 16.0,
-    name: "home"
+  const [mapPosition, setMapPosition] = useState<IPlace>({
+    latitude: 48.210033,
+    longitude: 16.363449,
+    name: "Vienna, Austria"
   });
- 
-  
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild >
@@ -46,20 +46,21 @@ export default function TagMissingLocationDialog({
             Tagging a location will add the location to the selected assets.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="search">
-          <TabsList className="flex justify-center">
-            <TabsTrigger value="search">Search and Pick</TabsTrigger>
-            <TabsTrigger value="latlong">
-              Lat & Long
-            </TabsTrigger>
+        <Tabs defaultValue="search" className="border rounded-lg">
+          <TabsList className="flex justify-between">
+            <TabsTrigger value="search">Immich Search</TabsTrigger>
+            <TabsTrigger value="searchOsm">OSM Search</TabsTrigger>
+            <TabsTrigger value="latlong">Lat &amp; Long</TabsTrigger>
             <TabsTrigger value="maps">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="search">
             <TagMissingLocationSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} />
           </TabsContent>
+          <TabsContent value="searchOsm">
+            <TagMissingLocationOSMSearchAndAdd onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
+          </TabsContent>
           <TabsContent value="latlong">
-            <TagMissingLocationSearchLatLong onSubmit={onSubmit}
-             onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
+            <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
           <TabsContent value="maps">
             <div className="flex flex-col gap-6 items-center ">
