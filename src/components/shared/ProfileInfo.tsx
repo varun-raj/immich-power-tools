@@ -5,6 +5,7 @@ import { useConfig } from "@/contexts/ConfigContext";
 import { logoutUser } from "@/handlers/api/user.handler"
 import { useCurrentUser } from "@/contexts/CurrentUserContext";
 import { useToast } from "../ui/use-toast";
+import { HandshakeIcon } from "lucide-react";
 
 export default function ProfileInfo() {
   const { updateContext, ...user } = useCurrentUser()
@@ -36,11 +37,19 @@ export default function ProfileInfo() {
         {user && (
           <>
             <p className="text-sm">{user?.name}</p>
-            {!user.isUsingAPIKey && (
-              <Button variant="destructive" className="mx-4 h-6 text-xs" onClick={handleLogout}>
-              Log Out
-            </Button>
-            )}
+            <div className="flex items-center justify-between gap-2 px-2">
+              {!user.isUsingAPIKey && (
+                <Button variant="destructive" className="h-6 flex-1 text-xs" onClick={handleLogout}>
+                  Log Out
+                </Button>
+              )}
+              <Button asChild variant="secondary" className="h-6 flex-1 text-xs flex items-center justify-center gap-2" onClick={handleLogout}>
+                <Link href="https://buymeacoffee.com/varunraj"  target="_blank">
+                  <HandshakeIcon className="w-4 h-4" />
+                  Support
+                </Link>
+              </Button>
+            </div>
           </>
         )}
       </div>

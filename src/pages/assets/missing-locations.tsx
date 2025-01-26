@@ -19,6 +19,7 @@ import FloatingBar from "@/components/shared/FloatingBar";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDialog";
+import { Input } from "@/components/ui/input";
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
@@ -110,57 +111,58 @@ export default function MissingLocations() {
           <MissingLocationDates groupBy={groupBy as "date" | "album"} />
           <MissingLocationAssets groupBy={groupBy as "date" | "album"} />
         </div>
-        <FloatingBar>
-          <div className="flex items-center gap-2 justify-between w-full">
-            <p className="text-sm text-muted-foreground">
-              {config.selectedIds.length} Selected
-            </p>
-            <div className="flex items-center gap-2">
-              {config.selectedIds.length === config.assets.length ? (
-                <Button
-                  variant={"outline"}
-                  size={"sm"}
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      selectedIds: [],
-                    })
-                  }
+        {selectedAssets.length &&
+          <FloatingBar>
+            <div className="flex items-center gap-2 justify-between w-full">
+              <p className="text-sm text-muted-foreground">
+                {config.selectedIds.length} Selected
+              </p>
+              <div className="flex items-center gap-2">
+                {config.selectedIds.length === config.assets.length ? (
+                  <Button
+                    variant={"outline"}
+                    size={"sm"}
+                    onClick={() =>
+                      setConfig({
+                        ...config,
+                        selectedIds: [],
+                      })
+                    }
+                  >
+                    Unselect all
+                  </Button>
+                ) : (
+                  <Button
+                    variant={"outline"}
+                    size={"sm"}
+                    onClick={() =>
+                      setConfig({
+                        ...config,
+                        selectedIds: config.assets.map((a) => a.id),
+                      })
+                    }
+                  >
+                    Select all
+                  </Button>
+                )}
+                {/* Seperator */}
+                <TagMissingLocationDialog onSubmit={handleSubmit} />
+                <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
+                <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
+                <AlertDialog
+                  title="Delete the selected assets?"
+                  description="This action will delete the selected assets and cannot be undone."
+                  onConfirm={handleDelete}
+                  disabled={config.selectedIds.length === 0}
                 >
-                  Unselect all
-                </Button>
-              ) : (
-                <Button
-                  variant={"outline"}
-                  size={"sm"}
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      selectedIds: config.assets.map((a) => a.id),
-                    })
-                  }
-                >
-                  Select all
-                </Button>
-              )}
-              {/* Seperator */}
-
-              <TagMissingLocationDialog onSubmit={handleSubmit} />
-              <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
-              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
-              <AlertDialog
-                title="Delete the selected assets?"
-                description="This action will delete the selected assets and cannot be undone."
-                onConfirm={handleDelete}
-                disabled={config.selectedIds.length === 0}
-              >
-                <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
-                  Delete
-                </Button>
-              </AlertDialog>
+                  <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
+                    Delete
+                  </Button>
+                </AlertDialog>
+              </div>
             </div>
-          </div>
-        </FloatingBar>
+          </FloatingBar>
+        }
       </MissingLocationContext.Provider>
     </PageLayout>
   );

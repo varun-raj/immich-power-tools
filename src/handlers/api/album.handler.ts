@@ -9,6 +9,7 @@ interface IPotentialAlbumsDatesFilters {
   endDate?: string;
   sortBy?: string;
   sortOrder?: string;
+  minAssets?: number;
 }
 export interface IPotentialAlbumsDatesResponse {
   date: string;

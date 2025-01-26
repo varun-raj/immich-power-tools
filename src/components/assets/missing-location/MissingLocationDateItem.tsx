@@ -36,7 +36,7 @@ export default function MissingLocationDateItem({ record, onSelect, groupBy }: I
       }
     >
       <p className="text-sm truncate">{dateLabel}</p>
-      <p className="text-xs text-foreground/50">{record.asset_count} Orphan Assets</p>
+      <p className="text-xs text-foreground/50">{record.asset_count} Assets</p>
     </div>
   );
 }
