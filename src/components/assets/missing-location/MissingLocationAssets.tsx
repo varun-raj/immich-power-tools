@@ -81,7 +81,15 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
     [images]
   );
 
-  const handleClick = (idx: number) => setIndex(idx);
+  const handleClick = (idx: number, asset: IAsset, event: MouseEvent<HTMLElement>) => {
+    if (selectedIds.length > 0) {
+      handleSelect(idx, asset, event);
+    }
+    else
+    {
+      setIndex(idx);
+    }
+  };
 
   const handleSelect = (_idx: number, asset: IAsset, event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
