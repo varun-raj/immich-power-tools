@@ -107,7 +107,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
           <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
             handleHide(!formData.isHidden);
           }}>
-          Hide
+          {formData.isHidden ? "Show" : "Hide"}
         </Button>
         <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ variant: "outline", className: "!py-0.5 !px-2 text-xs h-7" }} />
         </div>

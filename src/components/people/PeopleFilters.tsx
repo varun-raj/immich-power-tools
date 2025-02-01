@@ -15,20 +15,27 @@ import {
 import { Input } from "../ui/input";
 import { IPersonListFilters } from "@/handlers/api/people.handler";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { removeNullOrUndefinedProperties } from "@/helpers/data.helper";
+import { ParsedUrlQueryInput } from "querystring";
 
 export function PeopleFilters() {
   const router = useRouter();
-  const { updateContext, page, maximumAssetCount, type = "all", query ="" } = usePeopleFilterContext();
+  const { updateContext, page, maximumAssetCount, type = "all", query = "", visibility = "all" } = usePeopleFilterContext();
 
   const handleChange = (data: Partial<IPersonListFilters>) => {
     updateContext(data);
     router.push({
       pathname: router.pathname,
-      query: { 
+      query: {
         ...router.query,
-        ...data,
+        ...data,  
         page: data.page || undefined,
         type: data.type || undefined,
+        visibility: data.visibility || undefined,
+        query: data.query || undefined,
+        maximumAssetCount: data.maximumAssetCount || undefined,
+        sort: data.sort || undefined,
+        sortOrder: data.sortOrder || undefined,
       },
     });
   }
@@ -70,6 +77,17 @@ export function PeopleFilters() {
           <SelectItem value="all">All</SelectItem>
           <SelectItem value="nameless">Nameless</SelectItem>
           <SelectItem value="named">Named</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select value={visibility} onValueChange={(value) => handleChange({ visibility: value as "all" | "visible" | "hidden" })}>
+        <SelectTrigger>
+          <SelectValue placeholder="Visibility" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="visible">Visible</SelectItem>
+          <SelectItem value="hidden">Hidden</SelectItem>
         </SelectContent>
       </Select>
 
