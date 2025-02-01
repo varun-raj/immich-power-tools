@@ -61,8 +61,12 @@ export const findAssets = async (query: string) => {
   return API.post(FIND_ASSETS, { query });
 }
 
-export const getAssetGeoHeatmap = async () => {
-  return API.get(ASSET_GEO_HEATMAP_PATH);
+export interface IHeatMapParams {
+  albumIds?: string;
+  peopleIds?: string;
+}
+export const getAssetGeoHeatmap = async (filters: IHeatMapParams) => {
+  return API.get(ASSET_GEO_HEATMAP_PATH, filters);
 }
 
 export const deleteAssets = async (ids: string[]) => {

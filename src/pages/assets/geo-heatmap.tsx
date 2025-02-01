@@ -4,13 +4,19 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import PageLayout from '@/components/layouts/PageLayout';
-import { getAssetGeoHeatmap } from '@/handlers/api/asset.handler';
+import { getAssetGeoHeatmap, IHeatMapParams } from '@/handlers/api/asset.handler';
 import { useTheme } from 'next-themes';
-import { MapPinX } from 'lucide-react';
+import { MapPinX, X } from 'lucide-react';
+import AlbumDropdown from '@/components/shared/AlbumDropdown';
+import PeopleDropdown from '@/components/shared/PeopleDropdown';
+import { Button } from '@/components/ui/button';
 
+interface IHeatMapProps {
+  filters: IHeatMapParams;
+}
 
-const HeatMap = () => {
-  
+const HeatMap = ({ filters }: IHeatMapProps) => {
+
   const map = useMap();
   const visualization = useMapsLibrary('visualization');
 
@@ -27,14 +33,15 @@ const HeatMap = () => {
   useEffect(() => {
     if (!heatmap) return;
 
-    getAssetGeoHeatmap().then((data) => {
+    getAssetGeoHeatmap(filters).then((data) => {
+      heatmap.setData([]);
       heatmap.setData(data.map(([lng, lat]: [number, number]) => ({
         location: new google.maps.LatLng(lat, lng),
         weight: 10
       })));
     });
 
-  }, [heatmap]);
+  }, [heatmap, filters]);
 
   useEffect(() => {
     if (!heatmap) return;
@@ -53,6 +60,10 @@ export default function GeoHeatmap() {
   const { googleMapsApiKey } = useConfig();
   const { theme } = useTheme();
   const [mapId, setMapId] = useState('7a9e2ebecd32a903');
+  const [filters, setFilters] = useState<{
+    albumIds?: string
+    peopleIds?: string
+  }>({ });
 
   useEffect(() => {
     if (theme === 'light') {
@@ -65,21 +76,42 @@ export default function GeoHeatmap() {
 
   return (
     <PageLayout className="!p-0 !mb-0">
-      <Header leftComponent="Geo Heatmap" />
+      <Header leftComponent="Geo Heatmap" rightComponent={
+        <>
+          <AlbumDropdown albumIds={filters.albumIds ? [filters.albumIds] : []} onChange={(albumIds) => {
+            setFilters({
+              ...filters,
+              albumIds: albumIds?.[0]
+            })
+          }} />
+          <PeopleDropdown peopleIds={filters.peopleIds ? [filters.peopleIds] : []} onChange={(peopleIds) => {
+            setFilters({
+              ...filters,
+              peopleIds: peopleIds?.[0]
+            })
+          }} />
+          <Button 
+            variant="default" size="sm" 
+            disabled={Object.keys(filters).length === 0}
+            onClick={() => setFilters({})}>
+            <X size={16} /> Clear
+          </Button>
+        </>
+      } />
       <div className='h-full w-full'>
         {googleMapsApiKey ? (
           <APIProvider apiKey={googleMapsApiKey}>
-          <Map
-            defaultCenter={{ lat: 0, lng: 0 }}
-            mapId={mapId}
-            defaultZoom={2}
-            gestureHandling={'greedy'}
-            disableDefaultUI={true}
-            className='h-full w-full'
-          />
+            <Map
+              defaultCenter={{ lat: 0, lng: 0 }}
+              mapId={mapId}
+              defaultZoom={2}
+              gestureHandling={'greedy'}
+              disableDefaultUI={true}
+              className='h-full w-full'
+            />
 
-          <HeatMap />
-        </APIProvider>
+            <HeatMap filters={filters} />
+          </APIProvider>
         ) : (
           <div className='h-full w-full flex items-center justify-center flex-col gap-2'>
             <MapPinX className='w-10 h-10 text-muted-foreground' />

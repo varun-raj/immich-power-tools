@@ -26,13 +26,16 @@ export interface IComboBoxProps {
   onSelect?: (value: string) => void
   onOpenChange?: (open: boolean) => void
   closeOnSelect?: boolean
+  label?: string
+  onTextChange?: (text: string) => void
 }
 
 export function Combobox(
-  { options, onSelect, onOpenChange, closeOnSelect }: IComboBoxProps
+  { options, onSelect, onOpenChange, closeOnSelect, label, onTextChange }: IComboBoxProps
 ) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
+
 
   return (
     <Popover open={open} onOpenChange={(openState) => {
@@ -40,7 +43,10 @@ export function Combobox(
       onOpenChange?.(openState)
     }}>
       <PopoverTrigger asChild>
-        <Filter />
+        <div className="flex items-center text-sm gap-2 cursor-pointer">
+          <Filter size={16} />
+          <span>{label}</span>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
