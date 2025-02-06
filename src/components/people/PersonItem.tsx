@@ -10,8 +10,8 @@ import { ArrowUpRight, Info, Search } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
-import { Button } from "@/components/ui/button";
 import ShareAssetsTrigger from "../shared/ShareAssetsTrigger";
+import { Button, Input } from "antd";
 interface IProps {
   person: IPerson;
   onRemove: (person: IPerson) => void;
@@ -62,7 +62,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
           isHidden: hidden,
         }));
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         setLoading(false);
       });
@@ -79,11 +79,11 @@ export default function PersonItem({ person, onRemove }: IProps) {
       )}
     >
       <div className="relative w-full h-auto group">
-          <Avatar
-            className="w-full min-h-full h-auto rounded-lg"
-            src={person.thumbnailPath}
-            alt={person.name}
-          />
+        <Avatar
+          className="w-full min-h-full h-auto rounded-lg"
+          src={person.thumbnailPath}
+          alt={person.name}
+        />
         <div className="absolute bottom-2 w-full flex justify-center items-center">
           <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
         </div>
@@ -103,13 +103,13 @@ export default function PersonItem({ person, onRemove }: IProps) {
           </Link>
         </div>
         <div className="absolute top-2 right-2 flex flex-col gap-2">
-          <PersonMergeDropdown person={person} onRemove={onRemove}/>
-          <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
+          <PersonMergeDropdown person={person} onRemove={onRemove} />
+          <Button type="primary" size="small" onClick={() => {
             handleHide(!formData.isHidden);
           }}>
-          {formData.isHidden ? "Show" : "Hide"}
-        </Button>
-        <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ variant: "outline", className: "!py-0.5 !px-2 text-xs h-7" }} />
+            {formData.isHidden ? "Show" : "Hide"}
+          </Button>
+          <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ type: "primary", size: "small" }} />
         </div>
       </div>
       {!editMode ? (
@@ -126,7 +126,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
           )}
         </h2>
       ) : (
-        <input
+        <Input
           type="text"
           className="text-lg font-semibold text-center w-full px-2 py-1 rounded-lg"
           defaultValue={formData.name}

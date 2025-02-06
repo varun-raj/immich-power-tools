@@ -1,19 +1,23 @@
-import { addSeconds, addHours, addMinutes, format, parse, addYears } from "date-fns"
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
+import utc from "dayjs/plugin/utc";
 
-export const formatDate = (date: string, outputFormat?: string): string => {
-  return format(date, outputFormat || "PPP")
+dayjs.extend(customParseFormat);
+dayjs.extend(duration);
+dayjs.extend(utc);
+
+export const formatDate = (date: string | Date, outputFormat?: string): string => {
+  return dayjs(date).format(outputFormat || "MMMM d, YYYY");
 }
 
 export const parseDate = (date: string, inputFormat: string): Date => {
-  return parse(date, inputFormat, new Date());
+  return dayjs(date, inputFormat).toDate();
 }
 
 export const addDays = (date: Date, days: number): Date => {  
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
+  return dayjs(date).add(days, 'day').toDate();
 }
-
 
 export const offsetDate = (date: string, offset: { 
   years: number, 
@@ -22,11 +26,11 @@ export const offsetDate = (date: string, offset: {
   minutes: number, 
   seconds: number 
 }): string => {
-  const parsedDate = new Date(date);
-  const result = addYears(parsedDate, offset.years || 0)
-  const result2 = addDays(result, offset.days || 0)
-  const result3 = addHours(result2, offset.hours || 0)  
-  const result4 = addMinutes(result3, offset.minutes || 0)
-  const result5 = addSeconds(result4, offset.seconds || 0)
-  return result5.toISOString()
+  return dayjs(date)
+    .add(offset.years || 0, 'year')
+    .add(offset.days || 0, 'day')
+    .add(offset.hours || 0, 'hour')
+    .add(offset.minutes || 0, 'minute')
+    .add(offset.seconds || 0, 'second')
+    .toISOString();
 }

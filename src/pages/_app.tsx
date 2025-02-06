@@ -1,10 +1,10 @@
 import RootLayout from "@/components/layouts/RootLayout";
 import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
 import ConfigContext, { ConfigContextType } from "@/contexts/ConfigContext";
 import { useRef } from "react";
+import { ConfigProvider } from "antd";
 interface AppPropsWithProps extends AppProps {
   props: ConfigContextType;
 }
@@ -13,11 +13,15 @@ const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
 
   return (
     <ConfigContext.Provider value={intialData.current}>
-      <ThemeProvider attribute="class" storageKey="theme">
+      <ConfigProvider theme={{
+        token: {
+          colorPrimary: "#000000",
+        }
+      }}>
         <RootLayout>
           <Component {...pageProps} />
         </RootLayout>
-      </ThemeProvider>
+      </ConfigProvider>
     </ConfigContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Dialog, DialogTitle, DialogContent, DialogHeader, DialogTrigger, DialogDescription } from '../ui/dialog';
-import { Button, ButtonProps } from '../ui/button';
+import { Button, ButtonProps } from 'antd';
 import { ShareLinkFilters } from '@/types/shareLink';
 import { generateShareLink } from '@/handlers/api/shareLink.handler';
 import { Input } from '../ui/input';
@@ -73,7 +73,7 @@ export default function ShareAssetsTrigger({ filters, buttonProps }: ShareAssets
           </p>
           <div className="flex gap-2">
             <Button className="w-full" onClick={handleCopy}>{copied ? 'Copied' : 'Copy'}</Button>
-            <Button className="w-full" variant="outline" onClick={handleReset}>Generate New Link</Button>
+            <Button className="w-full" type="dashed" onClick={handleReset}>Generate New Link</Button>
           </div>
         </div> : (
           <div className="flex flex-col gap-4">

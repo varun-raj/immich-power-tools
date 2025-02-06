@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 
 import {
   Dialog,
@@ -33,6 +32,7 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import FaceThumbnail from "./merge/FaceThumbnail";
 import ErrorBlock from "../shared/ErrorBlock";
 import { cn } from "@/lib/utils";
+import { Button, Modal } from "antd";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
@@ -234,12 +234,9 @@ export function PersonMergeDropdown({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Modal open={open} onCancel={() => setOpen(false)}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn("!py-0.5 !px-2 text-xs h-7", triggerClassName)}
-        >
+        <Button type="primary" size="small" >
           Merge
         </Button>
       </DialogTrigger>
@@ -343,7 +340,7 @@ export function PersonMergeDropdown({
             onClick={() => {
               setSelectedPeople(similarPeople);
             }}
-            variant="outline"
+            type="primary"
           >
             Select All
           </Button>
@@ -354,7 +351,7 @@ export function PersonMergeDropdown({
               setSelectedPeople([]);
               setPrimaryPerson(person);
             }}
-            variant="outline"
+            type="default"
           >
             Cancel
           </Button>
@@ -366,6 +363,6 @@ export function PersonMergeDropdown({
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

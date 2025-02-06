@@ -1,22 +1,11 @@
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { Button } from "../ui/button";
-import { ArrowLeft, ArrowRight, SortAsc, SortDesc } from "lucide-react";
+import { Button, Input, Select } from "antd";
 import { usePeopleFilterContext } from "@/contexts/PeopleFilterContext";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
+
 import { IPersonListFilters } from "@/handlers/api/people.handler";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { removeNullOrUndefinedProperties } from "@/helpers/data.helper";
-import { ParsedUrlQueryInput } from "querystring";
+import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 export function PeopleFilters() {
   const router = useRouter();
@@ -28,7 +17,7 @@ export function PeopleFilters() {
       pathname: router.pathname,
       query: {
         ...router.query,
-        ...data,  
+        ...data,
         page: data.page || undefined,
         type: data.type || undefined,
         visibility: data.visibility || undefined,
@@ -69,86 +58,68 @@ export function PeopleFilters() {
         }}
       />
 
-      <Select value={type} onValueChange={(value) => handleChange({ type: value })}>
-        <SelectTrigger>
-          <SelectValue placeholder="Person Type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="nameless">Nameless</SelectItem>
-          <SelectItem value="named">Named</SelectItem>
-        </SelectContent>
-      </Select>
 
-      <Select value={visibility} onValueChange={(value) => handleChange({ visibility: value as "all" | "visible" | "hidden" })}>
-        <SelectTrigger>
-          <SelectValue placeholder="Visibility" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="visible">Visible</SelectItem>
-          <SelectItem value="hidden">Hidden</SelectItem>
-        </SelectContent>
-      </Select>
 
+      <Select
+        placeholder="Person Type"
+        options={[
+          { label: "All", value: "all" },
+          { label: "Nameless", value: "nameless" },
+          { label: "Named", value: "named" }]}
+        onChange={(value) => handleChange({ type: value as "all" | "nameless" | "named" })}
+      />
+
+      <Select
+        placeholder="Visibility"
+        options={[
+          { label: "All", value: "all" },
+          { label: "Visible", value: "visible" },
+          { label: "Hidden", value: "hidden" }]}
+        onChange={(value) => handleChange({ visibility: value as "all" | "visible" | "hidden" })}
+      />
+
+
+      <div>
       <Button
         disabled={prevPage < 1}
         onClick={() => handleChange({ page: prevPage })}
-      >
-        <ArrowLeft size={16} />
-      </Button>
+        icon={<ArrowLeftOutlined />}
+      />
+      </div>
 
-      <Button onClick={() => handleChange({ page: nextPage })}>
-        <ArrowRight size={16} />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant={"secondary"}
-            onClick={() => handleChange({ page: nextPage })}
-          >
-            <SortDesc size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem
-            onClick={() =>
-              handleChange({ sort: "assetCount", sortOrder: "asc" })
-            }
-          >
-            <SortAsc size={16} />
-            <span>Asset Count - ASC</span>
-          </DropdownMenuItem>
+      <div>
+      <Button 
+        onClick={() => handleChange({ page: nextPage })}
+        icon={<ArrowRightOutlined />}
+      />
+      </div>
+      
+      <Select 
+        options={[
+          { label: "Asset Count - ASC", value: "assetCountAsc" },
+          { label: "Asset Count - DESC", value: "assetCountDesc" },
+          { label: "Updated At - ASC", value: "updatedAtAsc" },
+          { label: "Updated At - DESC", value: "updatedAtDesc" },
+        ]}
+        placeholder="Sort By"
+        onChange={(value) => {
+          switch (value) {
+            case "assetCountAsc":
+              handleChange({ sort: "assetCount", sortOrder: "asc" });
+              break;
+            case "assetCountDesc":
+              handleChange({ sort: "assetCount", sortOrder: "desc" });
+              break;
+            case "updatedAtAsc":
+              handleChange({ sort: "updatedAt", sortOrder: "asc" });
+              break;
+            case "updatedAtDesc":
+              handleChange({ sort: "updatedAt", sortOrder: "desc" });
+              break;
+          }
+        }}
+      />
 
-          <DropdownMenuItem
-            onClick={() =>
-              handleChange({ sort: "assetCount", sortOrder: "desc" })
-            }
-          >
-            <SortDesc size={16} />
-            <span>Asset Count - DESC</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onClick={() =>
-              handleChange({ sort: "updatedAt", sortOrder: "asc" })
-            }
-          >
-            <SortAsc size={16} />
-            <span>Updated At - ASC</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={() =>
-              handleChange({ sort: "updatedAt", sortOrder: "desc" })
-            }
-          >
-            <SortDesc size={16} />
-            <span>Updated At - DESC</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }
