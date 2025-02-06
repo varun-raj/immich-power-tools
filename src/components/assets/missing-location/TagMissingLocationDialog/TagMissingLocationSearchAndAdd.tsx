@@ -96,7 +96,6 @@ export default function TagMissingLocationSearchAndAdd(
   return (
     <div className="flex flex-col gap-4 py-4 px-2">
       <div className="flex flex-col gap-2">
-        <Label>Search Location</Label>
         <Input
           placeholder="Search location"
           onChange={(e) => {
@@ -116,21 +115,21 @@ export default function TagMissingLocationSearchAndAdd(
                 key={place.name}
                 onClick={() => handleSelect(place)}
                 className={cn(
-                  "hover:bg-zinc-900 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
+                  "hover:bg-zinc-200 dark:hover:bg-zinc-800 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
                   {
-                    "bg-zinc-900":
+                    "bg-zinc-900 dark:bg-zinc-200":
                       selectedPlace && selectedPlace.name === place.name,
                   }
                 )}
               >
                 <div>
                   <p>{place.name}</p>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-gray-200">
                     {place.latitude}, {place.longitude}
                   </span>
                 </div>
                 {selectedPlace && selectedPlace.name === place.name && (
-                  <Check className="text-green-500" />
+                  <Check className="text-green-500 dark:text-green-400" />
                 )}
               </div>
             ))}
@@ -139,11 +138,11 @@ export default function TagMissingLocationSearchAndAdd(
       </div>
       <div className="self-end">
         <Button
-          variant="outline"
+          variant="default"
           onClick={handleSubmit}
           disabled={!selectedPlace || submitting}
         >
-          Add New Location
+          Tag Location
         </Button>
       </div>
     </div>

@@ -93,3 +93,9 @@
   max-width: none !important;
   height: none !important;
 }
+
+.dark {
+  .ReactGridGallery_tile {
+    @apply bg-zinc-800 !important;
+  }
+}

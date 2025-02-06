@@ -29,6 +29,7 @@ interface IQuery {
   sort: ISortField;
   sortOrder: "asc" | "desc";
   query: string;
+  visibility: "all" | "visible" | "hidden";
 }
 export default async function handler(
   req: NextApiRequest,
@@ -43,19 +44,21 @@ export default async function handler(
       sortOrder = "desc",
       type = "all",
       query = "",
+      visibility = "all",
     } = req.query as any as IQuery;
 
     const currentUser = await getCurrentUser(req);
 
     const maximumAssetCount = !maxValue || maxValue <= 0 ? 1000000 : maxValue;
+
     const whereClause = and(
-      eq(person.isHidden, false),
       isNull(assets.duplicateId),
       eq(assets.isVisible, true),
       eq(assets.isArchived, false),
       eq(assets.ownerId, currentUser.id),
       type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, "")),
-      query && query.length > 0 ? ilike(person.name, `%${query}%`) : undefined
+      query && query.length > 0 ? ilike(person.name, `%${query}%`) : undefined,
+      visibility === "visible" ? eq(person.isHidden, false) : visibility === "hidden" ? eq(person.isHidden, true) : undefined
     );
 
     let dbQuery = db

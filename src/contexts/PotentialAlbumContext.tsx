@@ -5,6 +5,7 @@ export interface IPotentialAlbumConfig {
   startDate?: string;
   selectedIds: string[];
   assets: IAsset[];
+  minAssets?: number;
 }
 
 export interface IPotentialAlbumContext extends IPotentialAlbumConfig {
@@ -14,6 +15,7 @@ const PotentialAlbumContext = createContext<IPotentialAlbumContext>({
   startDate: undefined,
   selectedIds: [],
   assets: [],
+  minAssets: 1,
   updateContext: () => { },
 });
 

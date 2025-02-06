@@ -20,6 +20,15 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(-1);
 
+
+  const handleClick = (index: number, asset: IAsset, event: React.MouseEvent<HTMLElement>) => {
+    if (selectedIds.length > 0) {
+      handleSelect(index, asset, event);
+    } else {
+      setIndex(index);
+    }
+  }
+
   const handleSelect = (_idx: number, asset: IAsset, event: React.MouseEvent<HTMLElement>) => {
 
     event.stopPropagation();
@@ -55,13 +64,13 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
       type: (asset.type === "VIDEO" ? "video" : "image") as any,
       sources:
         asset.type === "VIDEO"
-            ? [
-                {
-                  src: asset.downloadUrl as string,
-                  type: "video/mp4",
-                },
-              ]
-            : undefined,
+          ? [
+            {
+              src: asset.downloadUrl as string,
+              type: "video/mp4",
+            },
+          ]
+          : undefined,
       height: asset.exifImageHeight as number,
       width: asset.exifImageWidth as number,
       downloadUrl: asset.downloadUrl as string,
@@ -104,7 +113,7 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
       />
       <Gallery
         images={images}
-        onClick={setIndex}
+        onClick={handleClick}
         enableImageSelection={selectable}
         thumbnailImageComponent={LazyGridImage}
         onSelect={handleSelect}
