@@ -36,7 +36,7 @@ export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThum
           }}
         />
         <div className="absolute bottom-0 w-full bg-gray-800/70 text-white text-center text-xs font-bold py-1 group-hover:hidden">
-          {formatDate(album.firstPhotoDate.toString(), 'MMM d, yyyy')} - {formatDate(album.lastPhotoDate.toString(), 'MMM d, yyyy')}
+          {album.firstPhotoDate ? formatDate(album.firstPhotoDate?.toString(), 'MMM d, yyyy') : ''} - {album.lastPhotoDate ? formatDate(album.lastPhotoDate?.toString(), 'MMM d, yyyy') : ''}
         </div>
         <Checkbox
           defaultChecked={isSelected}
