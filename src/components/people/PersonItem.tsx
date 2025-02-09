@@ -6,12 +6,11 @@ import { PersonMergeDropdown } from "./PersonMergeDropdown";
 import PersonBirthdayCell from "./PersonBirthdayCell";
 import clsx from "clsx";
 import Link from "next/link";
-import { ArrowUpRight, Info, Search } from "lucide-react";
+import { ArrowUpRight, Info } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
-import { Badge } from "../ui/badge";
 import ShareAssetsTrigger from "../shared/ShareAssetsTrigger";
-import { Button, Input } from "antd";
+import { Badge, Button, Input } from "antd";
 interface IProps {
   person: IPerson;
   onRemove: (person: IPerson) => void;
@@ -85,7 +84,9 @@ export default function PersonItem({ person, onRemove }: IProps) {
           alt={person.name}
         />
         <div className="absolute bottom-2 w-full flex justify-center items-center">
-          <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
+          <Badge color="#000" style={{
+            border: 'none'
+          }} count={`${person.assetCount} Assets`}/>
         </div>
         <div className="absolute top-2 left-2 group-hover:flex hidden items-center gap-2">
           <Link

@@ -1,15 +1,5 @@
 "use client";
 
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { SearchSlash, X } from "lucide-react";
 import {
   listSimilarFaces,
@@ -17,22 +7,14 @@ import {
   searchPeople,
 } from "@/handlers/api/people.handler";
 import { IPerson } from "@/types/person";
-import { Avatar } from "../ui/avatar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
-import { Input } from "../ui/input";
+
 import Loader from "../ui/loader";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import FaceThumbnail from "./merge/FaceThumbnail";
 import ErrorBlock from "../shared/ErrorBlock";
-import { cn } from "@/lib/utils";
-import { Button, Modal } from "antd";
+import { Button, Modal, Input, Form, Avatar, Dropdown } from "antd";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
@@ -119,10 +101,10 @@ export function PersonMergeDropdown({
     if (selectedPeople.length === 0) {
       return;
     }
-  
+
     const personIds = selectedPeople.map((p) => p.id);
     setMerging(true);
-  
+
     const mergeInBatches = async (ids: string[], index: number = 0) => {
       if (index >= ids.length) {
         setOpen(false);
@@ -137,7 +119,7 @@ export function PersonMergeDropdown({
         onComplete?.(primaryPerson);
         return;
       }
-  
+
       const batch = ids.slice(index, index + 5);
       try {
         await mergePerson(person.id, batch);
@@ -150,7 +132,7 @@ export function PersonMergeDropdown({
         setMerging(false);
       }
     };
-  
+
     mergeInBatches(personIds);
   };
 
@@ -234,26 +216,63 @@ export function PersonMergeDropdown({
   };
 
   return (
-    <Modal open={open} onCancel={() => setOpen(false)}>
-      <DialogTrigger asChild>
-        <Button type="primary" size="small" >
-          Merge
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            Merge {person.name ? person.name : "Untagged Person"}
-          </DialogTitle>
-          <DialogDescription>
+    <>
+      <Button type="primary" size="small" onClick={() => setOpen(true)}>
+        Merge
+      </Button>
+      <Modal
+        open={open}
+        onCancel={() => setOpen(false)}
+        title={`Merge ${person.name ? person.name : "Untagged Person"}`}
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              onClick={() => {
+                setSelectedPeople(similarPeople);
+              }}
+              type="primary"
+            >
+              Select All
+            </Button>
+
+            <Button
+              onClick={() => {
+                setOpen(false);
+                setSelectedPeople([]);
+                setPrimaryPerson(person);
+              }}
+              type="default"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMerge}
+              disabled={selectedPeople.length === 0 || merging}
+            >
+              Merge {selectedPeople.length + 1} People
+            </Button>
+          </div>
+        }>
+        <div className="flex flex-col gap-2">
+          <p>
             <div className="flex items-center gap-2">
               <p>
                 {selectedPeople.length > 0
                   ? `Merging ${selectedPeople.length} people to ${person.name}`
                   : "Search and select people to merge with"}
               </p>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex gap-1 items-center">
+              <Dropdown
+                menu={{
+                  items: [person, ...selectedPeople].map((p) => ({
+                    label: p.name || "Untagged Person",
+                    key: p.id,
+                    icon: <Avatar src={p.thumbnailPath} alt={p.name} className="w-4 h-4" />,
+                    onClick: () => setPrimaryPerson(p),
+                  })),
+                }}
+                
+              >
+                <div className="flex gap-1 items-center">
                   <Avatar
                     src={primaryPerson.thumbnailPath}
                     alt={primaryPerson.name}
@@ -261,108 +280,63 @@ export function PersonMergeDropdown({
                   />
                   <p>{primaryPerson?.name || "Untagged Person"}</p>
                   <CaretDownIcon />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {[person, ...selectedPeople].map((person) => (
-                    <DropdownMenuItem
-                      key={person.id}
-                      onSelect={() => setPrimaryPerson(person)}
-                      className="flex gap-1"
-                    >
-                      <Avatar
-                        src={person.thumbnailPath}
-                        alt={person.name}
-                        className="w-6 h-6"
-                      />
-                      <span>{person.name || "Untagged Person"}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </div>
+              </Dropdown>
             </div>
-          </DialogDescription>
-        </DialogHeader>
-        <Input
-          placeholder="Search people..."
-          onChange={(e) => {
-            handleSearch(e.target.value);
-          }}
-        />
-        <div>
-          <label htmlFor="threshold" className="block text-sm font-medium text-gray-300">
-            Threshold
-          </label>
+          </p>
+
           <Input
-            type="number"
-            step="0.01"
-            min="0"
-            max="1"
-            value={threshold}
-            onChange={(e) => setThreshold(parseFloat(e.target.value))}
-            placeholder="Threshold (0 to 1)"
-            className="mt-2"
+            placeholder="Search people..."
+            onChange={(e) => {
+              handleSearch(e.target.value);
+            }}
           />
-        </div>
+          <Form.Item label="Threshold" name="threshold" layout="vertical">
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              value={threshold}
+              onChange={(e) => setThreshold(parseFloat(e.target.value))}
+              placeholder="Threshold (0 to 1)"
+            />
+          </Form.Item>
 
-        {selectedPeople.length > 0 ? (
-          <div className="flex flex-nowrap overflow-x-auto gap-2 py-2">
-            {selectedPeople.map((person) => (
-              <div
-                key={person.id}
-                className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
-              >
-                <Avatar
-                  src={person.thumbnailPath}
-                  alt={person.name}
-                  className="w-6 h-6"
-                />
-                <p className="text-xs text-nowrap">
-                  {person.name ? person.name : <span>Untagged person</span>}
-                </p>
-                <button
-                  className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
-                  onClick={() => handleRemove(person)}
+          {selectedPeople.length > 0 ? (
+            <div className="flex flex-nowrap overflow-x-auto gap-2">
+              {selectedPeople.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex border px-1 items-center gap-1 dark:bg-zinc-900 rounded-lg p-1"
                 >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div>
-            <p className="py-4 text-sm text-zinc-500">No Selections Yet</p>
-          </div>
-        )}
+                  <Avatar
+                    src={person.thumbnailPath}
+                    alt={person.name}
+                    className="w-6 h-6"
+                  />
+                  <p className="text-xs text-nowrap">
+                    {person.name ? person.name : <span>Untagged person</span>}
+                  </p>
+                  <button
+                    className="rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200 p-1"
+                    onClick={() => handleRemove(person)}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="py-4 text-sm text-zinc-500">No Selections Yet</p>
+            </div>
+          )}
 
-        {renderContent()}
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              setSelectedPeople(similarPeople);
-            }}
-            type="primary"
-          >
-            Select All
-          </Button>
+          {renderContent()}
 
-          <Button
-            onClick={() => {
-              setOpen(false);
-              setSelectedPeople([]);
-              setPrimaryPerson(person);
-            }}
-            type="default"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleMerge}
-            disabled={selectedPeople.length === 0 || merging}
-          >
-            Merge {selectedPeople.length + 1} People
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Modal>
+        </div>
+      </Modal>
+    </>
   );
 }
