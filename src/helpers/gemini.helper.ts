@@ -80,9 +80,12 @@ export const parseFindQuery = async (query: string): Promise<FindQuery>  => {
     }
   });
 
+  console.log("response from gemini", response.text());
+
   const parsedResponse = JSON.parse(response.text()) as FindQuery;
   const cleanedResponse = {
     ...parsedResponse
   };
+  
   return removeNullOrUndefinedProperties(cleanedResponse) as any as FindQuery;
 }

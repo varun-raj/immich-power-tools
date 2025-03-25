@@ -9,11 +9,12 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function search(req: NextApiRequest, res: NextApiResponse) {
-  const { query } = req.body;
-  const currentUser = await getCurrentUser(req);  
-  const parsedQuery = await parseFindQuery(query as string);
-  const { personIds } = parsedQuery;
-  const url = ENV.IMMICH_URL + "/api/search/smart";
+  try {
+    const { query } = req.body;
+    const currentUser = await getCurrentUser(req);  
+    const parsedQuery = await parseFindQuery(query as string);
+    const { personIds } = parsedQuery;
+    const url = ENV.IMMICH_URL + "/api/search/smart";
 
   let dbPeople: Person[] = [];
   if (personIds) {
@@ -59,5 +60,9 @@ export default async function search(req: NextApiRequest, res: NextApiResponse) 
   }).catch(err => {
     res.status(500).json({ error: err.message });
   });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to parse query" });
+  }
 
 }
