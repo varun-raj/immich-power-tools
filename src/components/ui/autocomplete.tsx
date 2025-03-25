@@ -118,7 +118,7 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           e.preventDefault()
           setOpen(true)
-          setSelectedIndex(0)
+          setSelectedIndex(showCreateNew ? 0 : -1)
         }
         return
       }
@@ -126,22 +126,28 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault()
-          setSelectedIndex((prev) => (prev + 1) % totalOptions)
+          setSelectedIndex((prev) => {
+            const next = prev + 1
+            return next >= totalOptions ? 0 : next
+          })
           break
         case 'ArrowUp':
           e.preventDefault()
-          setSelectedIndex((prev) => (prev - 1 + totalOptions) % totalOptions)
+          setSelectedIndex((prev) => {
+            const next = prev - 1
+            return next < 0 ? totalOptions - 1 : next
+          })
           break
         case 'Enter':
           e.preventDefault()
-          if (selectedIndex >= 0 && selectedIndex < filteredOptions.length) {
-            const option = filteredOptions[selectedIndex]
-            setInputValue(option.label)
-            onOptionSelect(option)
+          if (showCreateNew && selectedIndex === 0) {
+            onCreateNew(inputValue.trim())
             setOpen(false)
             setSelectedIndex(-1)
-          } else if (showCreateNew && selectedIndex === filteredOptions.length) {
-            onCreateNew(inputValue.trim())
+          } else if (selectedIndex >= (showCreateNew ? 1 : 0) && selectedIndex < totalOptions) {
+            const option = filteredOptions[selectedIndex - (showCreateNew ? 1 : 0)]
+            setInputValue(option.label)
+            onOptionSelect(option)
             setOpen(false)
             setSelectedIndex(-1)
           }
@@ -174,6 +180,7 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
           value={inputValue}
           onFocus={() => {
             setOpen(true)
+            setSelectedIndex(showCreateNew ? 0 : -1)
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
@@ -181,7 +188,7 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
           {...props}
           onChange={(e) => {
             setInputValue(e.target.value)
-            setSelectedIndex(-1)
+            setSelectedIndex(showCreateNew ? 0 : -1)
             props.onChange?.(e)
           }}
         />
@@ -193,12 +200,27 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
               </div>
             ) : (
               <>
+                {showCreateNew && (
+                  <button
+                    className={cn(
+                      "w-full px-3 py-2 text-left text-sm text-primary hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+                      selectedIndex === 0 && "bg-accent text-accent-foreground"
+                    )}
+                    onClick={() => {
+                      onCreateNew(inputValue.trim())
+                      setOpen(false)
+                      setSelectedIndex(-1)
+                    }}
+                  >
+                    {createNewLabel} &quot;{inputValue.trim()}&quot;
+                  </button>
+                )}
                 {filteredOptions.map((option, index) => (
                   <button
                     key={option.value}
                     className={cn(
                       "w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none flex items-center gap-2",
-                      index === selectedIndex && "bg-accent text-accent-foreground"
+                      (showCreateNew ? index + 1 : index) === selectedIndex && "bg-accent text-accent-foreground"
                     )}
                     onClick={() => {
                       setInputValue(option.label)
@@ -215,21 +237,6 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
                     </span>
                   </button>
                 ))}
-                {showCreateNew && (
-                  <button
-                    className={cn(
-                      "w-full border-t px-3 py-2 text-left text-sm text-primary hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
-                      selectedIndex === filteredOptions.length && "bg-accent text-accent-foreground"
-                    )}
-                    onClick={() => {
-                      onCreateNew(inputValue.trim())
-                      setOpen(false)
-                      setSelectedIndex(-1)
-                    }}
-                  >
-                    {createNewLabel} &quot;{inputValue.trim()}&quot;
-                  </button>
-                )}
               </>
             )}
           </div>

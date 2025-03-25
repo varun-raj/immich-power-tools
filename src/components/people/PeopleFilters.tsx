@@ -20,7 +20,8 @@ import { ParsedUrlQueryInput } from "querystring";
 
 export function PeopleFilters() {
   const router = useRouter();
-  const { updateContext, page, maximumAssetCount, type = "all", query = "", visibility = "all" } = usePeopleFilterContext();
+  const filters = usePeopleFilterContext();
+  const { updateContext, page, maximumAssetCount, type = "all", query = "", visibility = "all" } = filters;
 
   const handleChange = (data: Partial<IPersonListFilters>) => {
     updateContext(data);
@@ -69,7 +70,10 @@ export function PeopleFilters() {
         }}
       />
 
-      <Select value={type} onValueChange={(value) => handleChange({ type: value })}>
+      <Select value={type} onValueChange={(value) => handleChange({ 
+        ...removeNullOrUndefinedProperties(filters),
+        type: value as "all" | "nameless" | "named" 
+      })}>
         <SelectTrigger>
           <SelectValue placeholder="Person Type" />
         </SelectTrigger>
@@ -80,7 +84,10 @@ export function PeopleFilters() {
         </SelectContent>
       </Select>
 
-      <Select value={visibility} onValueChange={(value) => handleChange({ visibility: value as "all" | "visible" | "hidden" })}>
+      <Select value={visibility} onValueChange={(value) => handleChange({ 
+        ...removeNullOrUndefinedProperties(filters),
+          visibility: value as "all" | "visible" | "hidden" 
+        })}>
         <SelectTrigger>
           <SelectValue placeholder="Visibility" />
         </SelectTrigger>
