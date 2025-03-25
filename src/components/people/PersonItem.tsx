@@ -1,7 +1,7 @@
 import { IPerson } from "@/types/person";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Avatar } from "../ui/avatar";
-import { updatePerson } from "@/handlers/api/people.handler";
+import { mergePerson, searchPeople, updatePerson } from "@/handlers/api/people.handler";
 import { PersonMergeDropdown } from "./PersonMergeDropdown";
 import PersonBirthdayCell from "./PersonBirthdayCell";
 import clsx from "clsx";
@@ -12,6 +12,8 @@ import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
 import ShareAssetsTrigger from "../shared/ShareAssetsTrigger";
+import { Autocomplete, AutocompleteOption } from "../ui/autocomplete";
+import { AlertDialog, IAlertDialogActions } from "../ui/alert-dialog";
 interface IProps {
   person: IPerson;
   onRemove: (person: IPerson) => void;
@@ -22,6 +24,8 @@ export default function PersonItem({ person, onRemove }: IProps) {
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(person);
+  const selectedPerson = useRef<AutocompleteOption | null>(null);
+  const mergeDialogRef = useRef<IAlertDialogActions>(null);
 
   const handleEdit = () => {
     if (formData.name && formData.name !== person.name) {
@@ -62,10 +66,14 @@ export default function PersonItem({ person, onRemove }: IProps) {
           isHidden: hidden,
         }));
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleMerge = async (option: AutocompleteOption) => {
+    await mergePerson(person.id, [option.value]);
   };
 
   return (
@@ -79,11 +87,11 @@ export default function PersonItem({ person, onRemove }: IProps) {
       )}
     >
       <div className="relative w-full h-auto group">
-          <Avatar
-            className="w-full min-h-full h-auto rounded-lg"
-            src={person.thumbnailPath}
-            alt={person.name}
-          />
+        <Avatar
+          className="w-full min-h-full h-auto rounded-lg"
+          src={person.thumbnailPath}
+          alt={person.name}
+        />
         <div className="absolute bottom-2 w-full flex justify-center items-center">
           <Badge variant={"secondary"} className="text-xs !font-medium font-mono">{person.assetCount} Assets</Badge>
         </div>
@@ -103,13 +111,13 @@ export default function PersonItem({ person, onRemove }: IProps) {
           </Link>
         </div>
         <div className="absolute top-2 right-2 flex flex-col gap-2">
-          <PersonMergeDropdown person={person} onRemove={onRemove}/>
+          <PersonMergeDropdown person={person} onRemove={onRemove} />
           <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
             handleHide(!formData.isHidden);
           }}>
-          {formData.isHidden ? "Show" : "Hide"}
-        </Button>
-        <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ variant: "outline", className: "!py-0.5 !px-2 text-xs h-7" }} />
+            {formData.isHidden ? "Show" : "Hide"}
+          </Button>
+          <ShareAssetsTrigger filters={{ personIds: [person.id] }} buttonProps={{ variant: "outline", className: "!py-0.5 !px-2 text-xs h-7" }} />
         </div>
       </div>
       {!editMode ? (
@@ -126,7 +134,11 @@ export default function PersonItem({ person, onRemove }: IProps) {
           )}
         </h2>
       ) : (
-        <input
+        <Autocomplete
+          loadOptions={(query: string) => searchPeople(query).then((people) => people.map((person: any) => ({
+            label: person.name, value: person.id,
+            imageUrl: person.thumbnailPath
+          })))}
           type="text"
           className="text-lg font-semibold text-center w-full px-2 py-1 rounded-lg"
           defaultValue={formData.name}
@@ -135,18 +147,32 @@ export default function PersonItem({ person, onRemove }: IProps) {
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleEdit();
-            }
+          value={formData.name}
+          onOptionSelect={(value) => {
+            mergeDialogRef.current?.open();
+            selectedPerson.current = value;
           }}
+          createNewLabel="Merge with this person"
           disabled={loading}
-          onBlur={handleEdit}
+          onCreateNew={(value) => {
+            handleEdit();
+          }}
         />
       )}
       <div className="flex flex-col gap-2">
         <PersonBirthdayCell person={person} />
       </div>
+
+      <AlertDialog
+        ref={mergeDialogRef}
+        title="Merge Person"
+        description="Are you sure you want to merge this person with the selected person?"
+        onConfirm={() => {
+          if (selectedPerson.current) {
+            handleMerge(selectedPerson.current);
+          }
+        }}
+      />
     </div>
   );
 }
