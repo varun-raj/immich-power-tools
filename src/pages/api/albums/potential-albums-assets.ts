@@ -39,6 +39,8 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       AND a."ownerId" = '${ownerId}'
       AND e."dateTimeOriginal"::date = '${date}'
       AND a."isVisible" = true
+  ORDER BY
+      e."dateTimeOriginal" DESC
 `);
 
 export default async function handler(

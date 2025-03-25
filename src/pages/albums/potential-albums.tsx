@@ -66,10 +66,6 @@ export default function PotentialAlbums() {
     return createAlbum({
       ...formData,
       assetIds: config.selectedIds,
-      albumUsers: [{
-        role: "editor",
-        userId: id,
-      }]
     }).then(() => {
       toast({
         title: "Album created",
