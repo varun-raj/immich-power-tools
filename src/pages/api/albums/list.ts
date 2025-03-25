@@ -7,7 +7,6 @@ import { albums } from "@/schema/albums.schema";
 import { count, desc, eq, min, max, sql, and, sum, isNotNull } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
-import { users } from "@/schema/users.schema";
 import { assetFaces, exif, person } from "@/schema";
 import { IAlbum } from "@/types/album";
 

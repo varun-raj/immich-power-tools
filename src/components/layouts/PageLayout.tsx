@@ -1,8 +1,6 @@
 import React from "react";
 import Header from "../shared/Header";
 import { cn } from "@/lib/utils";
-import Head from "next/head";
-
 
 interface IProps {
   children: React.ReactNode[] | React.ReactNode;

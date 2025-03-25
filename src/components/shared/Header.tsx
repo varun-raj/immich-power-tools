@@ -1,23 +1,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
-import {
-  Home,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Head from "next/head";
 import { sidebarNavs } from "@/config/constants/sidebarNavs";

@@ -1,16 +1,8 @@
-import { db } from "@/config/db";
 import { ENV } from "@/config/environment";
-import { count, desc, gte, isNotNull, lte, ne } from "drizzle-orm";
-import { eq, inArray } from "drizzle-orm";
-import { assetFaces, assets, exif, person } from "@/schema";
-import { and } from "drizzle-orm";
-import { JsonWebTokenError, sign, verify } from "jsonwebtoken";
+import { JsonWebTokenError, verify } from "jsonwebtoken";
 import { NextApiResponse } from "next";
 
 import { NextApiRequest } from "next";
-import { albums } from "@/schema/albums.schema";
-import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
-import { ASSET_SHARE_THUMBNAIL_PATH, DOWNLOAD_ASSETS_PATH, SHARE_LINK_DOWNLOAD_PATH } from "@/config/routes";
 import { getUserHeaders } from "@/helpers/user.helper";
 
 interface ShareLinkFilters {

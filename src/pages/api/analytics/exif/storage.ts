@@ -2,7 +2,6 @@ import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { humanizeBytes } from "@/helpers/string.helper";
 import { assets, exif, users } from "@/schema";
-import { Value } from "@radix-ui/react-select";
 import { desc, eq } from "drizzle-orm";
 import { sum } from "drizzle-orm";
 import { NextApiResponse } from "next";

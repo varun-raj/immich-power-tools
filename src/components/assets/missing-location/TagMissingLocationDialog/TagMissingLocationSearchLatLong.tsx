@@ -1,16 +1,11 @@
 
-import ErrorBlock from "@/components/shared/ErrorBlock";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Loader from "@/components/ui/loader";
 import { useToast } from "@/components/ui/use-toast";
-import { searchPlaces } from "@/handlers/api/common.handler";
-import { cn } from "@/lib/utils";
 import { IPlace } from "@/types/common";
-import { Check } from "lucide-react";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 interface TagMissingLocationSearchLatLongProps {
   onSubmit: (place: IPlace) => Promise<any>;

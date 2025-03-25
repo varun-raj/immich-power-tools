@@ -11,7 +11,6 @@ import { LoginForm } from "../auth/LoginForm";
 import { useConfig } from "@/contexts/ConfigContext";
 import { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
-import PageLayout from "./PageLayout";
 
 type RootLayoutProps = {
   children: ReactNode;

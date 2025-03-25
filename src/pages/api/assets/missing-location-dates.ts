@@ -1,5 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { IMissingLocationDatesResponse } from "@/handlers/api/asset.handler";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";

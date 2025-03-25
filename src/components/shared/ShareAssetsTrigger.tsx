@@ -9,7 +9,6 @@ import { Label } from '@radix-ui/react-label';
 import { Switch } from '../ui/switch';
 import { Select, SelectValue, SelectContent, SelectItem, SelectTrigger } from '../ui/select';
 
-
 interface ShareAssetsTriggerProps {
   filters: ShareLinkFilters
   buttonProps?: ButtonProps

@@ -6,7 +6,7 @@ import { PersonMergeDropdown } from "./PersonMergeDropdown";
 import PersonBirthdayCell from "./PersonBirthdayCell";
 import clsx from "clsx";
 import Link from "next/link";
-import { ArrowUpRight, Info, Search } from "lucide-react";
+import { ArrowUpRight, Info } from "lucide-react";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";

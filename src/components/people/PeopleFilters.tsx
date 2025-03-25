@@ -16,7 +16,6 @@ import { Input } from "../ui/input";
 import { IPersonListFilters } from "@/handlers/api/people.handler";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { removeNullOrUndefinedProperties } from "@/helpers/data.helper";
-import { ParsedUrlQueryInput } from "querystring";
 
 export function PeopleFilters() {
   const router = useRouter();

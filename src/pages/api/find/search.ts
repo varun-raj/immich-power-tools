@@ -1,11 +1,11 @@
 import { db } from '@/config/db';
 import { ENV } from '@/config/environment';
 import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
-import { cleanUpAsset, cleanUpAssets, isFlipped } from '@/helpers/asset.helper';
+import { cleanUpAsset, isFlipped } from '@/helpers/asset.helper';
 import { parseFindQuery } from '@/helpers/gemini.helper';
-import { assetFaces, assets, person } from '@/schema';
+import { person } from '@/schema';
 import { Person } from '@/schema/person.schema';
-import { and, eq, inArray } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function search(req: NextApiRequest, res: NextApiResponse) {
@@ -58,11 +58,11 @@ export default async function search(req: NextApiRequest, res: NextApiResponse) 
       },
     });
   }).catch(err => {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   });
   } catch (err: any) {
     console.error(err);
-    res.status(500).json({ error: "Failed to parse query" });
+    res.status(500).json({ message: err.message || "Failed to parse query" });
   }
 
 }

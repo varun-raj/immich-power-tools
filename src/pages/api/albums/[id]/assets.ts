@@ -3,13 +3,10 @@ import { NextApiRequest } from "next";
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiResponse } from "next";
-import { albums } from "@/schema/albums.schema";
-import { count, desc, eq, min, max, sql, and, asc, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
-import { users } from "@/schema/users.schema";
 import { assetFaces, exif, person } from "@/schema";
-import { IAlbum } from "@/types/album";
 
 export default async function handler(
   req: NextApiRequest,

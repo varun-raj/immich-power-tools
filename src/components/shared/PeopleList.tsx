@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { IPerson } from '@/types/person';
 import { cn } from '@/lib/utils';
 import LazyImage from '../ui/lazy-image';
-import { PERSON_THUBNAIL_PATH } from '@/config/routes';
 import { Input } from '../ui/input';
 
 interface PeopleListProps {

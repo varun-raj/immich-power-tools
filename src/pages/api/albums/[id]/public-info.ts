@@ -1,7 +1,6 @@
 import { NextApiRequest } from "next";
 
 import { db } from "@/config/db";
-import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiResponse } from "next";
 import { albums } from "@/schema/albums.schema";
 import { count, eq, min, max, sql, and } from "drizzle-orm";
