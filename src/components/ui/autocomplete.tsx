@@ -62,12 +62,6 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
           setOpen(false)
           setSelectedIndex(-1)
-          // Don't blur the input when clicking outside with a small delay
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.focus()
-            }
-          }, 0)
         }
       }
 
@@ -146,22 +140,10 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
             onOptionSelect(option)
             setOpen(false)
             setSelectedIndex(-1)
-            // Keep focus on input after selection with a small delay
-            setTimeout(() => {
-              if (inputRef.current) {
-                inputRef.current.focus()
-              }
-            }, 0)
           } else if (showCreateNew && selectedIndex === filteredOptions.length) {
             onCreateNew(inputValue.trim())
             setOpen(false)
             setSelectedIndex(-1)
-            // Keep focus on input after creating new with a small delay
-            setTimeout(() => {
-              if (inputRef.current) {
-                inputRef.current.focus()
-              }
-            }, 0)
           }
           break
         case 'Escape':
@@ -190,9 +172,8 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
             }
           }}
           value={inputValue}
-          onFocus={(e) => {
+          onFocus={() => {
             setOpen(true)
-            // containerRef.current?.focus()
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
@@ -224,12 +205,6 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
                       onOptionSelect(option)
                       setOpen(false)
                       setSelectedIndex(-1)
-                      // Keep focus on input after selection with a small delay
-                      setTimeout(() => {
-                        if (inputRef.current) {
-                          inputRef.current.focus()
-                        }
-                      }, 0)
                     }}
                   >
                     {option.imageUrl && (
@@ -250,12 +225,6 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
                       onCreateNew(inputValue.trim())
                       setOpen(false)
                       setSelectedIndex(-1)
-                      // Keep focus on input after creating new with a small delay
-                      setTimeout(() => {
-                        if (inputRef.current) {
-                          inputRef.current.focus()
-                        }
-                      }, 0)
                     }}
                   >
                     {createNewLabel} &quot;{inputValue.trim()}&quot;

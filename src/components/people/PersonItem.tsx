@@ -152,7 +152,7 @@ export default function PersonItem({ person, onRemove }: IProps) {
             mergeDialogRef.current?.open();
             selectedPerson.current = value;
           }}
-          createNewLabel="Merge with this person"
+          createNewLabel="Create"
           disabled={loading}
           onCreateNew={(value) => {
             handleEdit();
