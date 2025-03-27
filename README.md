@@ -48,12 +48,17 @@ services:
       - .env
 ```
 
-Add the Immich API Key and immich url's to the env file (which you already have for the immich)
+Add the Immich API Key and immich url's to the env file (which you already have for the immich).
+You also need to add `DB_PORT` (Default 5432) and `DB_HOST`, which has to be set to the name of the immich database
+container (Default `immich_postgres`).
 
 ```bash
 IMMICH_API_KEY= # your_immich_api_key
 IMMICH_URL = "http://local-ip-of-immich:port" # Your immich instace ip address and port
 EXTERNAL_IMMICH_URL = "https://external-address" # External address of immich
+
+DB_PORT = "5432"
+DB_HOST = "immich_postgres"
 
 # Optional
 GOOGLE_MAPS_API_KEY= # Google Maps API Key
