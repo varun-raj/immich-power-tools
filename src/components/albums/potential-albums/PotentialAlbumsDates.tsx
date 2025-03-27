@@ -2,13 +2,13 @@ import {
   IPotentialAlbumsDatesResponse,
   listPotentialAlbumsDates,
 } from "@/handlers/api/album.handler";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PotentialDateItem from "./PotentialDateItem";
 import { usePotentialAlbumContext } from "@/contexts/PotentialAlbumContext";
 import { useRouter } from "next/router";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ArrowUpDownIcon, SortAsc, SortDesc } from "lucide-react";
+import { SortAsc, SortDesc } from "lucide-react";
 
 export default function PotentialAlbumsDates() {
   const router = useRouter();

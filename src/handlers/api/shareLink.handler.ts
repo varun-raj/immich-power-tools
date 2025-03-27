@@ -1,6 +1,7 @@
 
 import {
   SHARE_LINK_ASSETS_PATH,
+  SHARE_LINK_DOWNLOAD_PATH,
   SHARE_LINK_GENERATE_PATH,
   SHARE_LINK_PATH,
   SHARE_LINK_PEOPLE_PATH 
@@ -22,4 +23,8 @@ export const generateShareLink = async (filters: ShareLinkFilters) => {
 
 export const getShareLinkPeople = async (token: string) => {
   return API.get(SHARE_LINK_PEOPLE_PATH(token));
+} 
+
+export const downloadShareLink = async (token: string, assetIds: string[]) => {
+  return API.post(SHARE_LINK_DOWNLOAD_PATH(token), { assetIds });
 } 

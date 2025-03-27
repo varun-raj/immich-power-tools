@@ -1,5 +1,3 @@
-import { useConfig } from '@/contexts/ConfigContext';
-import { Link } from 'lucide-react';
 import React from 'react'
 
 interface ErrorBlockProps {

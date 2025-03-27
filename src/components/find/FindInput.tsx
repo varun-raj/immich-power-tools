@@ -3,8 +3,6 @@ import inputStyle from './findInputStyle'
 import { MentionsInput, Mention } from 'react-mentions'
 import { searchPeople } from '@/handlers/api/people.handler';
 import mentionStyle from './findMentionStyle';
-import classNames from './FindInput.module.css';
-
 
 interface FindInputProps {
   onSearch: (query: string) => void;

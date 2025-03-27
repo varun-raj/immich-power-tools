@@ -128,7 +128,7 @@ const AlertDialogCancel = React.forwardRef<
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
 
 
-export interface INewChangelogButtonActions {
+export interface IAlertDialogActions {
   open: () => void
 }
 interface AlertDialogProps extends AlertDialogPrimitive.AlertDialogProps {
@@ -142,7 +142,7 @@ interface AlertDialogProps extends AlertDialogPrimitive.AlertDialogProps {
   disabled?: boolean
 }
 
-const AlertDialog = React.forwardRef<INewChangelogButtonActions, Partial<AlertDialogProps>>(({
+const AlertDialog = React.forwardRef<IAlertDialogActions, Partial<AlertDialogProps>>(({
   children,
   title,
   description,

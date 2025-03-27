@@ -2,7 +2,6 @@ import { listAlbums } from '@/handlers/api/album.handler';
 import { IAlbum } from '@/types/album';
 import React, { useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { X } from 'lucide-react';
 
 interface IAlbumDropdownProps {
   albumIds?: string[];

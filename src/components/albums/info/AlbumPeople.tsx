@@ -1,22 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { IAlbum } from '@/types/album'
-import { IPerson } from '@/types/person'
 import { getAlbumPeople } from '@/handlers/api/album.handler'
 import Loader from '@/components/ui/loader'
 import LazyImage from '@/components/ui/lazy-image'
 import { PERSON_THUBNAIL_PATH } from '@/config/routes'
 import Link from 'next/link'
 import { useConfig } from '@/contexts/ConfigContext'
-import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Users, X } from 'lucide-react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { PersonMergeDropdown } from '@/components/people/PersonMergeDropdown'
 import { Button } from '@/components/ui/button'
 import { updatePerson } from '@/handlers/api/people.handler'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 
 interface AlbumPeopleProps {
   album: IAlbum
@@ -40,10 +37,15 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
   const [hidingPerson, setHidingPerson] = useState<boolean>(false)
   const [selectionMode, setSelectionMode] = useState<boolean>(false)
   const [selectedPeople, setSelectedPeople] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState<string>("")
 
   const selectedPerson = useMemo(() => {
     return people.find((person) => query.faceId === person.id)
   }, [people, query.faceId])
+
+  const filteredPeople = useMemo(() => {
+    return people.filter((person) => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  }, [people, searchQuery])
 
   const fetchPeople = async () => {
     return getAlbumPeople(album.id).then((people) => {
@@ -102,7 +104,12 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
 
   return (
     <div className="overflow-y-auto min-w-[200px] sticky top-0 py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)] border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
-
+      <Input
+        placeholder="Search"
+        className="w-full"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       {selectedPerson && (
         <div className='flex flex-col gap-2 bg-white dark:bg-zinc-900 p-2 rounded-md'>
           <div className='flex items-center gap-2'>
@@ -172,7 +179,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
         )}
       </div>
       <div className="flex flex-col overflow-x-hidden gap-2">
-        {people.map((person) => (
+        {filteredPeople.map((person) => (
           <div
             className={cn(
               'flex items-center gap-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md p-1',

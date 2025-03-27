@@ -1,5 +1,3 @@
-// pages/api/proxy/[...path].ts
-
 import { ENV } from '@/config/environment';
 import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
 import { getUserHeaders } from '@/helpers/user.helper';

@@ -1,7 +1,6 @@
 import { db } from "@/config/db";
 import { IMissingLocationDatesResponse } from "@/handlers/api/asset.handler";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
-import { parseDate } from "@/helpers/date.helper";
 import { assets, exif } from "@/schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 import { albums } from "@/schema/albums.schema";

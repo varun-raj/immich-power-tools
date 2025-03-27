@@ -7,8 +7,8 @@ import L, { LatLngExpression } from 'leaflet';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css'; // Re-uses images from ~leaflet package
 import 'leaflet-defaulticon-compatibility';
 
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import { useState } from "react";
 import { IPlace } from "@/types/common";
 import CustomMarker from "./CustomMarker";
 

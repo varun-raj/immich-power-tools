@@ -3,9 +3,7 @@ import MissingLocationDates from "@/components/assets/missing-location/MissingLo
 import TagMissingLocationDialog from "@/components/assets/missing-location/TagMissingLocationDialog/TagMissingLocationDialog";
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import MissingLocationContext, {
   IMissingLocationConfig,
 } from "@/contexts/MissingLocationContext";

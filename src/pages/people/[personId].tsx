@@ -2,12 +2,9 @@ import PageLayout from '@/components/layouts/PageLayout';
 import PersonAlbumList from '@/components/people/info/PersonAlbumList';
 import PersonCityList from '@/components/people/info/PersonCityList';
 import Header from '@/components/shared/Header';
-import { Button } from '@/components/ui/button';
 import Loader from '@/components/ui/loader';
-import { ASSET_THUMBNAIL_PATH, PERSON_THUBNAIL_PATH } from '@/config/routes';
-import { useConfig } from '@/contexts/ConfigContext';
+import { PERSON_THUBNAIL_PATH } from '@/config/routes';
 import { getPersonInfo } from '@/handlers/api/person.handler';
-import { IAlbum } from '@/types/album';
 import { IPerson } from '@/types/person'
 import { GalleryThumbnails,  MapPin, Plus } from 'lucide-react';
 import Image from 'next/image';

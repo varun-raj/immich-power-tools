@@ -1,11 +1,6 @@
 import { IPerson } from "@/types/person";
 import React, { useState } from "react";
-import { DatePicker } from "../ui/datepicker";
 import { updatePerson } from "@/handlers/api/people.handler";
-import { formatDate } from "@/helpers/date.helper";
-import { Button } from "../ui/button";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
 
 interface IProps {
   person: IPerson;

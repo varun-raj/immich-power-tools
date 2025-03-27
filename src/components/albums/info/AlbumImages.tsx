@@ -6,11 +6,9 @@ import { IAsset } from '@/types/asset'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ExternalLink, Hourglass } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { CalendarArrowUp } from 'lucide-react';
 import Lightbox from 'yet-another-react-lightbox';
 import Captions from 'yet-another-react-lightbox/plugins/captions';
 import LazyImage from '@/components/ui/lazy-image';
-import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

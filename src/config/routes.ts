@@ -69,3 +69,5 @@ export const SHARE_LINK_PATH = (token: string) => BASE_API_ENDPOINT + "/share-li
 export const SHARE_LINK_GENERATE_PATH = BASE_API_ENDPOINT + "/share-link/generate";
 export const SHARE_LINK_ASSETS_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/assets";
 export const SHARE_LINK_PEOPLE_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/people";
+export const SHARE_LINK_DOWNLOAD_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/download";
+export const DOWNLOAD_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/download/archive";

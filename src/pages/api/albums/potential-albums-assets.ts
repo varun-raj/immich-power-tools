@@ -1,10 +1,7 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { isFlipped } from "@/helpers/asset.helper";
-import { exif } from "@/schema";
-import { count, desc, isNotNull, ne, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
@@ -39,6 +36,8 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       AND a."ownerId" = '${ownerId}'
       AND e."dateTimeOriginal"::date = '${date}'
       AND a."isVisible" = true
+  ORDER BY
+      e."dateTimeOriginal" DESC
 `);
 
 export default async function handler(

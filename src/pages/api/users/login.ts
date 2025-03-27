@@ -1,7 +1,5 @@
-// pages/api/proxy.js
-
 import { appConfig } from "@/config/app.config";
-import { getCurrentUser, loginUser } from "@/handlers/serverUtils/user.utils";
+import { loginUser } from "@/handlers/serverUtils/user.utils";
 import { serializeCookie } from "@/lib/cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 

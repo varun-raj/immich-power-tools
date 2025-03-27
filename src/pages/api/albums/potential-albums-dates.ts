@@ -4,12 +4,10 @@ import { IPotentialAlbumsDatesResponse } from "@/handlers/api/album.handler";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { parseDate } from "@/helpers/date.helper";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
-import { albums } from "@/schema/albums.schema";
 import { assets } from "@/schema/assets.schema";
 import { exif } from "@/schema/exif.schema";
-import { and, count, desc, eq, gte, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { number } from "zod";
 
 
 export default async function handler(

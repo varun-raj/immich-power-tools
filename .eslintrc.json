@@ -6,5 +6,9 @@
       "files": ["remotion/*.{ts,tsx}"],
       "extends": ["plugin:@remotion/recommended"]
     }
-  ]
+  ],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off",
+    "@next/next/no-img-element": "off"
+  }
 }

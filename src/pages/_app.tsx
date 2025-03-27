@@ -5,6 +5,8 @@ import { ThemeProvider } from "next-themes";
 import { ENV } from "@/config/environment";
 import ConfigContext, { ConfigContextType } from "@/contexts/ConfigContext";
 import { useRef } from "react";
+import { queryClient } from "@/config/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
 interface AppPropsWithProps extends AppProps {
   props: ConfigContextType;
 }
@@ -13,11 +15,13 @@ const App = ({ Component, pageProps, ...props }: AppPropsWithProps) => {
 
   return (
     <ConfigContext.Provider value={intialData.current}>
-      <ThemeProvider attribute="class" storageKey="theme">
-        <RootLayout>
-          <Component {...pageProps} />
-        </RootLayout>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" storageKey="theme">
+          <RootLayout>
+            <Component {...pageProps} />
+          </RootLayout>
+        </ThemeProvider>
+      </QueryClientProvider>
     </ConfigContext.Provider>
   );
 };

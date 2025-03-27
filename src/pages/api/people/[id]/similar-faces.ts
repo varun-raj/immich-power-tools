@@ -1,9 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { CHART_COLORS } from "@/config/constants/chart.constant";
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
-import { stringToBoolean } from "@/helpers/data.helper";
-import { assetFaces, assets, exif, person } from "@/schema";
+import { assetFaces, person } from "@/schema";
 import { faceSearch } from "@/schema/faceSearch.schema";
 import { and, cosineDistance, desc, eq, gt, ne, sql } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";

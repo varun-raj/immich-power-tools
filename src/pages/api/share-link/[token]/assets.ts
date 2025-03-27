@@ -2,7 +2,7 @@ import { db } from "@/config/db";
 import { ENV } from "@/config/environment";
 import { desc, gte, lte } from "drizzle-orm";
 import { eq, inArray } from "drizzle-orm";
-import { assetFaces, assets, exif, person } from "@/schema";
+import { assetFaces, assets, exif } from "@/schema";
 import { and } from "drizzle-orm";
 import { JsonWebTokenError, sign, verify } from "jsonwebtoken";
 import { NextApiResponse } from "next";

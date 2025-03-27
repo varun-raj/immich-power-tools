@@ -1,7 +1,7 @@
 import PageLayout from '@/components/layouts/PageLayout'
 import Header from '@/components/shared/Header'
 import Loader from '@/components/ui/loader'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Camera } from 'lucide-react'
 import { humanizeNumber } from '@/helpers/string.helper'

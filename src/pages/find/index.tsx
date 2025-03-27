@@ -1,18 +1,13 @@
-import "yet-another-react-lightbox/styles.css";
 import FindInput from '@/components/find/FindInput';
 import PageLayout from '@/components/layouts/PageLayout';
 import Header from '@/components/shared/Header';
 import Loader from '@/components/ui/loader';
-import { ASSET_PREVIEW_PATH, ASSET_THUMBNAIL_PATH } from '@/config/routes';
+import { ASSET_PREVIEW_PATH } from '@/config/routes';
 import { useConfig } from '@/contexts/ConfigContext';
 import { findAssets } from '@/handlers/api/asset.handler';
 import { IAsset } from '@/types/asset';
-import { ArrowUpRight, Captions, Megaphone, Search, Speaker, TriangleAlert, WandSparkles } from 'lucide-react';
-import Image from 'next/image';
+import { Search, TriangleAlert, WandSparkles } from 'lucide-react';
 import React, { useMemo, useState } from 'react'
-import Lightbox from 'yet-another-react-lightbox';
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import AssetGrid from "@/components/shared/AssetGrid";
 import FloatingBar from "@/components/shared/FloatingBar";
 import AssetsBulkDeleteButton from "@/components/shared/AssetsBulkDeleteButton";
@@ -39,6 +34,7 @@ export default function FindPage() {
   const [assets, setAssets] = useState<IAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<IFindFilters>({});
+  const [error, setError] = useState<string | null>(null);
 
   const slides = useMemo(
     () =>
@@ -76,6 +72,9 @@ export default function FindPage() {
         setAssets(assets);
         setFilters(_filters);
       })
+      .catch((error: any) => {
+        setError(error.message || error.error || "Failed to fetch assets");
+      })
       .finally(() => {
         setLoading(false);
       });
@@ -87,7 +86,7 @@ export default function FindPage() {
 
   const handleDelete = (ids: string[]) => {
     setSelectedIds([]);
-    setAssets(assets.filter((asset) => !ids.includes(asset.id))); 
+    setAssets(assets.filter((asset) => !ids.includes(asset.id)));
 
   }
 
@@ -110,6 +109,18 @@ export default function FindPage() {
       return <div className="flex justify-center items-center h-full">
         <Loader />
       </div>
+    }
+    else if (error) {
+      return (
+
+        <div className="flex justify-center items-center h-full flex-col gap-2">
+          <TriangleAlert className='w-10 h-10 text-muted-foreground' />
+          <p className='text-lg font-bold'>Oops, something went wrong</p>
+          <p className='text-sm text-muted-foreground max-w-md text-center'>
+            Error: {error}
+          </p>
+        </div>
+      )
     }
     else if (query.length === 0) {
       return (

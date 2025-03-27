@@ -4,7 +4,7 @@ import { z } from "zod";
 import { removeNullOrUndefinedProperties } from "./data.helper";
 
 const gemini = new GoogleGenerativeAI(ENV.GEMINI_API_KEY);
-const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = gemini.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 interface FindQuery {
   query: string;
@@ -80,9 +80,12 @@ export const parseFindQuery = async (query: string): Promise<FindQuery>  => {
     }
   });
 
+  console.log("response from gemini", response.text());
+
   const parsedResponse = JSON.parse(response.text()) as FindQuery;
   const cleanedResponse = {
     ...parsedResponse
   };
+  
   return removeNullOrUndefinedProperties(cleanedResponse) as any as FindQuery;
 }
