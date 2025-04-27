@@ -7,6 +7,8 @@ import { and, eq, isNotNull } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 import { assetFaces, exif, person } from "@/schema";
+import { isFlipped } from "@/helpers/asset.helper";
+import { ASSET_VIDEO_PATH } from "@/config/routes";
 
 export default async function handler(
   req: NextApiRequest,
@@ -41,6 +43,7 @@ export default async function handler(
     exifImageHeight: exif.exifImageHeight,
     ownerId: assets.ownerId,
     dateTimeOriginal: exif.dateTimeOriginal,
+    orientation: exif.orientation,
   })
     .from(albumsAssetsAssets)
     .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
@@ -56,5 +59,18 @@ export default async function handler(
     .limit(100)
     .offset(100 * (page - 1));
 
-  res.status(200).json(dbAssets);
+  const cleanedAssets = dbAssets.map((asset) => {
+    return {
+      ...asset,
+      exifImageHeight: isFlipped(asset?.orientation)
+        ? asset?.exifImageWidth
+        : asset?.exifImageHeight,
+      exifImageWidth: isFlipped(asset?.orientation)
+        ? asset?.exifImageHeight
+        : asset?.exifImageWidth,
+      orientation: asset?.orientation,
+      downloadUrl: asset?.id ? ASSET_VIDEO_PATH(asset.id) : null,
+    };
+  });
+  res.status(200).json(cleanedAssets);
 }

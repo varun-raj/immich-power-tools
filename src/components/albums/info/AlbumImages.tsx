@@ -1,110 +1,84 @@
 import "yet-another-react-lightbox/styles.css";
-import { listAlbumAssets } from '@/handlers/api/album.handler';
-import { useConfig } from '@/contexts/ConfigContext';
-import { IAlbum } from '@/types/album'
-import { IAsset } from '@/types/asset'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { ExternalLink, Hourglass } from 'lucide-react';
-import { useRouter } from 'next/router';
-import Lightbox from 'yet-another-react-lightbox';
-import Captions from 'yet-another-react-lightbox/plugins/captions';
-import LazyImage from '@/components/ui/lazy-image';
+import { listAlbumAssets } from "@/handlers/api/album.handler";
+import { useConfig } from "@/contexts/ConfigContext";
+import { IAlbum } from "@/types/album";
+import { IAsset } from "@/types/asset";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Hourglass } from "lucide-react";
+import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import AssetGrid from "@/components/shared/AssetGrid";
+import PhotoSelectionContext, {
+  IPhotoSelectionContext,
+} from "@/contexts/PhotoSelectionContext";
 
 interface AlbumImagesProps {
-  album: IAlbum
-
+  album: IAlbum;
 }
 
 interface IAssetFilter {
-  faceId?: string
-  page: number
+  faceId?: string;
+  page: number;
 }
 export default function AlbumImages({ album }: AlbumImagesProps) {
   const { exImmichUrl } = useConfig();
   const router = useRouter();
   const { faceId } = router.query as { faceId: string };
-  const [assets, setAssets] = useState<IAsset[]>([])
+  const [assets, setAssets] = useState<IAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filters, setFilters] = useState<IAssetFilter>({
     faceId,
-    page: 1
-  })
-  const [hasMore, setHasMore] = useState(true)
+    page: 1,
+  });
+  const [hasMore, setHasMore] = useState(true);
 
-  const [index, setIndex] = useState(-1);
+  // Initialize context state
+  const [contextState, setContextState] = useState<IPhotoSelectionContext>({
+    selectedIds: [],
+    assets: [],
+    config: {},
+    updateContext: (newConfig: Partial<IPhotoSelectionContext>) => {
+      setContextState((prevState) => ({
+        ...prevState,
+        ...newConfig,
+        // No deep merge needed for config here as it's simple
+        config: newConfig.config
+          ? { ...prevState.config, ...newConfig.config }
+          : prevState.config,
+      }));
+    },
+  });
 
   const fetchAssets = async () => {
     setLoading(true);
     return listAlbumAssets(album.id, filters)
-      .then((assets) => {
+      .then((newAssets) => {
         if (filters.page === 1) {
-          setAssets(assets)
+          setAssets(newAssets);
         } else {
-          setAssets([...assets, ...assets])
+          setAssets((prevAssets) => [...prevAssets, ...newAssets]);
         }
-        setHasMore(assets.length >= 100)
+        setHasMore(newAssets.length === 100);
       })
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
   };
 
-  const images = useMemo(() => {
-    return assets.map((p) => ({
-      ...p,
-      src: p.url as string,
-      original: p.previewUrl as string,
-      width: p.exifImageWidth as number,
-      height: p.exifImageHeight as number,
-      // isSelected: selectedIds.includes(p.id),
-      tags: [
-        {
-          title: "Immich Link",
-          value: (
-            <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
-              Open in Immich
-            </a>
-          ),
-        },
-      ],
-    }));
-  }, [assets]);
-
-  const slides = useMemo(
-    () =>
-      images.map(({ original, width, height }) => ({
-        src: original,
-        width,
-        height,
-      })),
-    [images]
-  );
-
-  const handleClick = (idx: number) => setIndex(idx);
-
-  // const handleSelect = (_idx: number, asset: IAsset) => {
-  //   const isPresent = selectedIds.includes(asset.id);
-  //   if (isPresent) {
-  //     updateContext({
-  //       selectedIds: selectedIds.filter((id) => id !== asset.id),
-  //     });
-  //   } else {
-  //     updateContext({ selectedIds: [...selectedIds, asset.id] });
-  //   }
-  // };
-
   useEffect(() => {
-    fetchAssets();
+    if (album.id) {
+      fetchAssets();
+    }
   }, [album.id, filters]);
 
   useEffect(() => {
     setFilters({
       faceId,
-      page: 1
-    })
-  }, [faceId])
+      page: 1,
+    });
+    setAssets([]);
+    setHasMore(true);
+  }, [faceId]);
 
   if (loading && filters.page === 1)
     return (
@@ -114,53 +88,36 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
       </div>
     );
 
-  return (
-    <div>
-      <Lightbox
-        slides={slides}
-        plugins={[Captions]}
-        open={index >= 0}
-        index={index}
-        close={() => setIndex(-1)}
-      />
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="w-full h-[180px] overflow-hidden relative"
-            >
-            <LazyImage
-              loading="lazy"
-              key={image.id}
-              src={image.original}
-              alt={image.originalFileName}
-              className='overflow-hidden max-h-[180px] max-w-[180px] min-h-[180px] min-w-[180px]'
-              style={{
-                objectPosition: 'center',
-                objectFit: 'cover'
-              }}
-              onClick={() => handleClick(images.indexOf(image))}
-            />
-            <Link
-                className="absolute top-2 right-2 bg-white dark:bg-zinc-900 p-1 py-0.5 rounded-md flex items-center gap-1 text-xs"
-                target="_blank"
-                href={`${exImmichUrl}/photos/${image.id}`}>
-                <ExternalLink className="w-3 h-3" />
-                Open In Immich
-              </Link> 
-          </div>
-        ))}
+  if (errorMessage) {
+    return (
+      <div className="p-4 text-red-500">
+        Error loading images: {errorMessage}
       </div>
-      {hasMore && <Button variant="outline" className='w-full' onClick={() => {
-        setFilters({
-          ...filters,
-          page: filters.page + 1
-        })
-      }}
-        disabled={loading}
-      >
-        Load More
-      </Button>}
-    </div>
+    );
+  }
+
+  return (
+    <PhotoSelectionContext.Provider
+      value={{ ...contextState, updateContext: contextState.updateContext }}
+    >
+      <div className="w-full p-2">
+        <AssetGrid assets={assets} />
+        {hasMore && (
+          <Button
+            variant="outline"
+            className="w-full mt-4"
+            onClick={() => {
+              setFilters({
+                ...filters,
+                page: filters.page + 1,
+              });
+            }}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Load More"}
+          </Button>
+        )}
+      </div>
+    </PhotoSelectionContext.Provider>
   );
 }

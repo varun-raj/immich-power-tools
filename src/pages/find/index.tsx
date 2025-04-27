@@ -72,17 +72,7 @@ export default function FindPage() {
 
   const updateContext = contextState.updateContext;
 
-  // Derive slides from contextState.assets
-  const slides = useMemo(
-    () =>
-      contextState.assets.map((asset) => ({
-        src: ASSET_PREVIEW_PATH(asset.id),
-        width: 1000,
-        height: 1000,
-      })),
-    [contextState.assets]
-  );
-
+  
   const appliedFilters: {
     label: string;
     value: string;

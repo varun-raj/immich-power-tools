@@ -66,7 +66,6 @@ export default function AlbumListPage() {
   }
 
   const renderContent = () => {
-
     if (loading) {
       return <Loader />
     }
