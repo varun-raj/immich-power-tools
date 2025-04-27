@@ -42,7 +42,7 @@ export default function LazyGridImage(
   )
 
   return (
-    <div className="relative">
+    <div>
       <img {...props.imageProps} alt={props.imageProps.alt || ""} title="" />
       {props.item.isVideo && <div className="absolute bottom-2 right-2 bg-black/50 p-1 rounded-full flex items-center gap-1">
         <PlayIcon className="w-3 h-3 text-white" />

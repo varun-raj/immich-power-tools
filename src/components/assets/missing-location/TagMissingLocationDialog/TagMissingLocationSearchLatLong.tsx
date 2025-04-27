@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { IPlace } from "@/types/common";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 interface TagMissingLocationSearchLatLongProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -24,6 +24,8 @@ export default function TagMissingLocationSearchLatLong(
 ) {
   const { toast } = useToast();
 
+  const [latLong, setLatLong] = useState<string>("");
+
   const [formData, setFormData] = useState<IPlace>({
     latitude: location.latitude,
     longitude: location.longitude,
@@ -32,33 +34,15 @@ export default function TagMissingLocationSearchLatLong(
   const [submitting, setSubmitting] = useState(false);
 
   const isValid = useMemo(() => {
-    if (formData.latitude === 0 || formData.longitude === 0) {
-      return false;
-    }
     if (isNaN(formData.latitude) || isNaN(formData.longitude)) {
       return false;
     }
+    if (formData.latitude === 0 || formData.longitude === 0) {
+      return false;
+    }
+
     return true;
   }, [formData]);
-
-  const handleChange = (key: string, value: string) => {
-    // if somebody pastes a combination of "lat, long"
-    if (key === "latitude" && value.includes(",")) {
-      const latLong = value.split(",");
-      if (latLong.length === 2) {
-        setFormData({
-          ...formData,
-          latitude: parseFloat(latLong[0]),
-          longitude: parseFloat(latLong[1]),
-        });
-      }
-    } else {
-      setFormData({
-        ...formData,
-        [key]: value,
-      });
-    }
-  }
 
   const handleSubmit = () => {
     if (!isValid) {
@@ -103,32 +87,35 @@ export default function TagMissingLocationSearchLatLong(
     onLocationChange(place);
   }
 
+  useEffect(() => {
+    if (latLong) {
+      const [latitude, longitude] = latLong.split(",");
+      setFormData({
+        ...formData,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      });
+    }
+  }, [latLong]);
+
   return (
     <div className="flex flex-col gap-4 py-4 px-2">
       <div className="flex items-start gap-2">
         <div className="flex flex-col gap-2 flex-1">
-          <Label>Latitude</Label>
+          <Label>Latitude, Longitude</Label>
+          <span className="text-sm text-muted-foreground">
+            Enter lat and long in comma separated values
+          </span>
           <Input
-            placeholder="Latitude"
-            value={formData.latitude}
+            placeholder="Latitude, Longitude"
+            value={latLong}
             onChange={(e) => {
-              handleChange("latitude", e.target.value);
+              setLatLong(e.target.value);
             }}
             onBlur={(e) => handleBlur()}
           />
-        </div>
-        <div className="flex flex-col gap-2 flex-1">
-          <Label>
-            Longitude
-          </Label>
-          <Input
-            placeholder="Longitude"
-            value={formData.longitude}
-            onChange={(e) => {
-              handleChange("longitude", e.target.value);
-            }}
-            onBlur={(e) => handleBlur()}
-          />
+
+        
         </div>
       </div>
 

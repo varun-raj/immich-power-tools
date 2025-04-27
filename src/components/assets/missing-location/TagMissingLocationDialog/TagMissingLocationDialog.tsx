@@ -64,7 +64,11 @@ export default function TagMissingLocationDialog({
           </TabsContent>
           <TabsContent value="maps">
             <div className="flex flex-col gap-6 items-center ">
-              <LazyMap location={mapPosition} onLocationChange={setMapPosition} />
+              <LazyMap location={{
+                latitude: isNaN(mapPosition.latitude) ? 0 : mapPosition.latitude,
+                longitude: isNaN(mapPosition.longitude) ? 0 : mapPosition.longitude,
+                name: mapPosition.name,
+              }} onLocationChange={setMapPosition} />
             </div>
           </TabsContent>
         </Tabs>
