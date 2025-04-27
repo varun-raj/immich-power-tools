@@ -5,7 +5,6 @@ import Loader from '@/components/ui/loader';
 import { ASSET_PREVIEW_PATH } from '@/config/routes';
 import { useConfig } from '@/contexts/ConfigContext';
 import { findAssets } from '@/handlers/api/asset.handler';
-import { IAsset } from '@/types/asset';
 import { Search, TriangleAlert, WandSparkles } from 'lucide-react';
 import React, { useMemo, useState } from 'react'
 import AssetGrid from "@/components/shared/AssetGrid";
@@ -18,6 +17,7 @@ import AlbumSelectorDialog from '@/components/albums/AlbumSelectorDialog';
 import { addAssetToAlbum, createAlbum } from '@/handlers/api/album.handler';
 import { IAlbum, IAlbumCreate } from '@/types/album';
 import { useToast } from '@/components/ui/use-toast'; // Import useToast
+import { Button } from '@/components/ui/button'; // Import Button
 
 interface IFindFilters {
   [key: string]: string;
@@ -33,6 +33,16 @@ const FILTER_KEY_MAP = {
   "model": "Model",
   "personIds": "People",
 }
+
+// Add suggestion list
+const SUGGESTIONS = [
+  { label: "Last week's photos", query: "Photos from last week" },
+  { label: "Photos from last summer", query: "Photos taken last summer" },
+  { label: "Videos from New York", query: "Videos taken in New York" },
+  { label: "Photos with @alex", query: "Photos with @alex" }, // Example with person tag
+  { label: "Recent screenshots", query: "Screenshots taken recently" },
+];
+
 export default function FindPage() {
 
   // Remove local selectedIds and assets state
@@ -198,10 +208,24 @@ export default function FindPage() {
         <div className="flex justify-center flex-col gap-2 items-center h-full">
           <Search className='w-10 h-10 text-muted-foreground' />
           <p className='text-lg font-bold'>Search for photos in natural language</p>
-          <p className='text-sm text-muted-foreground text-center max-w-lg'> {/* Centered and max-width */} 
+          <p className='text-sm text-muted-foreground text-center max-w-lg'> {/* Centered and max-width */}
             Example: <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>Sunset photos from last week</kbd>. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
           </p>
-          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center mt-2'> {/* Added margin top */}
+          {/* Render suggestions */}
+          <div className="flex flex-wrap gap-2 justify-center mt-4 max-w-lg">
+            {SUGGESTIONS.map((suggestion) => (
+              <Button
+                key={suggestion.query}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => handleSearch(suggestion.query)}
+              >
+                {suggestion.label}
+              </Button>
+            ))}
+          </div>
+          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center mt-4'> {/* Adjusted margin top */}
             <span>Power tools uses Google Gemini only for parsing your query. None of your data is sent to Gemini.</span>
           </p>
         </div>
@@ -261,7 +285,11 @@ export default function FindPage() {
       {geminiEnabled ? (
         <>
           <div className="flex flex-col gap-4 p-2">
-            <FindInput onSearch={handleSearch} />
+            <FindInput 
+              value={query}
+              onChange={setQuery}
+              onSearch={handleSearch} 
+            />
           </div>
           {/* renderContent now includes the Provider */}
           {renderContent()}

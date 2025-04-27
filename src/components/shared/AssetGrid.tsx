@@ -6,6 +6,7 @@ import Lightbox from 'yet-another-react-lightbox';
 import { Gallery } from "react-grid-gallery";
 import LazyGridImage from "../ui/lazy-grid-image";
 import Download from "yet-another-react-lightbox/plugins/download";
+import Video from "yet-another-react-lightbox/plugins/video";
 
 
 interface AssetGridProps {
@@ -86,6 +87,7 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
       height: p.exifImageHeight / 10 as number,
       orientation: 1,
       isSelected: selectedIds.includes(p.id),
+      isVideo: p.type === "VIDEO",
     }));
   }, [assets, selectedIds]);
 
@@ -106,7 +108,7 @@ export default function AssetGrid({ assets, isInternal = true, selectable = fals
     <div>
       <Lightbox
         slides={slides}
-        plugins={[Download]}
+        plugins={[Download, Video]}
         open={index >= 0}
         index={index}
         close={() => setIndex(-1)}

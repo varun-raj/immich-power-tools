@@ -1,5 +1,6 @@
 import { db } from '@/config/db';
 import { ENV } from '@/config/environment';
+import { ASSET_VIDEO_PATH } from '@/config/routes';
 import { getCurrentUser } from '@/handlers/serverUtils/user.utils';
 import { cleanUpAsset, isFlipped } from '@/helpers/asset.helper';
 import { parseFindQuery } from '@/helpers/gemini.helper';
@@ -48,6 +49,7 @@ export default async function search(req: NextApiRequest, res: NextApiResponse) 
         exifImageHeight: isFlipped(item?.exifInfo?.orientation) ? item?.exifInfo?.exifImageWidth : item?.exifInfo?.exifImageHeight,
         exifImageWidth: isFlipped(item?.exifInfo?.orientation) ? item?.exifInfo?.exifImageHeight : item?.exifInfo?.exifImageWidth,
         orientation: item?.exifInfo?.orientation,
+        downloadUrl: ASSET_VIDEO_PATH(item.id)
       }
     }).map(cleanUpAsset)
     res.status(200).json({

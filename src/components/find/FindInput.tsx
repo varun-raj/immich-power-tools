@@ -6,11 +6,11 @@ import mentionStyle from './findMentionStyle';
 
 interface FindInputProps {
   onSearch: (query: string) => void;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-export default function FindInput({ onSearch }: FindInputProps) {
-
-  const [query, setQuery] = useState("");
+export default function FindInput({ onSearch, value, onChange }: FindInputProps) {
 
   const handleSearchPeople = async (e: any, callback: any) => {
     if (!e.length) return [];
@@ -22,16 +22,16 @@ export default function FindInput({ onSearch }: FindInputProps) {
 
   return (
     <MentionsInput
-      value={query}
+      value={value}
       singleLine={true}
       placeholder='Search for photos, use @ to search for people'
       style={inputStyle}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
-          onSearch(query);
+          onSearch(value);
         }
       }}
-      onChange={(e) => setQuery(e.target.value)}>
+      onChange={(e) => onChange(e.target.value)}>
       <Mention
         trigger="@"
         style={mentionStyle}

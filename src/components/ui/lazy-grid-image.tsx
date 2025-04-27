@@ -1,8 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
+import { humanizeDuration } from '@/helpers/string.helper'
+import { PlayIcon } from '@radix-ui/react-icons'
 import React, { useEffect } from 'react'
 import { Image, ImageExtended, ThumbnailImageProps } from 'react-grid-gallery'
 
-interface LazyImageProps extends ThumbnailImageProps<ImageExtended<Image>> {}
+interface LazyImageProps extends ThumbnailImageProps<ImageExtended<Image & { isVideo?: boolean, duration?: string }>> {}
+
 
 export default function LazyGridImage(
   props: LazyImageProps
@@ -39,6 +42,12 @@ export default function LazyGridImage(
   )
 
   return (
-    <img {...props.imageProps} alt={props.imageProps.alt || ""} title="" />
+    <div className="relative">
+      <img {...props.imageProps} alt={props.imageProps.alt || ""} title="" />
+      {props.item.isVideo && <div className="absolute bottom-2 right-2 bg-black/50 p-1 rounded-full flex items-center gap-1">
+        <PlayIcon className="w-3 h-3 text-white" />
+        {!!props.item.duration && <span className="text-xs text-white">{humanizeDuration(props.item.duration)}</span>}
+      </div>}
+    </div>
   )
 }

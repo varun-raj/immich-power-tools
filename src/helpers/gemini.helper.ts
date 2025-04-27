@@ -14,7 +14,14 @@ interface FindQuery {
   model?: string;
   createdAfter?: string;
   state?: string;
+  type?: string;
 }
+
+const allowedTypes = [
+  'IMAGE',
+  'VIDEO',
+  'AUDIO'
+]
 const responseSchema = {
   type: SchemaType.OBJECT,
   properties: {
@@ -50,6 +57,10 @@ const responseSchema = {
       type: SchemaType.STRING,
       description: "Name of the device that the query is about"
     },
+    type: {
+      type: SchemaType.STRING,
+      description: "One of the allowed media types (IMAGE, VIDEO, AUDIO, OTHER)",
+    }
   },
   required: ["query"],
 };
@@ -80,9 +91,13 @@ export const parseFindQuery = async (query: string): Promise<FindQuery>  => {
     }
   });
 
-  console.log("response from gemini", response.text());
-
   const parsedResponse = JSON.parse(response.text()) as FindQuery;
+
+  if (parsedResponse.type) {
+    if (!allowedTypes.includes(parsedResponse.type)) {
+      delete parsedResponse.type;
+    }
+  }
   const cleanedResponse = {
     ...parsedResponse
   };
