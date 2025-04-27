@@ -11,9 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useCurrentUser } from "@/contexts/CurrentUserContext";
-import PotentialAlbumContext, {
-  IPotentialAlbumConfig,
-} from "@/contexts/PotentialAlbumContext";
+import PhotoSelectionContext, { IPhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
 import { addAssetToAlbum, createAlbum } from "@/handlers/api/album.handler";
 import { deleteAssets } from "@/handlers/api/asset.handler";
 import { IAlbum, IAlbumCreate } from "@/types/album";
@@ -26,31 +24,39 @@ export default function PotentialAlbums() {
 
   const { query } = useRouter();
   const { startDate } = query as { startDate: string };
-  const [config, setConfig] = React.useState<IPotentialAlbumConfig>({
-    startDate: startDate || undefined,
+
+  const [contextState, setContextState] = React.useState<IPhotoSelectionContext>({
     selectedIds: [],
     assets: [],
-    minAssets: 1,
+    config: {
+      startDate: startDate || undefined,
+      minAssets: 1,
+    },
+    updateContext: (newConfig: Partial<IPhotoSelectionContext>) => {
+      setContextState(prevState => ({
+        ...prevState,
+        ...newConfig,
+        config: newConfig.config ? { ...prevState.config, ...newConfig.config } : prevState.config
+      }));
+    }
   });
 
-  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
+  const selectedAssets = useMemo(() => contextState.assets.filter((a) => contextState.selectedIds.includes(a.id)), [contextState.assets, contextState.selectedIds]);
+
+  const updateContext = contextState.updateContext;
 
   const handleSelect = (album: IAlbum) => {
-    return addAssetToAlbum(album.id, config.selectedIds)
+    return addAssetToAlbum(album.id, contextState.selectedIds)
       .then(() => {
-        setConfig({ ...config, selectedIds: [] });
-        setConfig({
-          ...config,
-          assets: config.assets.filter(
-            (asset) => !config.selectedIds.includes(asset.id)
-          ),
-          selectedIds: [],
-        });
+        const newAssets = contextState.assets.filter(
+          (asset) => !contextState.selectedIds.includes(asset.id)
+        );
+        updateContext({ selectedIds: [], assets: newAssets });
       })
       .then(() => {
         toast({
           title: `Assets added to ${album.albumName}`,
-          description: `${config.selectedIds.length} assets added to album`,
+          description: `${contextState.selectedIds.length} assets added to album`,
         });
       })
       .catch(() => {
@@ -65,20 +71,22 @@ export default function PotentialAlbums() {
   const handleCreate = (formData: IAlbumCreate) => {
     return createAlbum({
       ...formData,
-      assetIds: config.selectedIds,
+      assetIds: contextState.selectedIds,
     }).then(() => {
       toast({
         title: "Album created",
         description: "Album created successfully",
       });
-      setConfig({ ...config, selectedIds: [], assets: config.assets.filter(a => !config.selectedIds.includes(a.id)) });
+      const newAssets = contextState.assets.filter(a => !contextState.selectedIds.includes(a.id));
+      updateContext({ selectedIds: [], assets: newAssets });
     })
   }
 
   const handleDelete = () => {
-    return deleteAssets(config.selectedIds)
+    return deleteAssets(contextState.selectedIds)
       .then(() => {
-        setConfig({ ...config, selectedIds: [], assets: config.assets.filter(a => !config.selectedIds.includes(a.id)) });
+        const newAssets = contextState.assets.filter(a => !contextState.selectedIds.includes(a.id));
+        updateContext({ selectedIds: [], assets: newAssets });
       })
       .then(() => {
         toast({
@@ -96,8 +104,7 @@ export default function PotentialAlbums() {
   }
 
   const handleOffsetComplete = () => {
-    setConfig({
-      ...config,
+    updateContext({
       selectedIds: [],
     });
   }
@@ -110,40 +117,42 @@ export default function PotentialAlbums() {
           <div className="flex items-center gap-2">
             <Input
               placeholder="Minimum Assets Count"
-              defaultValue={config.minAssets}
+              type="number"
+              defaultValue={contextState.config.minAssets}
               onChange={(e) => {
                 if (e.target.value) {
-                  setConfig({ ...config, minAssets: parseInt(e.target.value) });
+                  const newMinAssets = parseInt(e.target.value);
+                  if (!isNaN(newMinAssets)) {
+                    updateContext({ config: { ...contextState.config, minAssets: newMinAssets } });
+                  }
                 }
               }}
             />
           </div>
         )}
       />
-      <PotentialAlbumContext.Provider
+      <PhotoSelectionContext.Provider
         value={{
-          ...config,
-          updateContext: (newConfig: Partial<IPotentialAlbumConfig>) =>
-            setConfig({ ...config, ...newConfig }),
+          ...contextState,
+          updateContext: updateContext,
         }}
       >
         <div className="flex divide-y">
           <PotentialAlbumsDates />
           <PotentialAlbumsAssets />
         </div>
-        {selectedAssets.length &&
+        {selectedAssets.length > 0 &&
           <FloatingBar>
             <div className="flex items-center gap-2 justify-between w-full">
               <p className="text-sm text-muted-foreground">
-                {config.selectedIds.length} Selected
+                {contextState.selectedIds.length} Selected
               </p>
               <div className="flex items-center gap-2">
                   <Button
                     variant={"outline"}
                     size={"sm"}
                     onClick={() =>
-                      setConfig({
-                        ...config,
+                      updateContext({
                         selectedIds: [],
                       })
                     }
@@ -155,9 +164,8 @@ export default function PotentialAlbums() {
                     variant={"outline"}
                     size={"sm"}
                     onClick={() =>
-                      setConfig({
-                        ...config,
-                        selectedIds: config.assets.map((a) => a.id),
+                      updateContext({
+                        selectedIds: contextState.assets.map((a) => a.id),
                       })
                     }
 
@@ -172,9 +180,9 @@ export default function PotentialAlbums() {
                   title="Delete the selected assets?"
                   description="This action will delete the selected assets and cannot be undone."
                   onConfirm={handleDelete}
-                  disabled={config.selectedIds.length === 0}
+                  disabled={contextState.selectedIds.length === 0}
                 >
-                  <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
+                  <Button variant={"destructive"} size={"sm"} disabled={contextState.selectedIds.length === 0}>
                     Delete
                   </Button>
                 </AlertDialog>
@@ -182,7 +190,7 @@ export default function PotentialAlbums() {
             </div>
           </FloatingBar>
         }
-      </PotentialAlbumContext.Provider>
+      </PhotoSelectionContext.Provider>
     </PageLayout>
   );
 }

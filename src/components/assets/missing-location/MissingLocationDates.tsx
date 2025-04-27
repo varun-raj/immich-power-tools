@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { listMissingLocationAlbums, listMissingLocationDates } from "@/handlers/api/asset.handler";
 import MissingLocationDateItem from "./MissingLocationDateItem";
-import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
+import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
 import { useRouter } from "next/router";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -12,44 +12,50 @@ interface IMissingLocationDatesProps {
 
 }
 export default function MissingLocationDates({ groupBy }: IMissingLocationDatesProps) {
-  const { dates, updateContext } = useMissingLocationContext();
+  const { config, updateContext } = usePhotoSelectionContext();
+  const { dates } = config;
+
   const router = useRouter();
-  const [filters, setFilters] = useState<{ sortBy: string, sortOrder: string }>({ sortBy: "date", sortOrder: "desc" });
+  const [filters, setFilters] = useState<{ sortBy: string, sortOrder: string }>({
+    sortBy: groupBy === "album" ? "name" : "date",
+    sortOrder: "desc"
+  });
   const [loading, setLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchData = async () => {
     const func = groupBy === "album" ? listMissingLocationAlbums : listMissingLocationDates
-    updateContext({ dates: [] })
+    updateContext({ config: { ...config, dates: [] } })
+    setLoading(true);
     return func({
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder,
     })
-      .then((r) => updateContext({ dates: r }))
+      .then((r) => updateContext({ config: { ...config, dates: r } }))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
   };
 
-  const handleSelect = (date: string) => {
+  const handleSelect = (value: string) => {
     if (groupBy === "album") {
-      updateContext({ albumId: date });
+      updateContext({ config: { ...config, albumId: value, startDate: undefined } });
       router.push({
         pathname: router.pathname,
         query: {
           ...router.query,
-          albumId: date,
+          albumId: value,
           groupBy: "album",
           startDate: undefined
         },
       });
     } else {
-      updateContext({ startDate: date });
+      updateContext({ config: { ...config, startDate: value, albumId: undefined } });
       router.push({
         pathname: router.pathname,
         query: {
           ...router.query,
-          startDate: date,
+          startDate: value,
           groupBy: "date",
           albumId: undefined
         },
@@ -58,8 +64,15 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
   };
 
   useEffect(() => {
+    setFilters({
+      sortBy: groupBy === "album" ? "name" : "date",
+      sortOrder: "desc"
+    });
+  }, [groupBy]);
+
+  useEffect(() => {
     fetchData();
-  }, [filters, groupBy]);
+  }, [filters]);
 
   return (
     <div className="min-w-[200px] max-w-[200px] sticky top-0 py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
@@ -67,14 +80,14 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
         {groupBy === "album" ? (
           <p className="text-sm text-gray-500 dark:text-zinc-400">Asset Count</p>
         ) : (<Select
-          defaultValue={filters.sortBy}
+          value={filters.sortBy}
           onValueChange={(value) => setFilters({ ...filters, sortBy: value })}
         >
           <SelectTrigger className="!p-2">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent defaultValue={filters.sortBy}>
-            <SelectGroup title="Sort by">
+          <SelectContent>
+            <SelectGroup>
               <SelectLabel>Sort by</SelectLabel>
               <SelectItem value="date">Date</SelectItem>
               <SelectItem value="asset_count">Asset Count</SelectItem>
@@ -92,7 +105,7 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
         </div>
       </div>
       <div className="overflow-y-auto flex flex-col gap-2">
-        {dates.map((record) => (
+        {dates?.map((record) => (
           <MissingLocationDateItem
             key={record.value}
             record={record}

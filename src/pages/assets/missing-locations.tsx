@@ -4,9 +4,7 @@ import TagMissingLocationDialog from "@/components/assets/missing-location/TagMi
 import PageLayout from "@/components/layouts/PageLayout";
 import Header from "@/components/shared/Header";
 import { Button } from "@/components/ui/button";
-import MissingLocationContext, {
-  IMissingLocationConfig,
-} from "@/contexts/MissingLocationContext";
+import PhotoSelectionContext, { IPhotoSelectionContext, IPhotoSelectionConfig } from "@/contexts/PhotoSelectionContext";
 import { deleteAssets, updateAssets } from "@/handlers/api/asset.handler";
 
 import { IPlace } from "@/types/common";
@@ -21,68 +19,78 @@ import AssetOffsetDialog from "@/components/assets/assets-options/AssetOffsetDia
 
 export default function MissingLocations() {
   const { query, push } = useRouter();
-  const { startDate, groupBy = "date" } = query as { startDate: string, groupBy: string };
-  const [config, setConfig] = React.useState<IMissingLocationConfig>({
-    startDate: startDate || undefined,
+  const { startDate, groupBy = "date", albumId } = query as { startDate: string, groupBy: string, albumId: string };
+
+  const [contextState, setContextState] = React.useState<IPhotoSelectionContext>({
     selectedIds: [],
     assets: [],
-    sort: "fileOriginalDate",
-    sortOrder: "asc",
-    dates: []
+    config: {
+      startDate: startDate || undefined,
+      albumId: albumId || undefined,
+      sort: "fileOriginalDate",
+      sortOrder: "asc",
+      dates: []
+    },
+    updateContext: (newConfig: Partial<IPhotoSelectionContext>) => {
+      setContextState(prevState => ({
+        ...prevState,
+        ...newConfig,
+        config: newConfig.config ? { ...prevState.config, ...newConfig.config } : prevState.config
+      }));
+    }
   });
 
-  const selectedAssets = useMemo(() => config.assets.filter((a) => config.selectedIds.includes(a.id)), [config.assets, config.selectedIds]);
+  const selectedAssets = useMemo(() => contextState.assets.filter((a) => contextState.selectedIds.includes(a.id)), [contextState.assets, contextState.selectedIds]);
 
   const handleSubmit = async (place: IPlace) => {
     await updateAssets({
-      ids: config.selectedIds,
+      ids: contextState.selectedIds,
       latitude: Number(place.latitude),
       longitude: Number(place.longitude),
     });
 
-    const newAssets = config.assets.filter(asset => !config.selectedIds.includes(asset.id));
+    const newAssets = contextState.assets.filter(asset => !contextState.selectedIds.includes(asset.id));
+    let newDates = [...contextState.config.dates || []];
 
-    if (config.startDate) {
-      const dayRecord = config.dates.filter(f => isSameDay(new Date(f.value), new Date(config.startDate!)));
+    if (contextState.config.startDate) {
+      const dayRecordIndex = newDates.findIndex(f => isSameDay(new Date(f.value), new Date(contextState.config.startDate!)));
 
-      if (dayRecord.length === 1) {
-        if (newAssets.length > 0)
-          dayRecord[0].asset_count = newAssets.length;
+      if (dayRecordIndex !== -1) {
+        if (newAssets.length > 0) {
+          newDates[dayRecordIndex] = { ...newDates[dayRecordIndex], asset_count: newAssets.length };
+        }
         else {
-          const indexToRemove = config.dates.findIndex(v=>isSameDay(v.value, dayRecord[0].value));
-
-          if (indexToRemove !== -1) {
-            config.dates.splice(indexToRemove, 1);
-          }
+          newDates.splice(dayRecordIndex, 1);
         }
       }
     }
 
-    setConfig({
-      ...config,
+    contextState.updateContext({
       selectedIds: [],
-      assets: newAssets
+      assets: newAssets,
+      config: { ...contextState.config, dates: newDates }
     });
   };
 
   const handleDelete = () => {
-    return deleteAssets(config.selectedIds).then(() => {
-      setConfig({
-        ...config,
+    return deleteAssets(contextState.selectedIds).then(() => {
+      const newAssets = contextState.assets.filter((a) => !contextState.selectedIds.includes(a.id));
+      let newDates = [...contextState.config.dates || []];
+
+      contextState.updateContext({
         selectedIds: [],
-        assets: config.assets.filter((a) => !config.selectedIds.includes(a.id)),
+        assets: newAssets,
       });
     })
   }
 
   const handleOffsetComplete = () => {
-    setConfig({
-      ...config,
+    contextState.updateContext({
       selectedIds: [],
     });
   }
   const handleChange = (e: { sortOrder: "asc" | "desc" }) => {
-    setConfig({ ...config, sortOrder: e.sortOrder });
+    contextState.updateContext({ config: { ...contextState.config, sortOrder: e.sortOrder } });
   }
 
   return (
@@ -92,6 +100,7 @@ export default function MissingLocations() {
         rightComponent={
           <div className="flex items-center gap-2">
             <Select value={groupBy} onValueChange={(value) => {
+              contextState.updateContext({ config: { startDate: undefined, albumId: undefined } });
               push({
                 pathname: "/assets/missing-locations",
                 query: {
@@ -111,38 +120,36 @@ export default function MissingLocations() {
               </SelectContent>
             </Select>
             <div>
-              <Button variant="default" size="sm" onClick={() => handleChange({ sortOrder: config.sortOrder === "asc" ? "desc" : "asc" })}>
-                {config.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
+              <Button variant="default" size="sm" onClick={() => handleChange({ sortOrder: contextState.config.sortOrder === "asc" ? "desc" : "asc" })}>
+                {contextState.config.sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
               </Button>
             </div>
           </div>
         }
       />
-      <MissingLocationContext.Provider
+      <PhotoSelectionContext.Provider
         value={{
-          ...config,
-          updateContext: (newConfig: Partial<IMissingLocationConfig>) =>
-            setConfig({ ...config, ...newConfig }),
+          ...contextState,
+          updateContext: contextState.updateContext,
         }}
       >
         <div className="flex divide-y">
           <MissingLocationDates groupBy={groupBy as "date" | "album"} />
           <MissingLocationAssets groupBy={groupBy as "date" | "album"} />
         </div>
-        {selectedAssets.length &&
+        {selectedAssets.length > 0 &&
           <FloatingBar>
             <div className="flex items-center gap-2 justify-between w-full">
               <p className="text-sm text-muted-foreground">
-                {config.selectedIds.length} Selected
+                {contextState.selectedIds.length} Selected
               </p>
               <div className="flex items-center gap-2">
-                {config.selectedIds.length === config.assets.length ? (
+                {contextState.selectedIds.length === contextState.assets.length ? (
                   <Button
                     variant={"outline"}
                     size={"sm"}
                     onClick={() =>
-                      setConfig({
-                        ...config,
+                      contextState.updateContext({
                         selectedIds: [],
                       })
                     }
@@ -154,16 +161,14 @@ export default function MissingLocations() {
                     variant={"outline"}
                     size={"sm"}
                     onClick={() =>
-                      setConfig({
-                        ...config,
-                        selectedIds: config.assets.map((a) => a.id),
+                      contextState.updateContext({
+                        selectedIds: contextState.assets.map((a) => a.id),
                       })
                     }
                   >
                     Select all
                   </Button>
                 )}
-                {/* Seperator */}
                 <TagMissingLocationDialog onSubmit={handleSubmit} />
                 <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
                 <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
@@ -171,9 +176,9 @@ export default function MissingLocations() {
                   title="Delete the selected assets?"
                   description="This action will delete the selected assets and cannot be undone."
                   onConfirm={handleDelete}
-                  disabled={config.selectedIds.length === 0}
+                  disabled={contextState.selectedIds.length === 0}
                 >
-                  <Button variant={"destructive"} size={"sm"} disabled={config.selectedIds.length === 0}>
+                  <Button variant={"destructive"} size={"sm"} disabled={contextState.selectedIds.length === 0}>
                     Delete
                   </Button>
                 </AlertDialog>
@@ -181,7 +186,7 @@ export default function MissingLocations() {
             </div>
           </FloatingBar>
         }
-      </MissingLocationContext.Provider>
+      </PhotoSelectionContext.Provider>
     </PageLayout>
   );
 }

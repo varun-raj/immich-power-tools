@@ -14,7 +14,7 @@ import TagMissingLocationSearchAndAdd from "./TagMissingLocationSearchAndAdd";
 import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
 import TagMissingLocationOSMSearchAndAdd from "./TagMissingLocationOSMSearchAndAdd";
 import dynamic from "next/dynamic";
-import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
+import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
 
 const LazyMap = dynamic(() => import("./Map"), {
   ssr: false
@@ -26,7 +26,7 @@ interface ITagMissingLocationDialogProps {
 export default function TagMissingLocationDialog({
   onSubmit,
 }: ITagMissingLocationDialogProps) {
-  const { selectedIds } = useMissingLocationContext();
+  const { selectedIds } = usePhotoSelectionContext();
   const [open, setOpen] = useState(false);
   const [mapPosition, setMapPosition] = useState<IPlace>({
     latitude: 48.210033,
@@ -43,7 +43,7 @@ export default function TagMissingLocationDialog({
         <DialogHeader>
           <DialogTitle>Tag Missing Location</DialogTitle>
           <DialogDescription>
-            Tagging a location will add the location to the selected assets.
+            Tagging a location will add the location to the selected {selectedIds.length} asset(s).
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="searchOsm" className="border rounded-lg">

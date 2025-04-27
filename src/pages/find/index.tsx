@@ -156,6 +156,7 @@ export default function FindPage() {
               <p className="text-sm text-muted-foreground">
                 {selectedIds.length} Selected
               </p>
+
               <AssetsBulkDeleteButton
                 selectedIds={selectedIds}
                 onDelete={handleDelete}

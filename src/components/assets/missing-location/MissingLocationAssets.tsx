@@ -8,7 +8,7 @@ import {
   CalendarArrowUp,
   Hourglass,
 } from "lucide-react";
-import { useMissingLocationContext } from "@/contexts/MissingLocationContext";
+import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
 import { listMissingLocationAssets } from "@/handlers/api/asset.handler";
 import { useConfig } from "@/contexts/ConfigContext";
 import LazyGridImage from "@/components/ui/lazy-grid-image";
@@ -19,8 +19,13 @@ interface IProps {
 export default function MissingLocationAssets({ groupBy }: IProps) {
   const { exImmichUrl } = useConfig();
 
-  const { startDate, albumId, selectedIds, sortOrder, sort, assets, updateContext } =
-    useMissingLocationContext();
+  const {
+    selectedIds,
+    assets,
+    updateContext,
+    config
+  } = usePhotoSelectionContext();
+  const { startDate, albumId, sortOrder, sort } = config;
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -36,18 +41,22 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
     });
     const filters = groupBy === "date" ? { startDate } : { albumId }
     return listMissingLocationAssets(filters)
-      .then((assets) => updateContext({ assets }))
+      .then((fetchedAssets) => updateContext({ assets: fetchedAssets }))
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
   };
 
   const images = useMemo(() => {
     let sortedAssets: IAsset[];
-
-    if (sortOrder === "desc")
-      sortedAssets = assets.sort((a, b) => new Date(b.dateTimeOriginal).getTime() - new Date(a.dateTimeOriginal).getTime())
-    else
-      sortedAssets = assets.sort((a, b) => new Date(a.dateTimeOriginal).getTime() - new Date(b.dateTimeOriginal).getTime());
+    try {
+      if (sortOrder === "desc")
+        sortedAssets = [...assets].sort((a, b) => new Date(b.dateTimeOriginal!).getTime() - new Date(a.dateTimeOriginal!).getTime())
+      else
+        sortedAssets = [...assets].sort((a, b) => new Date(a.dateTimeOriginal!).getTime() - new Date(b.dateTimeOriginal!).getTime());
+    } catch (error) {
+      console.error("Error sorting assets by date:", error);
+      sortedAssets = [...assets];
+    }
 
     return sortedAssets.
       map((p) => ({
@@ -62,14 +71,14 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
           {
             title: "Immich Link",
             value: (
-              <a href={exImmichUrl + "/photos/" + p.id} target="_blank">
+              <a href={exImmichUrl + "/photos/" + p.id} target="_blank" rel="noopener noreferrer">
                 Open in Immich
               </a>
             ),
           },
         ],
       }));
-  }, [assets, selectedIds, sortOrder]);
+  }, [assets, selectedIds, sortOrder, exImmichUrl]);
 
   const slides = useMemo(
     () =>
@@ -102,13 +111,18 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
       const clickedIndex = images.findIndex((image) => {
         return image.id === asset.id;
       });
-      if (event.shiftKey) {
+      if (event.shiftKey && lastSelectedIndex !== -1) {
         const startIndex = Math.min(clickedIndex, lastSelectedIndex);
         const endIndex = Math.max(clickedIndex, lastSelectedIndex);
-        const newSelectedIds = images.slice(startIndex, endIndex + 1).map((image) => image.id);
-        const allSelectedIds = [...selectedIds, ...newSelectedIds];
-        const uniqueSelectedIds = [...new Set(allSelectedIds)];
-        updateContext({ selectedIds: uniqueSelectedIds });
+        if (startIndex >= 0 && endIndex < images.length) {
+          const newSelectedIds = images.slice(startIndex, endIndex + 1).map((image) => image.id);
+          const allSelectedIds = [...selectedIds, ...newSelectedIds];
+          const uniqueSelectedIds = [...new Set(allSelectedIds)];
+          updateContext({ selectedIds: uniqueSelectedIds });
+        } else {
+          console.warn("Shift-select index out of bounds");
+          updateContext({ selectedIds: [...selectedIds, asset.id] });
+        }
       } else {
         updateContext({ selectedIds: [...selectedIds, asset.id] });
       }
@@ -132,10 +146,10 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
     return (
       <div className="flex flex-col gap-2 h-full justify-center items-center w-full">
         <CalendarArrowUp />
-        <p className="text-lg">Please select a date</p>
+        <p className="text-lg">Please select a date or album</p>
         <p className="text-sm">
-          When you select a date from the left, you will see all the orphan
-          assets captured on that date
+          When you select an item from the left, you will see all the orphan
+          assets associated with it.
         </p>
       </div>
     );
