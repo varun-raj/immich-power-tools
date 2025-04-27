@@ -11,6 +11,13 @@ import React, { useMemo, useState } from 'react'
 import AssetGrid from "@/components/shared/AssetGrid";
 import FloatingBar from "@/components/shared/FloatingBar";
 import AssetsBulkDeleteButton from "@/components/shared/AssetsBulkDeleteButton";
+// Context Imports
+import PhotoSelectionContext, { IPhotoSelectionContext } from '@/contexts/PhotoSelectionContext';
+// Album Imports
+import AlbumSelectorDialog from '@/components/albums/AlbumSelectorDialog';
+import { addAssetToAlbum, createAlbum } from '@/handlers/api/album.handler';
+import { IAlbum, IAlbumCreate } from '@/types/album';
+import { useToast } from '@/components/ui/use-toast'; // Import useToast
 
 interface IFindFilters {
   [key: string]: string;
@@ -28,22 +35,42 @@ const FILTER_KEY_MAP = {
 }
 export default function FindPage() {
 
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // Remove local selectedIds and assets state
+  // const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // const [assets, setAssets] = useState<IAsset[]>([]);
+  const { toast } = useToast(); // Initialize toast
   const { geminiEnabled, exImmichUrl } = useConfig();
   const [query, setQuery] = useState('');
-  const [assets, setAssets] = useState<IAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<IFindFilters>({});
   const [error, setError] = useState<string | null>(null);
 
+  // Initialize context state
+  const [contextState, setContextState] = useState<IPhotoSelectionContext>({
+    selectedIds: [],
+    assets: [],
+    config: {},
+    updateContext: (newConfig: Partial<IPhotoSelectionContext>) => {
+      setContextState(prevState => ({
+        ...prevState,
+        ...newConfig,
+        // No deep merge needed for config here as it's simple
+        config: newConfig.config ? { ...prevState.config, ...newConfig.config } : prevState.config
+      }));
+    }
+  });
+
+  const updateContext = contextState.updateContext;
+
+  // Derive slides from contextState.assets
   const slides = useMemo(
     () =>
-      assets.map((asset) => ({
+      contextState.assets.map((asset) => ({
         src: ASSET_PREVIEW_PATH(asset.id),
         width: 1000,
         height: 1000,
       })),
-    [assets]
+    [contextState.assets]
   );
 
   const appliedFilters: {
@@ -67,28 +94,73 @@ export default function FindPage() {
   const handleSearch = (query: string) => {
     setQuery(query);
     setLoading(true);
+    setError(null); // Clear previous errors
     findAssets(query)
       .then(({ assets, filters: _filters }) => {
-        setAssets(assets);
+        // Update context state with fetched assets
+        updateContext({ assets: assets, selectedIds: [] });
         setFilters(_filters);
       })
       .catch((error: any) => {
         setError(error.message || error.error || "Failed to fetch assets");
+        updateContext({ assets: [], selectedIds: [] }); // Clear assets on error
       })
       .finally(() => {
         setLoading(false);
       });
   }
 
+  // Update handleSelectionChange to use context
   const handleSelectionChange = (ids: string[]) => {
-    setSelectedIds(ids);
+    updateContext({ selectedIds: ids });
   }
 
+  // Update handleDelete to use context
   const handleDelete = (ids: string[]) => {
-    setSelectedIds([]);
-    setAssets(assets.filter((asset) => !ids.includes(asset.id)));
-
+    const newAssets = contextState.assets.filter((asset) => !ids.includes(asset.id));
+    updateContext({ selectedIds: [], assets: newAssets });
   }
+
+  // --- Album Handling Logic (Adapted from potential-albums.tsx) ---
+  const handleSelectAlbum = (album: IAlbum) => {
+    return addAssetToAlbum(album.id, contextState.selectedIds)
+      .then(() => {
+        toast({
+          title: `Assets added to ${album.albumName}`,
+          description: `${contextState.selectedIds.length} assets added to album`,
+        });
+        // Optionally clear selection or remove assets from view if needed
+        // updateContext({ selectedIds: [] });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to add assets album",
+          variant: "destructive",
+        });
+      });
+  };
+
+  const handleCreateAlbum = (formData: IAlbumCreate) => {
+    return createAlbum({
+      ...formData,
+      assetIds: contextState.selectedIds,
+    }).then((newAlbum) => { // Assuming createAlbum returns the new album
+      toast({
+        title: "Album created",
+        description: `Album "${newAlbum.albumName}" created successfully with ${contextState.selectedIds.length} assets.`, // Provide more detail
+      });
+      // Optionally clear selection or remove assets from view
+      // updateContext({ selectedIds: [] });
+    }).catch(() => {
+      toast({
+        title: "Error creating album",
+        description: "Failed to create album",
+        variant: "destructive",
+      });
+    });
+  }
+  // --- End Album Handling Logic ---
 
   const renderFilters = () => {
     if (appliedFilters.length === 0) return null;
@@ -112,7 +184,6 @@ export default function FindPage() {
     }
     else if (error) {
       return (
-
         <div className="flex justify-center items-center h-full flex-col gap-2">
           <TriangleAlert className='w-10 h-10 text-muted-foreground' />
           <p className='text-lg font-bold'>Oops, something went wrong</p>
@@ -127,44 +198,60 @@ export default function FindPage() {
         <div className="flex justify-center flex-col gap-2 items-center h-full">
           <Search className='w-10 h-10 text-muted-foreground' />
           <p className='text-lg font-bold'>Search for photos in natural language</p>
-          <p className='text-sm text-muted-foreground'>
-            Example: Sunset photos from last week. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
+          <p className='text-sm text-muted-foreground text-center max-w-lg'> {/* Centered and max-width */} 
+            Example: <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>Sunset photos from last week</kbd>. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
           </p>
-          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center'>
+          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center mt-2'> {/* Added margin top */}
             <span>Power tools uses Google Gemini only for parsing your query. None of your data is sent to Gemini.</span>
           </p>
         </div>
       )
     }
-    else if (assets.length === 0) {
+    // Use contextState.assets for the check
+    else if (contextState.assets.length === 0) {
       return <div className="flex justify-center items-center h-full flex-col gap-2">
         <TriangleAlert className='w-10 h-10 text-muted-foreground' />
         <p className='text-lg font-bold'>No results found for the below filters</p>
-        <p className='text-sm text-muted-foreground'>
-          {renderFilters()}
-        </p>
+        {appliedFilters.length > 0 && // Show filters only if they exist
+          <div className='text-sm text-muted-foreground mt-2'> {/* Added margin top */}
+            {renderFilters()}
+          </div>
+        }
       </div>
     }
 
+    // Wrap grid and floating bar with Context Provider
     return (
-      <>
-        {renderFilters()}
-        <div className="w-full">
-          <AssetGrid assets={assets} selectable onSelectionChange={handleSelectionChange} />
-          {selectedIds.length > 0 && (
-            <FloatingBar>
-              <p className="text-sm text-muted-foreground">
-                {selectedIds.length} Selected
-              </p>
-
-              <AssetsBulkDeleteButton
-                selectedIds={selectedIds}
-                onDelete={handleDelete}
-              />
-            </FloatingBar>
-          )}
+      <PhotoSelectionContext.Provider value={{ ...contextState, updateContext }}>
+        <div className="flex flex-col gap-4"> {/* Added gap */}
+          {renderFilters()}
+          <div className="w-full">
+            {/* Pass context assets and selection handler */}
+            <AssetGrid
+              assets={contextState.assets}
+              selectable
+              onSelectionChange={handleSelectionChange}
+            />
+            {/* Use contextState.selectedIds for FloatingBar condition and props */}
+            {contextState.selectedIds.length > 0 && (
+              <FloatingBar>
+                <p className="text-sm text-muted-foreground">
+                  {contextState.selectedIds.length} Selected
+                </p>
+                <div className="flex items-center gap-2"> {/* Container for buttons */}
+                  {/* Add AlbumSelectorDialog */}
+                  <AlbumSelectorDialog onSelected={handleSelectAlbum} onSubmit={handleCreateAlbum} />
+                  <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div> {/* Separator */}
+                  <AssetsBulkDeleteButton
+                    selectedIds={contextState.selectedIds}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              </FloatingBar>
+            )}
+          </div>
         </div>
-      </>
+      </PhotoSelectionContext.Provider>
     )
   }
 
@@ -176,6 +263,7 @@ export default function FindPage() {
           <div className="flex flex-col gap-4 p-2">
             <FindInput onSearch={handleSearch} />
           </div>
+          {/* renderContent now includes the Provider */}
           {renderContent()}
         </>
       ) : (
