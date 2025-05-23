@@ -72,8 +72,8 @@ export default async function handler(
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
     .leftJoin(assets, and(
       eq(albumsAssetsAssets.assetsId, assets.id),
-      eq(assets.isVisible, true),
-      isNotNull(assets.isArchived),
+      eq(assets.visibility, "timeline"),
+      eq(assets.status, "active"),
     ))
     .leftJoin(exif, eq(assets.id, exif.assetId))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))

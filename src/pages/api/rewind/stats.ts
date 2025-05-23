@@ -26,8 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const numberOfPhotos = await db.select({ count: count(assets.id) }).from(assets).where(and( 
     eq(assets.ownerId, user.id),
-    eq(assets.isVisible, true),
-    eq(assets.isArchived, false),
+    eq(assets.visibility, "timeline"),
+    eq(assets.status, "active"),
   ));
 
   // Get list of countries visited in the year
@@ -38,8 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
     eq(assets.ownerId, user.id),
-    eq(assets.isVisible, true),
-    eq(assets.isArchived, false),
+    eq(assets.visibility, "timeline"),
+    eq(assets.status, "active"),
   ))
   .groupBy(exif.country);
 
@@ -52,8 +52,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
     eq(assets.ownerId, user.id),
-    eq(assets.isVisible, true),
-    eq(assets.isArchived, false),
+    eq(assets.visibility, "timeline"),
+    eq(assets.status, "active"),
   ))
   .groupBy(exif.city);
 
@@ -72,8 +72,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
     eq(assets.ownerId, user.id),
-    eq(assets.isVisible, true),
-    eq(assets.isArchived, false),
+    eq(assets.visibility, "timeline"),
+    eq(assets.status, "active"),
   ))
   .orderBy(desc(count(assets.id)))
   .limit(4)
@@ -93,8 +93,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
     eq(assets.ownerId, user.id),
-    eq(assets.isVisible, true),
-    eq(assets.isArchived, false),
+    eq(assets.visibility, "timeline"),
+    eq(assets.status, "active"),
     isNotNull(person.name),
   ))
   .orderBy(desc(count(assets.id)))
@@ -106,9 +106,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .from(assets)
   .leftJoin(exif, eq(exif.assetId, assets.id))
   .where(and(
-    eq(assets.isVisible, true),
+    eq(assets.visibility, "timeline"),
     eq(assets.isFavorite, true),
-    eq(assets.isArchived, false),
+    eq(assets.status, "active"),
     eq(assets.ownerId, user.id),
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
   ))

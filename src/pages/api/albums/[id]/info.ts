@@ -33,7 +33,7 @@ export default async function handler(
     .from(albums)
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
     .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
-    .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.isVisible, true)))
+    .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.visibility, "timeline")))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
     .where(and(eq(albums.ownerId, currentUser.id), eq(albums.id, id)))

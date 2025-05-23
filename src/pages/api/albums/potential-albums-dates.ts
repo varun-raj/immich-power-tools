@@ -25,7 +25,7 @@ export default async function handler(
       .leftJoin(exif, eq(assets.id, exif.assetId))
       .where(and  (
         eq(assets.ownerId, currentUser.id),
-        eq(assets.isVisible, true),
+        eq(assets.visibility, "timeline"),
         isNull(albumsAssetsAssets.albumsId),
         isNotNull(exif.dateTimeOriginal),
 

@@ -31,8 +31,8 @@ export default async function handler(
         isNotNull(assets.createdAt),
         isNotNull(exif.dateTimeOriginal),
         eq(assets.ownerId, currentUser.id),
-        eq(assets.isVisible, true),
-        eq(assets.isArchived, false),
+        eq(assets.visibility, "timeline"),
+        eq(assets.status, "active"),
         isNull(assets.deletedAt),
       ))
       .groupBy(sql`DATE(${exif.dateTimeOriginal})`)

@@ -7,7 +7,7 @@ export const sidebarNavs = [
     icon: <Rewind className="h-4 w-4" />,
   },
   {
-    title: "Find",
+    title: "Find Assets",
     link: "/find",
     icon: <Search className="h-4 w-4" />,
   },

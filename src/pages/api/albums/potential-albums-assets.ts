@@ -35,7 +35,7 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       aaa."albumsId" IS NULL 
       AND a."ownerId" = '${ownerId}'
       AND e."dateTimeOriginal"::date = '${date}'
-      AND a."isVisible" = true
+      AND a."visibility" = 'timeline'
   ORDER BY
       e."dateTimeOriginal" DESC
 `);

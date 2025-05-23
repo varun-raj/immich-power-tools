@@ -39,7 +39,7 @@ const SUGGESTIONS = [
   { label: "Last week's photos", query: "Photos from last week" },
   { label: "Photos from last summer", query: "Photos taken last summer" },
   { label: "Videos from New York", query: "Videos taken in New York" },
-  { label: "Photos with @alex", query: "Photos with @alex" }, // Example with person tag
+  { label: "Photos taken in Beach", query: "Photos taken in Berlin" }, // Example with person tag
   { label: "Recent screenshots", query: "Screenshots taken recently" },
 ];
 

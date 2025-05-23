@@ -53,8 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         albumIds?.length > 0 ? inArray(albums.id, albumIds) : undefined,
         startDate ? gte(assets.createdAt, new Date(startDate)) : undefined,
         endDate ? lte(assets.createdAt, new Date(endDate)) : undefined,
-        eq(assets.isArchived, false),
-        eq(assets.isVisible, true),
+        eq(assets.status, "active"),
+        eq(assets.visibility, "timeline"),
         eq(assets.isOffline, false),
         isNotNull(person.id),
         ne(person.name, "")

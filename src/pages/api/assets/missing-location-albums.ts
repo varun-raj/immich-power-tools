@@ -35,7 +35,7 @@ export default async function handler(
           isNotNull(assets.createdAt),
           isNotNull(exif.dateTimeOriginal),
           eq(assets.ownerId, currentUser.id),
-          eq(assets.isVisible, true),
+          eq(assets.visibility, "timeline"),
           isNotNull(albums.id)
       ))
       .groupBy(albums.id)

@@ -53,8 +53,8 @@ export default async function handler(
 
     const whereClause = and(
       isNull(assets.duplicateId),
-      eq(assets.isVisible, true),
-      eq(assets.isArchived, false),
+      eq(assets.visibility, "timeline"),
+      eq(assets.status, "active"),
       eq(assets.ownerId, currentUser.id),
       type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, "")),
       query && query.length > 0 ? ilike(person.name, `%${query}%`) : undefined,

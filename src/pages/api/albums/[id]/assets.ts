@@ -52,8 +52,8 @@ export default async function handler(
     .leftJoin(person, eq(assetFaces.personId, person.id))
     .where(and(
       eq(albumsAssetsAssets.albumsId, id), 
-      eq(assets.isVisible, true),
-      isNotNull(assets.isArchived),
+      eq(assets.visibility, "timeline"),
+      eq(assets.status, "active"),
       faceId ? eq(assetFaces.personId, faceId) : undefined,
     ))
     .limit(100)

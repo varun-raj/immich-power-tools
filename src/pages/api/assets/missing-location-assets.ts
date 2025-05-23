@@ -39,8 +39,8 @@ const getRowsByDates = async (startDateDate: Date, endDateDate: Date, currentUse
       gte(exif.dateTimeOriginal, startDateDate),
       lte(exif.dateTimeOriginal, endDateDate),
       eq(assets.ownerId, currentUser.id),
-      eq(assets.isVisible, true),
-      eq(assets.isArchived, false),
+      eq(assets.visibility, "timeline"),
+      eq(assets.status, "active"),
       isNull(assets.deletedAt),
     ));
 }
@@ -73,8 +73,8 @@ const getRowsByAlbums = async (currentUser: IUser, albumId: string) => {
       isNotNull(assets.createdAt),
       eq(assets.ownerId, currentUser.id),
       eq(albums.id, albumId),
-      eq(assets.isVisible, true),
-      eq(assets.isArchived, false),
+      eq(assets.visibility, "timeline"),
+      eq(assets.status, "active"),
       isNull(assets.deletedAt),
     ));
 }

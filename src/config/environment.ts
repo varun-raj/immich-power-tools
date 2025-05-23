@@ -8,6 +8,7 @@ export const ENV = {
   DB_HOST: process.env.DB_HOST as string,
   DB_PORT: process.env.DB_PORT as string,
   DB_DATABASE_NAME: process.env.DB_DATABASE_NAME as string,
+  DB_SCHEMA: (process.env.DB_SCHEMA as string) || 'public',
   JWT_SECRET: process.env.JWT_SECRET as string,
   SECURE_COOKIE: process.env.SECURE_COOKIE === 'true',
   VERSION: process.env.VERSION,
