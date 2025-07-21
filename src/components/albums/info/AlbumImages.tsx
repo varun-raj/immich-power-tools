@@ -3,14 +3,15 @@ import { listAlbumAssets } from "@/handlers/api/album.handler";
 import { useConfig } from "@/contexts/ConfigContext";
 import { IAlbum } from "@/types/album";
 import { IAsset } from "@/types/asset";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, MouseEvent } from "react";
 import { Hourglass } from "lucide-react";
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
-import AssetGrid from "@/components/shared/AssetGrid";
-import PhotoSelectionContext, {
-  IPhotoSelectionContext,
-} from "@/contexts/PhotoSelectionContext";
+import { Gallery } from "react-grid-gallery";
+import Lightbox from "yet-another-react-lightbox";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import LazyGridImage from "@/components/ui/lazy-grid-image";
+import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
 
 interface AlbumImagesProps {
   album: IAlbum;
@@ -20,11 +21,15 @@ interface IAssetFilter {
   faceId?: string;
   page: number;
 }
+
 export default function AlbumImages({ album }: AlbumImagesProps) {
   const { exImmichUrl } = useConfig();
   const router = useRouter();
   const { faceId } = router.query as { faceId: string };
-  const [assets, setAssets] = useState<IAsset[]>([]);
+
+  // Use context from parent instead of managing own
+  const { selectedIds, updateContext, assets } = usePhotoSelectionContext();
+
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filters, setFilters] = useState<IAssetFilter>({
@@ -32,37 +37,92 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
     page: 1,
   });
   const [hasMore, setHasMore] = useState(true);
-
-  // Initialize context state
-  const [contextState, setContextState] = useState<IPhotoSelectionContext>({
-    selectedIds: [],
-    assets: [],
-    config: {},
-    updateContext: (newConfig: Partial<IPhotoSelectionContext>) => {
-      setContextState((prevState) => ({
-        ...prevState,
-        ...newConfig,
-        // No deep merge needed for config here as it's simple
-        config: newConfig.config
-          ? { ...prevState.config, ...newConfig.config }
-          : prevState.config,
-      }));
-    },
-  });
+  const [index, setIndex] = useState(-1);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState(-1);
 
   const fetchAssets = async () => {
     setLoading(true);
     return listAlbumAssets(album.id, filters)
       .then((newAssets) => {
         if (filters.page === 1) {
-          setAssets(newAssets);
+          updateContext({ assets: newAssets });
         } else {
-          setAssets((prevAssets) => [...prevAssets, ...newAssets]);
+          updateContext({ assets: [...assets, ...newAssets] });
         }
         setHasMore(newAssets.length === 100);
       })
       .catch(setErrorMessage)
       .finally(() => setLoading(false));
+  };
+
+  const images = useMemo(() => {
+    return assets.map((p) => ({
+      ...p,
+      src: p.url as string,
+      original: p.previewUrl as string,
+      width: p.exifImageWidth as number,
+      height: p.exifImageHeight as number,
+      isSelected: selectedIds.includes(p.id),
+      orientation: 1,
+      tags: [
+        {
+          title: "Immich Link",
+          value: (
+            <a href={exImmichUrl + "/photos/" + p.id} target="_blank" rel="noopener noreferrer">
+              Open in Immich
+            </a>
+          ),
+        },
+      ],
+    }));
+  }, [assets, selectedIds, exImmichUrl]);
+
+  const slides = useMemo(
+    () =>
+      images.map(({ original, width, height }) => ({
+        src: original,
+        width,
+        height,
+      })),
+    [images]
+  );
+
+  const handleClick = (idx: number, asset: IAsset, event: MouseEvent<HTMLElement>) => {
+    if (selectedIds.length > 0) {
+      handleSelect(idx, asset, event);
+    } else {
+      setIndex(idx);
+    }
+  };
+
+  const handleSelect = (_idx: number, asset: IAsset, event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    const isPresent = selectedIds.includes(asset.id);
+    if (isPresent) {
+      updateContext({
+        selectedIds: selectedIds.filter((id) => id !== asset.id),
+      });
+    } else {
+      const clickedIndex = images.findIndex((image) => {
+        return image.id === asset.id;
+      });
+      if (event.shiftKey && lastSelectedIndex !== -1) {
+        const startIndex = Math.min(clickedIndex, lastSelectedIndex);
+        const endIndex = Math.max(clickedIndex, lastSelectedIndex);
+        if (startIndex >= 0 && endIndex < images.length) {
+          const newSelectedIds = images.slice(startIndex, endIndex + 1).map((image) => image.id);
+          const allSelectedIds = [...selectedIds, ...newSelectedIds];
+          const uniqueSelectedIds = [...new Set(allSelectedIds)];
+          updateContext({ selectedIds: uniqueSelectedIds });
+        } else {
+          console.warn("Shift-select index out of bounds");
+          updateContext({ selectedIds: [...selectedIds, asset.id] });
+        }
+      } else {
+        updateContext({ selectedIds: [...selectedIds, asset.id] });
+      }
+      setLastSelectedIndex(clickedIndex);
+    }
   };
 
   useEffect(() => {
@@ -76,7 +136,7 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
       faceId,
       page: 1,
     });
-    setAssets([]);
+    updateContext({ assets: [], selectedIds: [] });
     setHasMore(true);
   }, [faceId]);
 
@@ -97,11 +157,29 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
   }
 
   return (
-    <PhotoSelectionContext.Provider
-      value={{ ...contextState, updateContext: contextState.updateContext }}
-    >
-      <div className="w-full p-2">
-        <AssetGrid assets={assets} />
+    <>
+      <Lightbox
+        slides={slides}
+        plugins={[Captions]}
+        open={index >= 0}
+        index={index}
+        close={() => setIndex(-1)}
+      />
+      <div className="w-full p-2 overflow-y-auto max-h-[calc(100vh-60px)]">
+        <Gallery
+          images={images}
+          onClick={handleClick}
+          enableImageSelection={true}
+          onSelect={handleSelect}
+          thumbnailImageComponent={LazyGridImage}
+          tagStyle={{
+            color: "white",
+            fontSize: "12px",
+            backgroundColor: "rgba(0, 0, 0)",
+            padding: "2px",
+            borderRadius: "5px",
+          }}
+        />
         {hasMore && (
           <Button
             variant="outline"
@@ -118,6 +196,6 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
           </Button>
         )}
       </div>
-    </PhotoSelectionContext.Provider>
+    </>
   );
 }
