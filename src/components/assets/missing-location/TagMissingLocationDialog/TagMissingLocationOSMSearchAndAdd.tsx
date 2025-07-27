@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/loader";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, addRecentSearch } from "@/lib/utils";
 import { IPlace } from "@/types/common";
 import axios from "axios";
 import { Check } from "lucide-react";
 import React, { useRef, useState } from "react";
+import RecentSearches from "./RecentSearches";
 
 interface ITagMissingLocationSearchAndAddProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -107,6 +108,8 @@ export default function TagMissingLocationOSMSearchAndAdd(
     setSubmitting(true);
     onSubmit(selectedPlace)
       .then(() => {
+        // Save to recent searches
+        addRecentSearch(selectedPlace, 'osm');
         toast({
           title: "Location updated",
           description: "Location updated successfully",
@@ -136,6 +139,19 @@ export default function TagMissingLocationOSMSearchAndAdd(
             handleSearch(e.target.value);
           }}
         />
+      
+      {/* Recent Searches */}
+      {!loading && !searchedPlaces && (
+        <RecentSearches 
+          searchType="osm" 
+          onSelect={(place) => {
+            setSelectedPlace(place);
+            onLocationChange(place);
+          }}
+          selectedPlace={selectedPlace}
+        />
+      )}
+      
       <div>
         {loading && <Loader />}
         {!loading && searchedPlaces && searchedPlaces.length === 0 && (

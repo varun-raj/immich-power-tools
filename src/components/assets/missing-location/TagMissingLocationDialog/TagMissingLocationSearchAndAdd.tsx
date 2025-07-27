@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/loader";
 import { useToast } from "@/components/ui/use-toast";
 import { searchPlaces } from "@/handlers/api/common.handler";
-import { cn } from "@/lib/utils";
+import { cn, addRecentSearch } from "@/lib/utils";
 import { IPlace } from "@/types/common";
 import { Check } from "lucide-react";
 import React, { useRef, useState } from "react";
+import RecentSearches from "./RecentSearches";
 
 interface ITagMissingLocationSearchAndAddProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -70,6 +71,8 @@ export default function TagMissingLocationSearchAndAdd(
     setSubmitting(true);
     onSubmit(selectedPlace)
       .then(() => {
+        // Save to recent searches
+        addRecentSearch(selectedPlace, 'immich');
         toast({
           title: "Location updated",
           description: "Location updated successfully",
@@ -101,6 +104,18 @@ export default function TagMissingLocationSearchAndAdd(
           }}
         />
       </div>
+      
+      {/* Recent Searches */}
+      {!loading && !searchedPlaces && (
+        <RecentSearches 
+          searchType="immich" 
+          onSelect={(place) => {
+            setSelectedPlace(place);
+          }}
+          selectedPlace={selectedPlace}
+        />
+      )}
+      
       <div>
         {loading && <Loader />}
         {!loading && searchedPlaces && searchedPlaces.length === 0 && (
@@ -113,9 +128,9 @@ export default function TagMissingLocationSearchAndAdd(
                 key={place.name}
                 onClick={() => handleSelect(place)}
                 className={cn(
-                  "hover:bg-zinc-200 dark:hover:bg-zinc-800 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
+                  "hover:bg-gray-300 dark:hover:bg-gray-700 flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer",
                   {
-                    "bg-zinc-900 dark:bg-zinc-200":
+                    "bg-gray-300 dark:bg-gray-700":
                       selectedPlace && selectedPlace.name === place.name,
                   }
                 )}

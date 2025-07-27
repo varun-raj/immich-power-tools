@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { addRecentSearch } from "@/lib/utils";
 import { IPlace } from "@/types/common";
 import React, { useEffect, useMemo, useState } from "react";
+import RecentSearches from "./RecentSearches";
 
 interface TagMissingLocationSearchLatLongProps {
   onSubmit: (place: IPlace) => Promise<any>;
@@ -52,6 +54,8 @@ export default function TagMissingLocationSearchLatLong(
     setSubmitting(true);
     onSubmit(formData)
       .then(() => {
+        // Save to recent searches
+        addRecentSearch(formData, 'latlong');
         toast({
           title: "Location updated",
           description: "Location updated successfully",
@@ -118,6 +122,17 @@ export default function TagMissingLocationSearchLatLong(
         
         </div>
       </div>
+
+      {/* Recent Searches */}
+      <RecentSearches 
+        searchType="latlong" 
+        onSelect={(place) => {
+          setFormData(place);
+          onLocationChange(place);
+          setLatLong(`${place.latitude}, ${place.longitude}`);
+        }}
+        selectedPlace={formData.name ? formData : null}
+      />
 
       <div className="self-end">
         <Button
