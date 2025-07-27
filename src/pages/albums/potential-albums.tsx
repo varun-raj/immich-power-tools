@@ -79,6 +79,8 @@ export default function PotentialAlbums() {
       });
       const newAssets = contextState.assets.filter(a => !contextState.selectedIds.includes(a.id));
       updateContext({ selectedIds: [], assets: newAssets });
+    }).catch((error) => {
+      console.log("Error", error);
     })
   }
 

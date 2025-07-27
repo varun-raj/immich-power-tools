@@ -28,9 +28,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.setHeader(key, value)
     })
 
-  // Stream the response body
-    const reader = response.body?.getReader()
-    if (reader) {
+    // Only stream the response body if it exists and has content
+    if (response.body) {
+      const reader = response.body.getReader()
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
