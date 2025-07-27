@@ -95,7 +95,7 @@ export default function PersonPage() {
         }
       />
       <div className="flex divide-y">
-        <div className="overflow-y-auto sticky top-0 min-w-[200px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
+        <div className="overflow-y-auto sticky top-0 min-w-[200px] py-2 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  dark:bg-zinc-900 bg-gray-200 flex flex-col gap-2 px-2">
           <ul className="flex flex-col gap-1">
             <li>
               <Link href={{

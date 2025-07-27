@@ -47,6 +47,13 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
     return people.filter((person) => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
   }, [people, searchQuery])
 
+  const { knownPeople, unknownPeople } = useMemo(() => {
+    return {
+      knownPeople: people.filter((person) => person.name),
+      unknownPeople: people.filter((person) => !person.name)
+    }
+  }, [people])
+
   const fetchPeople = async () => {
     return getAlbumPeople(album.id).then((people) => {
       setPeople(people)
@@ -102,8 +109,46 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
     return <div>{errorMessage}</div>
   }
 
+  const renderPerson = (person: IAlbumPerson) => (
+    <div
+      className={cn(
+        'flex items-center gap-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md p-1',
+        selectedPerson?.id === person.id ? "bg-gray-300 dark:bg-gray-700" : ""
+      )}
+      key={person.id}
+      onClick={() => {
+        if (selectionMode) {
+          handleBulkSelect(person.id)
+        } else {
+          onSelect(person.id)
+        }
+      }}
+    >
+      {selectionMode && (
+        <Checkbox
+          id={person.id + "_checkbox"}
+          checked={selectedPeople.includes(person.id)}
+          onCheckedChange={() => handleBulkSelect(person.id)}
+        />
+      )}
+      <LazyImage
+        role="button"
+        className={
+          cn("cursor-pointer h-8 w-8 min-w-8 rounded-full",
+          )
+        }
+        src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
+      <div className='flex flex-col'>
+        <p className='text-sm'>{person.name || "No Name"}</p>
+        <p className={
+          cn("text-xs text-gray-500 dark:text-gray-400")
+        }>{person.numberOfPhotos} photos</p>
+      </div>
+    </div>
+  )
+
   return (
-    <div className="overflow-y-auto min-w-[200px] sticky top-0 py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)] border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
+    <div className="overflow-y-auto min-w-[200px] sticky top-0 py-2 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)] border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
       <Input
         placeholder="Search"
         className="w-full"
@@ -111,7 +156,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       {selectedPerson && (
-        <div className='flex flex-col gap-2 bg-white dark:bg-zinc-900 p-2 rounded-md'>
+        <div className='flex flex-col gap-2 bg-white dark:bg-zinc-900 py-2 rounded-md'>
           <div className='flex items-center gap-2'>
             <Image
               src={PERSON_THUBNAIL_PATH(selectedPerson.id)}
@@ -155,9 +200,10 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
         </div>
       )}
 
+      <div className='flex flex-col gap-1 flex-1 overflow-y-auto'>
 
       <div className="flex items-center gap-2 justify-between">
-        <p className="text-sm font-medium">People</p>
+        <p className="text-sm font-medium">Known People</p>
         {!readOnly && (
           <>
             {!selectedPerson && (
@@ -178,45 +224,15 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
           </>
         )}
       </div>
-      <div className="flex flex-col overflow-x-hidden gap-2">
-        {filteredPeople.map((person) => (
-          <div
-            className={cn(
-              'flex items-center gap-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md p-1',
-              selectedPerson?.id === person.id ? "bg-gray-300 dark:bg-gray-700" : ""
-            )}
-            key={person.id}
-            onClick={() => {
-              if (selectionMode) {
-                handleBulkSelect(person.id)
-              } else {
-                onSelect(person.id)
-              }
-            }}
-          >
-            {selectionMode && (
-              <Checkbox
-                id={person.id + "_checkbox"}
-                checked={selectedPeople.includes(person.id)}
-                onCheckedChange={() => handleBulkSelect(person.id)}
-              />
-            )}
-            <LazyImage
-              role="button"
-              className={
-                cn("cursor-pointer h-10 w-10 min-w-10 rounded-full border-2",
-                  !!person.name ? "border-green-500" : "border-gray-500",
-                )
-              }
-              src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
-            <div className='flex flex-col'>
-              <p>{person.name || "No Name"}</p>
-              <p className={
-                cn("text-xs text-gray-500 dark:text-gray-400")
-              }>{person.numberOfPhotos} photos</p>
-            </div>
-          </div>
-        ))}
+      <div className="flex flex-col gap-1">
+        {knownPeople.map(renderPerson)}
+      </div>
+      {unknownPeople.length > 0 && (
+        <div className='flex flex-col gap-1'>
+          <p className='text-sm font-medium'>Unknown People</p>
+          {unknownPeople.map(renderPerson)}
+        </div>
+      )}
       </div>
     </div>
   )

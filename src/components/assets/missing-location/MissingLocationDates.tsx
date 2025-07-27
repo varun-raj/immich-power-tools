@@ -75,7 +75,7 @@ export default function MissingLocationDates({ groupBy }: IMissingLocationDatesP
   }, [filters]);
 
   return (
-    <div className="min-w-[200px] max-w-[200px] sticky top-0 py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
+    <div className="min-w-[200px] max-w-[200px] sticky top-0 py-2 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
       <div className="flex justify-between items-center gap-2">
         {groupBy === "album" ? (
           <p className="text-sm text-gray-500 dark:text-zinc-400">Asset Count</p>
