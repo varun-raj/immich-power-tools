@@ -38,7 +38,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
   const [selectionMode, setSelectionMode] = useState<boolean>(false)
   const [selectedPeople, setSelectedPeople] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState<string>("")
-
+  
   const selectedPerson = useMemo(() => {
     return people.find((person) => query.faceId === person.id)
   }, [people, query.faceId])
@@ -98,6 +98,18 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
     }
   }
 
+  const handleUnknownPeopleCheck = (checked: boolean) => {
+    setSelectedPeople(checked ? unknownPeople.map((person) => person.id) : [])
+    router.push({
+      pathname,
+      query: {
+        ...query,
+        faceId: null
+      }
+    })
+  }
+  
+
   useEffect(() => {
     fetchPeople()
   }, [])
@@ -108,6 +120,8 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
   if (errorMessage) {
     return <div>{errorMessage}</div>
   }
+
+
 
   const renderPerson = (person: IAlbumPerson) => (
     <div
@@ -229,7 +243,14 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
       </div>
       {unknownPeople.length > 0 && (
         <div className='flex flex-col gap-1'>
-          <p className='text-sm font-medium'>Unknown People</p>
+          <div className='flex items-center gap-2'>
+            <p className='text-sm font-medium'>Unknown People</p>
+            <Checkbox
+              id='unknown-people-checkbox'
+              checked={selectedPeople.length === unknownPeople.length}
+              onCheckedChange={handleUnknownPeopleCheck}
+            />
+          </div>
           {unknownPeople.map(renderPerson)}
         </div>
       )}
