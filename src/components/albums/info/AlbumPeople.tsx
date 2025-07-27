@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { IAlbum } from '@/types/album'
+import React, { useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import { IAlbum, IAlbumPerson } from '@/types/album'
 import { getAlbumPeople } from '@/handlers/api/album.handler'
 import Loader from '@/components/ui/loader'
 import LazyImage from '@/components/ui/lazy-image'
@@ -17,17 +17,17 @@ import { Input } from '@/components/ui/input'
 
 interface AlbumPeopleProps {
   album: IAlbum
-  onSelect: (personId: string) => void
+  onSelect: (person: IAlbumPerson) => void
   readOnly?: boolean
 }
 
-interface IAlbumPerson {
-  id: string
-  name: string
-  numberOfPhotos: number
-  
+export interface IAlbumPeopleRef {
+  updatePerson: (person: IAlbumPerson) => void
+  mergePerson: (oldPerson: IAlbumPerson, newPerson: IAlbumPerson) => void
 }
-export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeopleProps) {
+
+
+const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album, onSelect, readOnly }, ref) => {
   const { exImmichUrl } = useConfig()
   const router = useRouter()
   const { query, pathname } = router
@@ -49,10 +49,10 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
 
   const { knownPeople, unknownPeople } = useMemo(() => {
     return {
-      knownPeople: people.filter((person) => person.name),
-      unknownPeople: people.filter((person) => !person.name)
+      knownPeople: filteredPeople.filter((person) => person.name),
+      unknownPeople: filteredPeople.filter((person) => !person.name)
     }
-  }, [people])
+  }, [filteredPeople])
 
   const fetchPeople = async () => {
     return getAlbumPeople(album.id).then((people) => {
@@ -114,6 +114,15 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
     fetchPeople()
   }, [])
 
+  useImperativeHandle(ref, () => ({
+    updatePerson: (person: IAlbumPerson) => {
+      setPeople((oldPeople) => oldPeople.map((p) => p.id === person.id ? person : p))
+    },
+    mergePerson: (oldPerson: IAlbumPerson, newPerson: IAlbumPerson) => {
+      setPeople((oldPeople) => oldPeople.map((p) => p.id === oldPerson.id ? newPerson : p))
+    }
+  }))
+
   if (loading) {
     return <Loader />
   }
@@ -134,7 +143,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
         if (selectionMode) {
           handleBulkSelect(person.id)
         } else {
-          onSelect(person.id)
+          onSelect(person)
         }
       }}
     >
@@ -206,7 +215,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
                     }
                   })
                 }} />
-              <Button disabled={hidingPerson} className="!py-0.5 !px-2 text-xs h-7 flex-1" variant="outline" onClick={() => handleHidePerson(selectedPerson.id)}>
+              <Button disabled={hidingPerson} variant={"outline"} className="!py-0.5 !px-2 text-xs h-7 flex-1" onClick={() => handleHidePerson(selectedPerson.id)}>
                 Hide
               </Button>
             </div>
@@ -230,7 +239,7 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
             )}
             {selectedPeople.length > 0 && (
               <div className='absolute mx-auto bottom-0 w-full py-2 bg-white darl:bg-black -mx-2 px-2'>
-                <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
+                <Button variant="default" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
                   Hide {selectedPeople.length} people
                 </Button>
               </div>
@@ -257,4 +266,8 @@ export default function AlbumPeople({ album, onSelect, readOnly }: AlbumPeoplePr
       </div>
     </div>
   )
-}
+})
+
+AlbumPeople.displayName = "AlbumPeople"
+
+export default AlbumPeople

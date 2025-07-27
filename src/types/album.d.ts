@@ -39,3 +39,10 @@ export interface IAlbumCreate {
     userId: string;
   }[];
 }
+
+export interface IAlbumPerson {
+  id: string
+  name: string
+  numberOfPhotos: number
+  
+}
