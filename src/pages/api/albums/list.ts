@@ -83,5 +83,5 @@ export default async function handler(
     .orderBy(desc(albums.createdAt));
   
   const sortedAlbums = sortAlbums(dbAlbums as IAlbum[], sortBy, sortOrder);
-  res.status(200).json(dbAlbums);
+  res.status(200).json(sortedAlbums);
 }
