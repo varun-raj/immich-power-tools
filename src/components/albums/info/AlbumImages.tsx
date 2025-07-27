@@ -1,7 +1,7 @@
 import "yet-another-react-lightbox/styles.css";
 import { listAlbumAssets } from "@/handlers/api/album.handler";
 import { useConfig } from "@/contexts/ConfigContext";
-import { IAlbum } from "@/types/album";
+import { IAlbum, IAlbumPerson } from "@/types/album";
 import { IAsset } from "@/types/asset";
 import React, { useEffect, useMemo, useRef, useState, MouseEvent } from "react";
 import { Hourglass } from "lucide-react";
@@ -12,9 +12,12 @@ import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import LazyGridImage from "@/components/ui/lazy-grid-image";
 import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
+import { PERSON_THUBNAIL_PATH } from "@/config/routes";
+import Image from "next/image";
 
 interface AlbumImagesProps {
   album: IAlbum;
+  selectedPerson: IAlbumPerson | null;
 }
 
 interface IAssetFilter {
@@ -22,7 +25,7 @@ interface IAssetFilter {
   page: number;
 }
 
-export default function AlbumImages({ album }: AlbumImagesProps) {
+export default function AlbumImages({ album, selectedPerson }: AlbumImagesProps) {
   const { exImmichUrl } = useConfig();
   const router = useRouter();
   const { faceId } = router.query as { faceId: string };
@@ -158,6 +161,7 @@ export default function AlbumImages({ album }: AlbumImagesProps) {
 
   return (
     <>
+      
       <Lightbox
         slides={slides}
         plugins={[Captions]}

@@ -1,13 +1,12 @@
 import FloatingBar from '@/components/shared/FloatingBar'
 import { AlertDialog, IAlertDialogActions } from '@/components/ui/alert-dialog'
 import { Autocomplete, AutocompleteOption } from '@/components/ui/autocomplete'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
+import { PERSON_THUBNAIL_PATH } from '@/config/routes'
 import { mergePerson, searchPeople, updatePerson } from '@/handlers/api/people.handler'
 import { IAlbumPerson } from '@/types/album'
+import Image from 'next/image'
 import { useRef, useState } from 'react'
-import { Toaster } from 'react-hot-toast'
 
 interface AlbumPersonNameBarProps {
   selectedPerson: IAlbumPerson | null

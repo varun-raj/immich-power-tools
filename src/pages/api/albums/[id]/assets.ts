@@ -3,7 +3,7 @@ import { NextApiRequest } from "next";
 import { db } from "@/config/db";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiResponse } from "next";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { assets } from "@/schema/assets.schema";
 import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 import { assetFaces, exif, person } from "@/schema";
@@ -56,6 +56,7 @@ export default async function handler(
       eq(assets.status, "active"),
       faceId ? eq(assetFaces.personId, faceId) : undefined,
     ))
+    .orderBy(desc(assets.id), desc(assets.localDateTime))
     .limit(100)
     .offset(100 * (page - 1));
 
@@ -71,6 +72,8 @@ export default async function handler(
       orientation: asset?.orientation,
       downloadUrl: asset?.id ? ASSET_VIDEO_PATH(asset.id) : null,
     };
+  }).sort((b, a) => {
+    return new Date(b.localDateTime || 0).getTime() - new Date(a.localDateTime || 0).getTime();
   });
   res.status(200).json(cleanedAssets);
 }

@@ -68,8 +68,8 @@ export default function AlbumListPage() {
 
   useEffect(() => {
     fetchAlbumInfo()
-  }, [])
 
+  }, [])
   // Update context albumId when router albumId changes
   useEffect(() => {
     contextState.updateContext({
@@ -137,7 +137,7 @@ export default function AlbumListPage() {
         {albumInfo && (
           <>
             <AlbumPeople ref={albumPeopleRef} album={albumInfo} key={albumInfo.id} onSelect={handleSelectPerson} />
-            <AlbumImages album={albumInfo} key={albumInfo.id} />
+            <AlbumImages album={albumInfo} key={albumInfo.id} selectedPerson={selectedPerson} />
           </>
         )}
       </div>

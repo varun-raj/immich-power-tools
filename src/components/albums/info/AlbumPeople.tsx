@@ -14,6 +14,9 @@ import { Button } from '@/components/ui/button'
 import { updatePerson } from '@/handlers/api/people.handler'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { CheckIcon } from '@radix-ui/react-icons'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 
 interface AlbumPeopleProps {
   album: IAlbum
@@ -38,7 +41,7 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
   const [selectionMode, setSelectionMode] = useState<boolean>(false)
   const [selectedPeople, setSelectedPeople] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState<string>("")
-  
+
   const selectedPerson = useMemo(() => {
     return people.find((person) => query.faceId === person.id)
   }, [people, query.faceId])
@@ -108,7 +111,7 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
       }
     })
   }
-  
+
 
   useEffect(() => {
     fetchPeople()
@@ -157,7 +160,7 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
       <LazyImage
         role="button"
         className={
-          cn("cursor-pointer h-8 w-8 min-w-8 rounded-full",
+          cn("cursor-pointer h-10 w-10 min-w-10 rounded-full",
           )
         }
         src={PERSON_THUBNAIL_PATH(person.id)} alt={person.name} />
@@ -172,12 +175,29 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
 
   return (
     <div className="overflow-y-auto min-w-[200px] sticky top-0 py-2 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)] border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
-      <Input
-        placeholder="Search"
-        className="w-full"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="Search"
+          className="flex-1"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {!readOnly && !selectedPerson && (
+          <Button
+            variant={selectionMode ? "default" : "outline"}
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => {
+              setSelectionMode(!selectionMode)
+              if (selectionMode) {
+                setSelectedPeople([])
+              }
+            }}
+          >
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
       {selectedPerson && (
         <div className='flex flex-col gap-2 bg-white dark:bg-zinc-900 py-2 rounded-md'>
           <div className='flex items-center gap-2'>
@@ -188,6 +208,7 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
               height={20}
               className="rounded-full"
             />
+
 
             <Link target="_blank" href={`${exImmichUrl}/people/${selectedPerson.id}`}
               className="text-sm font-medium">
@@ -224,45 +245,51 @@ const AlbumPeople = React.forwardRef<IAlbumPeopleRef, AlbumPeopleProps>(({ album
       )}
 
       <div className='flex flex-col gap-1 flex-1 overflow-y-auto'>
-
-      <div className="flex items-center gap-2 justify-between">
-        <p className="text-sm font-medium">Known People</p>
-        {!readOnly && (
-          <>
-            {!selectedPerson && (
-              <Button variant="outline" className="!py-0.5 !px-2 text-xs h-7" onClick={() => {
-                setSelectionMode(!selectionMode)
-                setSelectedPeople([])
-              }}>
-                {selectionMode ? "Cancel" : "Select"}
-              </Button>
-            )}
-            {selectedPeople.length > 0 && (
-              <div className='absolute mx-auto bottom-0 w-full py-2 bg-white darl:bg-black -mx-2 px-2'>
-                <Button variant="default" className="!py-0.5 !px-2 text-xs h-7" onClick={handleHideSelectedPeople}>
-                  Hide {selectedPeople.length} people
-                </Button>
+        <Accordion type="multiple" className="w-full">
+          <AccordionItem value="known-people" className="border-none">
+            <AccordionTrigger className="py-2 hover:no-underline">
+              <div className="flex items-center gap-2 justify-between w-full">
+                <p className="text-xs font-medium">Known ({knownPeople.length})</p>
               </div>
-            )}
-          </>
-        )}
-      </div>
-      <div className="flex flex-col gap-1">
-        {knownPeople.map(renderPerson)}
-      </div>
-      {unknownPeople.length > 0 && (
-        <div className='flex flex-col gap-1'>
-          <div className='flex items-center gap-2'>
-            <p className='text-sm font-medium'>Unknown People</p>
-            <Checkbox
-              id='unknown-people-checkbox'
-              checked={selectedPeople.length === unknownPeople.length}
-              onCheckedChange={handleUnknownPeopleCheck}
-            />
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-1">
+                {knownPeople.map(renderPerson)}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {unknownPeople.length > 0 && (
+            <AccordionItem value="unknown-people" className="border-none">
+              <AccordionTrigger className="py-2 hover:no-underline">
+                <div className="flex items-center gap-2 justify-between w-full">
+                  <p className="text-xs font-medium">Unknown ({unknownPeople.length})</p>
+                  <Checkbox
+                    id='unknown-people-checkbox'
+                    checked={selectedPeople.length === unknownPeople.length}
+                    onCheckedChange={(checked: boolean) => {
+                      handleUnknownPeopleCheck(checked)
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-1">
+                  {unknownPeople.map(renderPerson)}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          )}
+        </Accordion>
+
+        {selectedPeople.length > 0 && (
+          <div className='sticky bottom-0 w-full py-2 bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800'>
+            <Button variant="default" className="!py-0.5 !px-2 text-xs h-7 w-full" onClick={handleHideSelectedPeople}>
+              Hide {selectedPeople.length} people
+            </Button>
           </div>
-          {unknownPeople.map(renderPerson)}
-        </div>
-      )}
+        )}
       </div>
     </div>
   )
