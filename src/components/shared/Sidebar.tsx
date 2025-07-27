@@ -18,14 +18,14 @@ export default function Sidebar() {
   return (
     <div className="hidden border-r bg-muted/40 md:block max-h-screen min-h-screen">
       <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center justify-between border-b px-2 lg:h-[60px] lg:px-2">
+        <div className="flex h-12 items-center justify-between border-b px-2 lg:px-2">
           <Link href="/" className="flex items-center gap-1 font-semibold">
             <img
               src="/favicon.png"
-              width={32}
-              height={32}
+              width={26}
+              height={26}
               alt="Immich Power Tools"
-              className="w-8 h-8"
+              className="w-6 h-6"
             />
             <span className="">Immich Power Tools</span>
           </Link>

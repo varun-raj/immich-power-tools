@@ -48,7 +48,7 @@ export default function Header({ leftComponent, rightComponent, title }: IProps)
       </Head>
     )}
     <header key="header" className={
-      clsx("sticky z-10 top-0 w-full flex h-14 items-center gap-4 border-b bg-white dark:bg-black px-4 lg:h-[60px] lg:px-6")
+      clsx("sticky z-10 top-0 w-full flex h-12 items-center gap-4 border-b bg-white dark:bg-black px-4 lg:px-6")
     }>
       <Sheet>
         <SheetTrigger asChild>

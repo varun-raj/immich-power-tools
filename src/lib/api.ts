@@ -19,7 +19,6 @@ export class APIError extends Error {
 }
 
 const handleErrors = (error: AxiosError | any) => {
-  
   let errorObject = {}
   if (error.response && error.response.data) {
     return Promise.reject({

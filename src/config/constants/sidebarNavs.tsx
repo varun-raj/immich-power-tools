@@ -1,11 +1,11 @@
 import { GalleryHorizontal, GalleryVerticalEnd, Image as ImageIcon, MapPin, MapPinX, Rewind, Search, User } from "lucide-react";
 
 export const sidebarNavs = [
-  {
-    title: "Rewind 2024",
-    link: "/rewind",
-    icon: <Rewind className="h-4 w-4" />,
-  },
+  // {
+  //   title: "Rewind 2024",
+  //   link: "/rewind",
+  //   icon: <Rewind className="h-4 w-4" />,
+  // },
   {
     title: "Find Assets",
     link: "/find",

@@ -20,6 +20,7 @@ export interface AutocompleteProps extends React.InputHTMLAttributes<HTMLInputEl
   isLoading?: boolean
   onCreateNew?: (inputValue: string) => void
   createNewLabel?: string
+  position?: "top" | "bottom"
 }
 
 const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
@@ -34,6 +35,7 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
     isLoading: externalLoading,
     onCreateNew,
     createNewLabel = "Create new",
+    position = "top",
     ...props 
   }, forwardedRef) => {
     const [open, setOpen] = React.useState(false)
@@ -193,7 +195,7 @@ const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps>(
           }}
         />
         {open && (filteredOptions.length > 0 || isLoading || showCreateNew) && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[300px] overflow-auto rounded-md border bg-popover shadow-md">
+          <div className={cn("absolute left-0 right-0 z-50 mt-1 max-h-[300px] overflow-auto rounded-md border bg-popover shadow-md", position === "top" ? "top-full" : "bottom-full")}>
             {isLoading ? (
               <div className="px-3 py-2 text-sm text-muted-foreground">
                 Loading...

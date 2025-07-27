@@ -15,6 +15,8 @@ import TagMissingLocationSearchLatLong from "./TagMissingLocationSearchLatLong";
 import TagMissingLocationOSMSearchAndAdd from "./TagMissingLocationOSMSearchAndAdd";
 import dynamic from "next/dynamic";
 import { usePhotoSelectionContext } from "@/contexts/PhotoSelectionContext";
+import { addRecentSearch } from "@/lib/utils";
+import RecentSearches from "./RecentSearches";
 
 const LazyMap = dynamic(() => import("./Map"), {
   ssr: false
@@ -31,8 +33,14 @@ export default function TagMissingLocationDialog({
   const [mapPosition, setMapPosition] = useState<IPlace>({
     latitude: 48.210033,
     longitude: 16.363449,
-    name: "Vienna, Austria"
+    name: ""
   });
+
+  const handleMapSubmit = async (place: IPlace) => {
+    // Save to recent searches
+    addRecentSearch(place, 'map');
+    return onSubmit(place);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -64,11 +72,39 @@ export default function TagMissingLocationDialog({
           </TabsContent>
           <TabsContent value="maps">
             <div className="flex flex-col gap-6 items-center ">
+              {/* Recent Searches */}
+              <RecentSearches 
+                searchType="map" 
+                onSelect={(place) => {
+                  setMapPosition(place);
+                }}
+                selectedPlace={mapPosition.name ? mapPosition : null}
+              />
+              
               <LazyMap location={{
                 latitude: isNaN(mapPosition.latitude) ? 0 : mapPosition.latitude,
                 longitude: isNaN(mapPosition.longitude) ? 0 : mapPosition.longitude,
                 name: mapPosition.name,
               }} onLocationChange={setMapPosition} />
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setMapPosition({
+                    latitude: 48.210033,
+                    longitude: 16.363449,
+                    name: ""
+                  })}
+                >
+                  Reset
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={() => handleMapSubmit(mapPosition)}
+                  disabled={!mapPosition.name}
+                >
+                  Tag Location
+                </Button>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

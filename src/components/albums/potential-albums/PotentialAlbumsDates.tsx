@@ -51,7 +51,7 @@ export default function PotentialAlbumsDates() {
   }, [filters, minAssets]);
 
   return (
-    <div className="min-w-[200px] py-4 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-1">
+    <div className="min-w-[200px] py-2 max-h-[calc(100vh-60px)] min-h-[calc(100vh-60px)]  border-r border-gray-200 dark:border-zinc-800 flex flex-col gap-2 px-1">
       <div className="flex justify-between items-center gap-2">
         <Select
           value={filters.sortBy}
