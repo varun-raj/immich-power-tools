@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, timestamp, boolean, text } from 'drizzle-orm/pg-core';
 
-export const albums = pgTable('albums', {
+export const albums = pgTable('album', {
     id: uuid('id').defaultRandom().primaryKey().notNull(),
     ownerId: uuid('ownerId').notNull(),
     albumName: varchar('albumName').notNull().default('Untitled Album'),

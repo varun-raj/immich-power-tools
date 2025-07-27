@@ -1,7 +1,7 @@
 import { pgTable, uuid, varchar, integer, bigint, timestamp, doublePrecision, text } from 'drizzle-orm/pg-core';
 import { assets } from './assets.schema'; // Assuming you have an assets table defined
 
-export const exif = pgTable('exif', {
+export const exif = pgTable('asset_exif', {
   assetId: uuid('assetId').primaryKey().notNull().references(() => assets.id, { onDelete: 'cascade' }),
   make: varchar('make'),
   model: varchar('model'),

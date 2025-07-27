@@ -1,6 +1,6 @@
 import { pgTable, uuid, integer } from "drizzle-orm/pg-core";
 
-export const assetFaces = pgTable("asset_faces", {
+export const assetFaces = pgTable("asset_face", {
     id: uuid("id").defaultRandom().primaryKey(),
     assetId: uuid("assetId").notNull(),
     personId: uuid("personId"),
