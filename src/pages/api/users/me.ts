@@ -1,7 +1,4 @@
-// pages/api/proxy.js
-
 import { db } from "@/config/db";
-import { ENV } from "@/config/environment";
 import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { NextApiRequest, NextApiResponse } from "next";
 

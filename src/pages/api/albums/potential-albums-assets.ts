@@ -24,12 +24,12 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       e."dateTimeOriginal",
       e."orientation"
   FROM 
-      assets a
+      asset a
   LEFT JOIN 
-      albums_assets_assets aaa 
+      album_asset aaa 
       ON a.id = aaa."assetsId"
   LEFT JOIN 
-      exif e 
+      asset_exif e 
       ON a.id = e."assetId"
   WHERE 
       aaa."albumsId" IS NULL 
@@ -58,6 +58,7 @@ export default async function handler(
     });
     return res.status(200).json(cleanedRows);
   } catch (error: any) {
+    console.error(error);
     res.status(500).json({
       error: error?.message,
     });
