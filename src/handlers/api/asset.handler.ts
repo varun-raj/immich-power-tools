@@ -5,10 +5,12 @@ import {
   LIST_MISSING_LOCATION_ASSETS_PATH,
   LIST_MISSING_LOCATION_DATES_PATH,
   UPDATE_ASSETS_PATH,
+  FILTER_ASSETS,
 } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
 import { IAsset } from "@/types/asset";
+import type { AssetFilter } from "@/types/filter";
 
 interface IMissingAssetAlbumsFilters {
   startDate?: string;
@@ -72,3 +74,24 @@ export const getAssetGeoHeatmap = async (filters: IHeatMapParams) => {
 export const deleteAssets = async (ids: string[]) => {
   return API.delete(UPDATE_ASSETS_PATH, { ids });
 } 
+
+export interface FilterAssetsParams {
+  filters: AssetFilter[];
+  page?: number;
+  limit?: number;
+}
+
+export interface FilterAssetsResponse {
+  assets: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  };
+  filters: AssetFilter[];
+}
+
+export const filterAssets = async (params: FilterAssetsParams): Promise<FilterAssetsResponse> => {
+  return API.post(FILTER_ASSETS, params);
+}; 

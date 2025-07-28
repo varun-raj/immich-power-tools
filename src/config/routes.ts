@@ -33,6 +33,7 @@ export const DELETE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/delete";
 export const LIST_MISSING_LOCATION_DATES_PATH = BASE_API_ENDPOINT + "/assets/missing-location-dates";
 export const LIST_MISSING_LOCATION_ALBUMS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-albums";
 export const LIST_MISSING_LOCATION_ASSETS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-assets";
+export const FILTER_ASSETS = BASE_API_ENDPOINT + "/assets/filter-assets";
 export const UPDATE_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/assets";
 export const ASSET_THUMBNAIL_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id;
 export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/thumbnail/" + id + "?size=preview";
