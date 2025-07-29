@@ -4,7 +4,7 @@ import Loader from '@/components/ui/loader'
 import { useConfig } from '@/contexts/ConfigContext'
 import { deleteAlbums, listAlbums } from '@/handlers/api/album.handler'
 import { IAlbum } from '@/types/album'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import AlbumThumbnail from '@/components/albums/list/AlbumThumbnail'
 import { Button } from '@/components/ui/button'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input'
 import AlbumShareDialog, { IAlbumShareDialogRef } from '@/components/albums/share/AlbumShareDialog'
 import { AlertDialog } from '@/components/ui/alert-dialog'
 import toast from 'react-hot-toast'
+import { useAlbumSelection } from '@/hooks'
+import FloatingBar from '@/components/shared/FloatingBar'
 
 const SORT_BY_OPTIONS = [
   { value: 'lastPhotoDate', label: 'Last Photo Date' },
@@ -25,6 +27,7 @@ const SORT_BY_OPTIONS = [
   { value: 'albumSize', label: 'Album Size' },
   { value: 'faceCount', label: 'Number of People' },
 ]
+
 export default function AlbumListPage() {
   const router = useRouter()
   const [search, setSearch] = useState('')
@@ -33,13 +36,25 @@ export default function AlbumListPage() {
   const [albums, setAlbums] = useState<IAlbum[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [selectedAlbumsIds, setSelectedAlbumsIds] = useState<string[]>([])
   const albumShareDialogRef = useRef<IAlbumShareDialogRef>(null);
   const [deleting, setDeleting] = useState(false)
 
   const selectedSortBy = useMemo(() => SORT_BY_OPTIONS.find((option) => option.value === sortBy), [sortBy])
 
   const searchedAlbums = useMemo(() => albums.filter((album) => album.albumName.toLowerCase().includes(search.toLowerCase())), [albums, search])
+
+  const {
+    selectedIds,
+    selectedCount,
+    isSelected,
+    selectAlbum,
+    selectAll,
+    clearSelection,
+    isAllSelected,
+    isPartiallySelected
+  } = useAlbumSelection(searchedAlbums)
+
+  const selectedAlbums = useMemo(() => albums.filter((album) => selectedIds.includes(album.id)), [albums, selectedIds])
 
   const fetchAlbums = async () => {
     setLoading(true)
@@ -56,27 +71,16 @@ export default function AlbumListPage() {
       })
   }
 
-  const selectedAlbums = useMemo(() => albums.filter((album) => selectedAlbumsIds.includes(album.id)), [albums, selectedAlbumsIds])
-
   useEffect(() => {
     fetchAlbums()
   }, [sortBy, sortOrder])
 
-
-  const handleSelect = (checked: boolean, albumId: string) => {
-    if (checked) {
-      setSelectedAlbumsIds([...selectedAlbumsIds, albumId])
-    } else {
-      setSelectedAlbumsIds(selectedAlbumsIds.filter((id) => id !== albumId))
-    }
-  }
-
   const handleDeleteAlbums = async () => {
     setDeleting(true)
-    return deleteAlbums(selectedAlbumsIds).then(() => {
-      setSelectedAlbumsIds([])
-      setAlbums(albums.filter((album) => !selectedAlbumsIds.includes(album.id)))
-      toast.success(`Deleted ${selectedAlbumsIds.length} albums`)
+    return deleteAlbums(selectedIds).then(() => {
+      clearSelection()
+      setAlbums(albums.filter((album) => !selectedIds.includes(album.id)))
+      toast.success(`Deleted ${selectedCount} albums`)
     }).catch((error) => {
       toast.error(error.message)
     }).finally(() => {
@@ -97,48 +101,30 @@ export default function AlbumListPage() {
           <AlbumThumbnail
             album={album}
             key={album.id}
-            selected={selectedAlbumsIds.includes(album.id)}
-            onSelect={(checked) => handleSelect(checked, album.id)}
+            selected={isSelected(album.id)}
+            onSelect={selectAlbum}
           />
         ))}
       </div>
     )
   }
   return (
-    <PageLayout className="!p-0 !mb-0">
+    <PageLayout className="!p-0 !mb-0 relative">
       <Header
-        leftComponent="Manage Albums"
+        leftComponent={
+          <div className="flex items-center gap-2">
+            <span>Manage Albums</span>
+            {selectedCount > 0 && (
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                ({selectedCount} selected)
+              </span>
+            )}
+          </div>
+        }
         rightComponent={
           <div className="flex items-center gap-2">
-            {!!selectedAlbumsIds.length && (
-              <>
-                <Button
-                  variant={"secondary"}
-                  size={"sm"}
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    albumShareDialogRef.current?.open(selectedAlbums)
-                  }}>
-                  <Share size={16} /> Share {selectedAlbumsIds.length} albums
-                </Button>
-
-                <AlertDialog
-                  title='Delete Albums'
-                  description='Are you sure you want to delete these albums?'
-                  onConfirm={handleDeleteAlbums}
-                >
-                  <Button
-                    variant={"destructive"}
-                    size={"sm"}
-                    className="flex items-center gap-2"
-                    disabled={deleting}
-                  >
-                    <Trash size={16} /> {deleting ? "Deleting..." : `Delete ${selectedAlbumsIds.length} albums`}
-                  </Button>
-                </AlertDialog>
-              </>
-            )}
             <Input type="text" placeholder="Search" className="w-48" onChange={(e) => setSearch(e.target.value)} />
+            
             <Select
               defaultValue={selectedSortBy?.value}
               onValueChange={(value) => router.push({
@@ -171,6 +157,60 @@ export default function AlbumListPage() {
         }
       />
       {renderContent()}
+      {selectedCount > 0 && (
+        <FloatingBar className="!fixed">
+          <div className="flex items-center gap-2 justify-between w-full">
+            <p className="text-sm text-muted-foreground">
+              {selectedCount} Selected
+            </p>
+            <div className="flex items-center gap-2">
+              {isAllSelected ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearSelection}
+                  className="text-xs"
+                >
+                  Clear Selection
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={selectAll}
+                  className="text-xs"
+                >
+                  Select All
+                </Button>
+              )}
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex items-center gap-2"
+                onClick={() => {
+                  albumShareDialogRef.current?.open(selectedAlbums)
+                }}>
+                <Share size={16} /> Share
+              </Button>
+              <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
+              <AlertDialog
+                title='Delete Albums'
+                description='Are you sure you want to delete these albums?'
+                onConfirm={handleDeleteAlbums}
+              >
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  disabled={deleting}
+                >
+                  <Trash size={16} /> {deleting ? "Deleting..." : "Delete"}
+                </Button>
+              </AlertDialog>
+            </div>
+          </div>
+        </FloatingBar>
+      )}
       <AlbumShareDialog
         ref={albumShareDialogRef}
       />
