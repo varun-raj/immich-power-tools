@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { getRecentSearchesByType, RecentSearch } from "@/lib/utils";
+import { getRecentSearchesByType, RecentSearch, cn } from "@/lib/utils";
 import { IPlace } from "@/types/common";
 import { Clock, MapPin } from "lucide-react";
 import React from "react";
@@ -9,9 +8,10 @@ interface RecentSearchesProps {
   searchType: RecentSearch['searchType'];
   onSelect: (place: IPlace) => void;
   selectedPlace?: IPlace | null;
+  className?: string;
 }
 
-export default function RecentSearches({ searchType, onSelect, selectedPlace }: RecentSearchesProps) {
+export default function RecentSearches({ searchType, onSelect, selectedPlace, className }: RecentSearchesProps) {
   const recentSearches = getRecentSearchesByType(searchType);
 
   if (recentSearches.length === 0) {
@@ -32,7 +32,7 @@ export default function RecentSearches({ searchType, onSelect, selectedPlace }: 
   };
 
   return (
-    <div className="mb-4">
+    <div className={cn("mb-4", className)}>
       <div className="flex items-center gap-2 mb-3">
         <Clock className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-medium text-muted-foreground">Recent Searches</h3>
@@ -50,7 +50,7 @@ export default function RecentSearches({ searchType, onSelect, selectedPlace }: 
               "hover:bg-zinc-200 dark:hover:bg-zinc-800 flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer border",
               {
                 "bg-zinc-200 dark:bg-zinc-800 border-primary":
-                  selectedPlace && 
+                  selectedPlace &&
                   selectedPlace.name === search.name &&
                   selectedPlace.latitude === search.latitude &&
                   selectedPlace.longitude === search.longitude,
@@ -60,7 +60,7 @@ export default function RecentSearches({ searchType, onSelect, selectedPlace }: 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                <p className="text-sm truncate">{search.name}</p>
+                <p className="text-sm line-clamp-2">{search.name}</p>
               </div>
               <div className="flex items-center justify-between mt-1">
                 <span className="text-xs text-muted-foreground">
@@ -76,4 +76,4 @@ export default function RecentSearches({ searchType, onSelect, selectedPlace }: 
       </div>
     </div>
   );
-} 
+}

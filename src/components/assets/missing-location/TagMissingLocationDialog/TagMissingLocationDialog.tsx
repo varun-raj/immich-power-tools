@@ -54,7 +54,7 @@ export default function TagMissingLocationDialog({
             Tagging a location will add the location to the selected {selectedIds.length} asset(s).
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="searchOsm" className="border rounded-lg">
+        <Tabs defaultValue="searchOsm" className="border rounded-lg min-w-0 max-w-full">
           <TabsList className="flex justify-between">
             <TabsTrigger value="searchOsm" className="w-full">Open Street Map</TabsTrigger>
             <TabsTrigger value="search" className="w-full">Immich Geo</TabsTrigger>
@@ -71,16 +71,17 @@ export default function TagMissingLocationDialog({
             <TagMissingLocationSearchLatLong onSubmit={onSubmit} onOpenChange={setOpen} location={mapPosition} onLocationChange={setMapPosition} />
           </TabsContent>
           <TabsContent value="maps">
-            <div className="flex flex-col gap-6 items-center ">
+            <div className="flex flex-col gap-6 items-center min-w-0 max-w-full py-4">
               {/* Recent Searches */}
-              <RecentSearches 
-                searchType="map" 
+              <RecentSearches
+                searchType="map"
                 onSelect={(place) => {
                   setMapPosition(place);
                 }}
                 selectedPlace={mapPosition.name ? mapPosition : null}
+                className="w-[500px]" // Matching the width of the map
               />
-              
+
               <LazyMap location={{
                 latitude: isNaN(mapPosition.latitude) ? 0 : mapPosition.latitude,
                 longitude: isNaN(mapPosition.longitude) ? 0 : mapPosition.longitude,
