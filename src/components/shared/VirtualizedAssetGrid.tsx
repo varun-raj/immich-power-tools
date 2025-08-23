@@ -159,7 +159,7 @@ const VirtualizedAssetGrid = forwardRef<VirtualizedAssetGridRef, VirtualizedAsse
               <PlayIcon className="w-3 h-3 text-white" />
               {asset.duration && (
                 <span className="text-xs text-white">
-                  {humanizeDuration(asset.duration)}
+                  {humanizeDuration(asset.duration.toString())}
                 </span>
               )}
             </div>
