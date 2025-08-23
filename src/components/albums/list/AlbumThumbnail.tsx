@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import Link from 'next/link';
 import { humanizeBytes, humanizeNumber, pluralize } from '@/helpers/string.helper';
@@ -12,15 +12,19 @@ import { Calendar, Camera } from 'lucide-react';
 
 interface IAlbumThumbnailProps {
   album: IAlbum;
-  onSelect: (checked: boolean) => void;
+  onSelect: (albumId: string, isShiftClick?: boolean) => void;
   selected: boolean;
 }
-export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThumbnailProps) {
-  const [isSelected, setIsSelected] = useState(selected);
 
+export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThumbnailProps) {
   const numberOfDays = useMemo(() => {
     return differenceInDays(album.lastPhotoDate, album.firstPhotoDate);
   }, [album.firstPhotoDate, album.lastPhotoDate]);
+
+  const handleCheckboxChange = (event: React.MouseEvent) => {
+    const isShiftClick = event.shiftKey;
+    onSelect(album.id, isShiftClick);
+  };
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-lg relative group">
@@ -39,8 +43,8 @@ export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThum
           {album.firstPhotoDate ? formatDate(album.firstPhotoDate?.toString(), 'MMM d, yyyy') : ''} - {album.lastPhotoDate ? formatDate(album.lastPhotoDate?.toString(), 'MMM d, yyyy') : ''}
         </div>
         <Checkbox
-          defaultChecked={isSelected}
-          onCheckedChange={onSelect}
+          checked={selected}
+          onClick={handleCheckboxChange}
           className="absolute top-2 left-2 w-6 h-6 rounded-full border-gray-300 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         />
       </label>
@@ -54,15 +58,15 @@ export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThum
         {numberOfDays === 0 ? '1 day' : `${numberOfDays.toLocaleString() } days`} <Calendar size={12} />
       </p>
       </div>
-      <div className="p-4">
+      <div className={`p-4 ${selected ? 'bg-blue-500' : ''}`}>
         <Link href={`/albums/${album.id}`}>
-          <h2 className="text-md font-semibold truncate">{album.albumName}</h2>
+          <h2 className={`text-md font-semibold truncate ${selected ? 'text-white' : ''}`}>{album.albumName}</h2>
         </Link>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs text-gray-700 dark:text-gray-500">{humanizeNumber(album.faceCount)} {
+          <p className={`text-xs ${selected ? 'text-white' : 'text-gray-700 dark:text-gray-500'}`}>{humanizeNumber(album.faceCount)} {
           pluralize(album.faceCount, 'person', 'people')
         } </p>
-          <p className="text-xs text-gray-700 dark:text-gray-500">{humanizeBytes(parseInt(album.size))}</p>
+          <p className={`text-xs ${selected ? 'text-white' : 'text-gray-700 dark:text-gray-500'}`}>{humanizeBytes(parseInt(album.size))}</p>
         </div>
       </div>
     </div>

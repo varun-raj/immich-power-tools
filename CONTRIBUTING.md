@@ -29,3 +29,11 @@ Since the `thumbnailPath` of Immich API doesnt give us a direct link to the imag
 
 **For Person's Thumbnail**
 You can find the API route here `pages/api/immich-proxy/thumbnail/[id].ts`
+
+### Branching Strategy
+
+- Always create a new branch for your changes
+- Always rebase your branch before creating a PR
+- Always squash your commits before merging
+- Always merge your branch into the `prerelease` branch
+- Always delete your branch after merging

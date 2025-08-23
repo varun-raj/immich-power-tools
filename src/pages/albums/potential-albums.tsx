@@ -112,7 +112,7 @@ export default function PotentialAlbums() {
   }
 
   return (
-    <PageLayout className="!p-0 !mb-0 relative">
+    <PageLayout className="!p-0 !mb-0 relative pb-20">
       <Header
         leftComponent="Potential Albums"
         rightComponent={(
@@ -150,6 +150,7 @@ export default function PotentialAlbums() {
                 {contextState.selectedIds.length} Selected
               </p>
               <div className="flex items-center gap-2">
+                {contextState.selectedIds.length === contextState.assets.length ? (
                   <Button
                     variant={"outline"}
                     size={"sm"}
@@ -161,8 +162,8 @@ export default function PotentialAlbums() {
                   >
                     Unselect all
                   </Button>
-               
-                 <Button
+                ) : (
+                  <Button
                     variant={"outline"}
                     size={"sm"}
                     onClick={() =>
@@ -170,10 +171,10 @@ export default function PotentialAlbums() {
                         selectedIds: contextState.assets.map((a) => a.id),
                       })
                     }
-
                   >
                     Select all
                   </Button>
+                )}
                 <AlbumSelectorDialog onSelected={handleSelect} onSubmit={handleCreate} />
                 <AssetOffsetDialog assets={selectedAssets} onComplete={handleOffsetComplete} />
                 <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
