@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         eq(assets.visibility, "timeline"),
         eq(assets.isOffline, false),
       ))
-      .orderBy(desc(assets.createdAt));
+      .orderBy(desc(assets.localDateTime));
 
     const cleanedAssets = dbAssets.map((asset) => {
       return {
