@@ -165,7 +165,7 @@ export default function AlbumListPage() {
   }
   
   return (
-    <PageLayout className="!p-0 !mb-0 relative">
+    <PageLayout className="!p-0 !mb-0 relative pb-20">
       <Header
         leftComponent={
           <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function AlbumListPage() {
       />
       {renderContent()}
       {currentSelectedCount > 0 && (
-        <FloatingBar className="!fixed">
+        <FloatingBar>
           <div className="flex items-center gap-2 justify-between w-full">
             <p className="text-sm text-muted-foreground">
               {currentSelectedCount} Selected

@@ -35,7 +35,7 @@
     "@remotion/cli": "4.0.232",
     "@remotion/eslint-plugin": "^4.0.232",
     "@tanstack/react-query": "^5.69.0",
-    "@tanstack/react-table": "^8.20.1",
+    "@tanstack/react-table": "^8.21.3",
     "@types/cookie": "^0.6.0",
     "@types/qs": "^6.9.15",
     "@types/react-autosuggest": "^10.1.11",

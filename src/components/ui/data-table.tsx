@@ -13,20 +13,15 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   TableRoot,
   TableBody,
@@ -94,7 +89,6 @@ export function DataTable<TData, TValue>({
     enableSorting: true,
     enableFilters: true,
     enableColumnFilters: true,
-    enablePagination: true,
   })
 
   // Sync external selection with table selection
@@ -175,22 +169,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={(e) => {
-                    // Prevent row click from interfering with link clicks
-                    if (e.target instanceof HTMLAnchorElement) {
-                      e.stopPropagation()
-                    }
-                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell 
                       key={cell.id}
-                      onClick={(e) => {
-                        // Allow link clicks to propagate
-                        if (e.target instanceof HTMLAnchorElement) {
-                          e.stopPropagation()
-                        }
-                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

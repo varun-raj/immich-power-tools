@@ -270,7 +270,7 @@ export default function FindPage() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout className="pb-20">
       <Header leftComponent="Find" />
       {geminiEnabled ? (
         <>

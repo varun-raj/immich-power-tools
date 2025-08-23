@@ -112,7 +112,7 @@ export default function PotentialAlbums() {
   }
 
   return (
-    <PageLayout className="!p-0 !mb-0 relative">
+    <PageLayout className="!p-0 !mb-0 relative pb-20">
       <Header
         leftComponent="Potential Albums"
         rightComponent={(
