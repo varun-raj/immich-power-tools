@@ -73,7 +73,7 @@ export const getAssetGeoHeatmap = async (filters: IHeatMapParams) => {
 }
 
 export const deleteAssets = async (ids: string[]) => {
-  return API.delete(UPDATE_ASSETS_PATH, { ids });
+  return API.delete(UPDATE_ASSETS_PATH, { ids, force: true });
 } 
 
 export interface IEmptyVideosParams {

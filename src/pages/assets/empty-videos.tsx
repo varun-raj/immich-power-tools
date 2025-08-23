@@ -22,6 +22,7 @@ export default function EmptyVideosPage() {
   const [assets, setAssets] = useState<IAsset[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
   
   // Initialize filters from URL params or defaults
   const getInitialFilters = () => {
