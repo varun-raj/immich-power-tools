@@ -16,7 +16,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog'
 import toast from 'react-hot-toast'
 import { useAlbumSelection } from '@/hooks'
 import FloatingBar from '@/components/shared/FloatingBar'
-import { DataTable } from '@/components/ui/data-table'
+import DataTable, { DataTableRef } from '@/components/ui/data-table'
 import { albumColumns } from '@/components/albums/AlbumTableColumns'
 
 const SORT_BY_OPTIONS = [
@@ -41,6 +41,8 @@ export default function AlbumListPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const albumShareDialogRef = useRef<IAlbumShareDialogRef>(null);
   const [deleting, setDeleting] = useState(false)
+
+  const dataTableRef = useRef<DataTableRef<IAlbum>>(null)
   
   // Separate selection state for table view
   const [tableSelectedIds, setTableSelectedIds] = useState<string[]>([])
@@ -103,9 +105,9 @@ export default function AlbumListPage() {
     })
   }
 
-  const handleTableSelectionChange = (selectedRowIds: string[]) => {
+  const handleTableSelectionChange = useCallback((selectedRowIds: string[]) => {
     setTableSelectedIds(selectedRowIds)
-  }
+  }, [])
 
   const handleSelectAll = () => {
     if (viewMode === 'table') {
@@ -140,11 +142,11 @@ export default function AlbumListPage() {
           <DataTable
             columns={albumColumns}
             data={searchedAlbums}
-            selectedIds={currentSelectedIds}
             onRowSelectionChange={handleTableSelectionChange}
             getRowId={(row) => row.id}
             searchValue={search}
             onSearchChange={setSearch}
+            ref={dataTableRef}
           />
         </div>
       )
