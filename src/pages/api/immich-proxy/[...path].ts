@@ -22,24 +22,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Forward the status code
     res.status(response.status)
 
-    // Forward the headers
+    // Forward the headers, but filter out problematic ones
     const responseHeaders = response.headers
     responseHeaders.forEach((value, key) => {
-      res.setHeader(key, value)
+      // Skip headers that can cause decoding issues
+      const skipHeaders = [
+        'content-encoding',
+        'content-length',
+        'transfer-encoding',
+        'connection',
+        'keep-alive'
+      ]
+      
+      if (!skipHeaders.includes(key.toLowerCase())) {
+        res.setHeader(key, value)
+      }
     })
 
-    // Only stream the response body if it exists and has content
+    // Handle the response body properly
     if (response.body) {
-      const reader = response.body.getReader()
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        res.write(value)
+      // For binary content or when we need to preserve encoding
+      if (response.headers.get('content-type')?.includes('image/') || 
+          response.headers.get('content-type')?.includes('video/') ||
+          response.headers.get('content-type')?.includes('audio/') ||
+          response.headers.get('content-type')?.includes('application/octet-stream')) {
+        
+        const arrayBuffer = await response.arrayBuffer()
+        res.send(Buffer.from(arrayBuffer))
+      } else {
+        // For text/JSON content, let Next.js handle the encoding
+        const text = await response.text()
+        res.send(text)
       }
+    } else {
+      res.end()
     }
-    res.end()
   } catch (error: any) {
     console.error('Proxy error:', error)
     res.status(500).json({ error: error?.message })
   }
+}
+
+export const config = {
+  api: {
+    responseLimit: false,
+  },
 }

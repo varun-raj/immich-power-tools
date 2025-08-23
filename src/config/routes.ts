@@ -74,3 +74,5 @@ export const SHARE_LINK_ASSETS_PATH = (token: string) => BASE_API_ENDPOINT + "/s
 export const SHARE_LINK_PEOPLE_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/people";
 export const SHARE_LINK_DOWNLOAD_PATH = (token: string) => BASE_API_ENDPOINT + "/share-link/" + token + "/download";
 export const DOWNLOAD_ASSETS_PATH = BASE_PROXY_ENDPOINT + "/download/archive";
+
+export const LIST_DUPLICATES_PATH = BASE_PROXY_ENDPOINT + "/duplicates";
