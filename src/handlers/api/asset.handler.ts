@@ -1,5 +1,6 @@
 import {
   ASSET_GEO_HEATMAP_PATH,
+  LIST_EMPTY_VIDEOS_PATH,
   FIND_ASSETS,
   LIST_MISSING_LOCATION_ALBUMS_PATH,
   LIST_MISSING_LOCATION_ASSETS_PATH,
@@ -72,3 +73,15 @@ export const getAssetGeoHeatmap = async (filters: IHeatMapParams) => {
 export const deleteAssets = async (ids: string[]) => {
   return API.delete(UPDATE_ASSETS_PATH, { ids });
 } 
+
+export interface IEmptyVideosParams {
+  limit: number;
+  page: number;
+  maxDuration: number;
+  sortBy?: string;
+  sortOrder?: string;
+}
+
+export const listEmptyVideos = async (filters: IEmptyVideosParams) => {
+  return API.get(LIST_EMPTY_VIDEOS_PATH, filters).then((assets) => assets.map(cleanUpAsset));
+}   

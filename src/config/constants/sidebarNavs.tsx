@@ -1,4 +1,4 @@
-import { GalleryHorizontal, GalleryVerticalEnd, Image as ImageIcon, MapPin, MapPinX, Rewind, Search, User } from "lucide-react";
+import { GalleryHorizontal, GalleryVerticalEnd, Image as ImageIcon, MapPin, MapPinX, Rewind, Search, User, Video   } from "lucide-react";
 
 export const sidebarNavs = [
   // {
@@ -41,6 +41,12 @@ export const sidebarNavs = [
     title: "Geo Heatmap",
     link: "/assets/geo-heatmap",
     icon: <MapPin className="h-4 w-4" />,
+  },
+  // Empty Videos
+  {
+    title: "Empty Videos",
+    link: "/assets/empty-videos", 
+    icon: <Video className="h-4 w-4" />,
   }
   
 ];
