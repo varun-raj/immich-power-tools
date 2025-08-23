@@ -68,15 +68,8 @@ export const useGridDimensions = ({
     calculateDimensions();
   }, [calculateDimensions]);
 
-  const updateRowCount = useCallback((totalItems: number) => {
-    setDimensions(prev => ({
-      ...prev,
-      rowCount: Math.ceil(totalItems / prev.columnCount)
-    }));
-  }, []);
 
   return {
     ...dimensions,
-    updateRowCount
   };
 };
