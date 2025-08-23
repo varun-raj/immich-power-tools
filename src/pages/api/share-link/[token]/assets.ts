@@ -1,7 +1,7 @@
 import { db } from "@/config/db";
 import { ENV } from "@/config/environment";
-import { desc, gte, lte } from "drizzle-orm";
-import { eq, inArray } from "drizzle-orm";
+import { desc, gte, lte, sql } from "drizzle-orm";
+import { eq, inArray, or, isNull, count } from "drizzle-orm";
 import { assetFaces, assets, exif } from "@/schema";
 import { and } from "drizzle-orm";
 import { JsonWebTokenError, sign, verify } from "jsonwebtoken";
@@ -76,8 +76,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       orientation: exif.orientation,
     }).from(assets)
       .innerJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-      .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
-      .innerJoin(albums, eq(albumsAssetsAssets.albumsId, albums.id))
+      .leftJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
+      .leftJoin(albums, eq(albumsAssetsAssets.albumsId, albums.id))
       .innerJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
         filteredPersonIds?.length > 0 ? inArray(assetFaces.personId, filteredPersonIds) : undefined,
