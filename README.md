@@ -61,6 +61,8 @@ GEMINI_API_KEY= # Gemini API Key
 ```
 Refer here for obtaining Immich API Key: https://immich.app/docs/features/command-line-interface#obtain-the-api-key
 
+> [!NOTE] When creating the API key, make sure you select all the permissions for the API key.  
+
 #### Method 2 - Portainer
 
 If you're using portainer, run the docker using `docker run` and add the power tools to the same network as immich.
