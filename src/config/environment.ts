@@ -13,7 +13,6 @@ export const ENV = {
   SECURE_COOKIE: process.env.SECURE_COOKIE === 'true',
   VERSION: process.env.VERSION,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
-  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY as string,
   IMMICH_SHARE_LINK_KEY: process.env.IMMICH_SHARE_LINK_KEY as string,
   POWER_TOOLS_ENDPOINT_URL: process.env.POWER_TOOLS_ENDPOINT_URL as string,
 };
