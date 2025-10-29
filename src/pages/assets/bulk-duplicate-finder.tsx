@@ -7,6 +7,8 @@ import VirtualizedDuplicateList from '@/components/assets/duplicate-assets/Virtu
 import Loader from '@/components/ui/loader'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, Search, Shield, Trash2 } from 'lucide-react'
+import FloatingBar from '@/components/shared/FloatingBar'
+import { AlertDialog } from '@/components/ui/alert-dialog'
 
 import { toast } from '@/components/ui/use-toast'
 import { humanizeBytes } from '@/helpers/string.helper'
@@ -71,6 +73,27 @@ export default function BulkDuplicatePage() {
   const allAssetIds = useMemo(() => {
     return duplicates.flatMap(record => record.assets.map(asset => asset.id));
   }, [duplicates]);
+
+  // Calculate selected assets info for discard mode
+  const selectedAssetsInfo = useMemo(() => {
+    if (selectionMode !== 'discard' || selectedAssets.size === 0) {
+      return { count: 0, totalSize: 0 };
+    }
+
+    let count = 0;
+    let totalSize = 0;
+
+    duplicates.forEach(record => {
+      record.assets.forEach(asset => {
+        if (selectedAssets.has(asset.id)) {
+          count++;
+          totalSize += asset.exifInfo.fileSizeInByte;
+        }
+      });
+    });
+
+    return { count, totalSize };
+  }, [duplicates, selectedAssets, selectionMode]);
 
   const handleAssetSelect = useCallback((assetId: string, isShiftClick?: boolean) => {
     setSelectedAssets(prev => {
@@ -174,6 +197,45 @@ export default function BulkDuplicatePage() {
       setIsDeleting(false);
     }
   }, [duplicates]);
+
+  const handleDeleteAllSelected = async () => {
+    if (selectedAssets.size === 0 || selectionMode !== 'discard') return;
+
+    setIsDeleting(true);
+    try {
+      const selectedAssetIds = Array.from(selectedAssets);
+      
+      // Delete all selected assets
+      await deleteAssets(selectedAssetIds);
+
+      // Update duplicates: remove deleted assets and clean up empty records
+      setDuplicates(prev => {
+        const updatedDuplicates = prev.map(record => ({
+          ...record,
+          assets: record.assets.filter(asset => !selectedAssets.has(asset.id))
+        })).filter(record => record.assets.length > 0);
+
+        return updatedDuplicates;
+      });
+
+      // Clear selection
+      setSelectedAssets(new Set());
+      setLastSelectedIndex(-1);
+
+      toast({
+        title: "Success",
+        description: `Successfully deleted ${selectedAssetIds.length} selected assets${selectedAssetsInfo.totalSize > 0 ? ` and saved ${humanizeBytes(selectedAssetsInfo.totalSize)} of storage` : ''}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete selected assets. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleKeepSelected = async (record: IDuplicateAssetRecord, selectedIds: string[], unselectedIds: string[]) => {
     setIsDeleting(true);
@@ -362,6 +424,38 @@ export default function BulkDuplicatePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {selectionMode === 'discard' && selectedAssets.size > 0 && (
+        <FloatingBar>
+          <div className="flex items-center gap-2 justify-between w-full">
+            <p className="text-sm text-muted-foreground">
+              {selectedAssetsInfo.count} Selected
+              {selectedAssetsInfo.totalSize > 0 && (
+                <span className="ml-2">
+                  ({humanizeBytes(selectedAssetsInfo.totalSize)})
+                </span>
+              )}
+            </p>
+            <div className="flex items-center gap-2">
+              <AlertDialog
+                title="Delete the selected assets?"
+                description={`This action will delete ${selectedAssetsInfo.count} selected asset${selectedAssetsInfo.count !== 1 ? 's' : ''}${selectedAssetsInfo.totalSize > 0 ? ` and save ${humanizeBytes(selectedAssetsInfo.totalSize)} of storage` : ''}. This action cannot be undone.`}
+                onConfirm={handleDeleteAllSelected}
+                disabled={selectedAssets.size === 0}
+              >
+                <Button 
+                  variant={"destructive"} 
+                  size={"sm"} 
+                  disabled={selectedAssets.size === 0}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </AlertDialog>
+            </div>
+          </div>
+        </FloatingBar>
       )}
     </PageLayout>
   )
