@@ -14,10 +14,11 @@ import { Input } from '@/components/ui/input'
 import AlbumShareDialog, { IAlbumShareDialogRef } from '@/components/albums/share/AlbumShareDialog'
 import { AlertDialog } from '@/components/ui/alert-dialog'
 import toast from 'react-hot-toast'
-import { useAlbumSelection } from '@/hooks'
 import FloatingBar from '@/components/shared/FloatingBar'
 import DataTable, { DataTableRef } from '@/components/ui/data-table'
 import { albumColumns } from '@/components/albums/AlbumTableColumns'
+import MergeAlbumDialog from '@/components/albums/MergeAlbumDialog'
+import { AlbumSelectionProvider, useAlbumSelection } from '@/contexts/AlbumSelectionContext'
 
 const SORT_BY_OPTIONS = [
   { value: 'lastPhotoDate', label: 'Last Photo Date' },
@@ -30,7 +31,7 @@ const SORT_BY_OPTIONS = [
   { value: 'faceCount', label: 'Number of People' },
 ]
 
-export default function AlbumListPage() {
+const AlbumList = () => {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
@@ -52,22 +53,15 @@ export default function AlbumListPage() {
   const searchedAlbums = useMemo(() => albums.filter((album) => album.albumName.toLowerCase().includes(search.toLowerCase())), [albums, search])
 
   const {
-    selectedIds,
-    selectedCount,
-    isSelected,
+    selectedAlbums,     
     selectAlbum,
     selectAll,
     clearSelection,
-    isAllSelected,
-    isPartiallySelected
-  } = useAlbumSelection(searchedAlbums)
-
-  const selectedAlbums = useMemo(() => albums.filter((album) => selectedIds.includes(album.id)), [albums, selectedIds])
+  } = useAlbumSelection()
 
   // Use appropriate selection state based on view mode
-  const currentSelectedIds = viewMode === 'table' ? tableSelectedIds : selectedIds
+  const currentSelectedIds = viewMode === 'table' ? tableSelectedIds : selectedAlbums.map(album => album.id)
   const currentSelectedCount = currentSelectedIds.length
-  const currentSelectedAlbums = useMemo(() => albums.filter((album) => currentSelectedIds.includes(album.id)), [albums, currentSelectedIds])
 
   const fetchAlbums = async () => {
     setLoading(true)
@@ -105,6 +99,11 @@ export default function AlbumListPage() {
     })
   }
 
+  const handleMergeAlbums = async (primaryAlbumId: string, secondaryAlbumIds: string[]  ) => {
+    setAlbums(albums.filter((album) => !secondaryAlbumIds.includes(album.id) && album.id !== primaryAlbumId))
+    toast.success(`Merged ${secondaryAlbumIds.length} albums`)
+  }
+
   const handleTableSelectionChange = useCallback((selectedRowIds: string[]) => {
     setTableSelectedIds(selectedRowIds)
   }, [])
@@ -113,7 +112,7 @@ export default function AlbumListPage() {
     if (viewMode === 'table') {
       setTableSelectedIds(searchedAlbums.map(album => album.id))
     } else {
-      selectAll()
+      selectAll(searchedAlbums)
     }
   }
 
@@ -124,6 +123,19 @@ export default function AlbumListPage() {
       clearSelection()
     }
   }
+
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleClearSelection()
+    }
+  }
+
+  useEffect(() => {
+    // Escape to clear selection
+  
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [])
 
   const isAllSelectedCurrent = searchedAlbums.length > 0 && currentSelectedCount === searchedAlbums.length
   const isPartiallySelectedCurrent = currentSelectedCount > 0 && currentSelectedCount < searchedAlbums.length
@@ -158,8 +170,8 @@ export default function AlbumListPage() {
           <AlbumThumbnail
             album={album}
             key={album.id}
-            selected={isSelected(album.id)}
-            onSelect={selectAlbum}
+            selected={selectedAlbums.some(selectedAlbum => selectedAlbum.id === album.id)}
+            onSelect={(album, isShiftClick) => selectAlbum(album, searchedAlbums, isShiftClick ?? false)}
           />
         ))}
       </div>
@@ -202,6 +214,7 @@ export default function AlbumListPage() {
               </Button>
             </div>
             
+
             <Select
               defaultValue={selectedSortBy?.value}
               onValueChange={(value) => router.push({
@@ -241,6 +254,10 @@ export default function AlbumListPage() {
               {currentSelectedCount} Selected
             </p>
             <div className="flex items-center gap-2">
+              <MergeAlbumDialog 
+                onMerge={handleMergeAlbums}
+              />
+
               {isAllSelectedCurrent ? (
                 <Button
                   variant="outline"
@@ -265,7 +282,7 @@ export default function AlbumListPage() {
                 size="sm"
                 className="flex items-center gap-2"
                 onClick={() => {
-                  albumShareDialogRef.current?.open(currentSelectedAlbums)
+                  albumShareDialogRef.current?.open(selectedAlbums as IAlbum[])
                 }}>
                 <Share size={16} /> Share
               </Button>
@@ -292,5 +309,13 @@ export default function AlbumListPage() {
         ref={albumShareDialogRef}
       />
     </PageLayout>
+  )
+}
+
+export default function AlbumListPage() {
+  return (
+    <AlbumSelectionProvider>
+      <AlbumList />
+    </AlbumSelectionProvider>
   )
 }

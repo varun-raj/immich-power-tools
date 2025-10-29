@@ -29,6 +29,10 @@ export const CREATE_ALBUM_PATH = BASE_PROXY_ENDPOINT + "/albums";
 export const ADD_ASSETS_ALBUMS_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";
 export const SHARE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/share";
 export const DELETE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/delete";
+
+
+export const ADD_ASSETS_TO_ALBUM_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/albums/" + id + "/assets";
+export const MERGE_ALBUMS_PATH = BASE_API_ENDPOINT + "/albums/merge";
 // Assets
 export const LIST_MISSING_LOCATION_DATES_PATH = BASE_API_ENDPOINT + "/assets/missing-location-dates";
 export const LIST_MISSING_LOCATION_ALBUMS_PATH = BASE_API_ENDPOINT + "/assets/missing-location-albums";
@@ -55,6 +59,9 @@ export const SEARCH_PLACES_PATH = BASE_PROXY_ENDPOINT + "/search/places";
 export const ASSET_STATISTICS = BASE_PROXY_ENDPOINT + "/assets/statistics";
 export const LIVE_PHOTO_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/livephoto";
 export const HEATMAP_DATA = BASE_API_ENDPOINT + "/analytics/statistics/heatmap";
+export const PEOPLE_NAMES_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/people-names";
+export const GEO_PHOTOS_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/geo-photos";
+export const ALBUM_PHOTOS_STATISTICS = BASE_API_ENDPOINT + "/analytics/statistics/album-photos";
 // Common
 export const GET_FILTERS = BASE_API_ENDPOINT + "/filters/asset-filters";
 

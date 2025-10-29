@@ -8,6 +8,7 @@ import LazyGridImage from "../ui/lazy-grid-image";
 import Download from "yet-another-react-lightbox/plugins/download";
 import Video from "yet-another-react-lightbox/plugins/video";
 import { usePhotoSelectionContext } from '@/contexts/PhotoSelectionContext';
+import { useConfig } from '@/contexts/ConfigContext';
 
 
 interface AssetGridProps {
@@ -26,7 +27,7 @@ interface AssetGridRef {
 const AssetGrid = forwardRef<AssetGridRef, AssetGridProps>(({ assets, isInternal = true, selectable = false, onSelectionChange }, ref) => {
   const [index, setIndex] = useState(-1);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(-1);
-  
+  const { exImmichUrl } = useConfig();
   // Use context for selection state
   const { selectedIds, updateContext } = usePhotoSelectionContext();
 
@@ -112,8 +113,18 @@ const AssetGrid = forwardRef<AssetGridRef, AssetGridProps>(({ assets, isInternal
       orientation: 1,
       isSelected: selectedIds.includes(p.id),
       isVideo: p.type === "VIDEO",
+      tags: [
+        {
+          title: "Immich Link",
+          value: (
+            <a href={exImmichUrl + "/photos/" + p.id} target="_blank" rel="noopener noreferrer">
+              Open in Immich
+            </a>
+          ),
+        },
+      ],
     }));
-  }, [assets, selectedIds]);
+  }, [assets, selectedIds, exImmichUrl]);
 
   const handleEsc = (event: KeyboardEvent) => {
     if (event.key === "Escape") {

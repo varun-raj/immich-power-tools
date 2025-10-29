@@ -12,7 +12,7 @@ interface IQuery {
   id: string;
   page: number;
   perPage: number;
-  nameLessOnly: boolean | string;
+  name: "nameless" | "tagged" | "all";
   minimumAssetCount: number;
   sort: ISortField;
   sortOrder: "asc" | "desc";
@@ -26,6 +26,7 @@ export default async function handler(
     const {
       id,
       threshold = 0.5, 
+      name,
     } = req.query as any as IQuery;
 
     const currentUser = await getCurrentUser(req);
@@ -97,7 +98,16 @@ export default async function handler(
       )
       .limit(12);
 
-    return res.status(200).json(people);
+
+    const filteredPeople = people.filter((personRecord) => {
+      if (name === "nameless") {
+        return !personRecord.name || personRecord.name === "";
+      } else if (name === "tagged") {
+        return personRecord.name && personRecord.name !== "";
+      }
+      return true;
+    }); 
+    return res.status(200).json(filteredPeople);
   } catch (error: any) {
     res.status(500).json({
       error: error?.message,

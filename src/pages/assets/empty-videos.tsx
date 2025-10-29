@@ -6,7 +6,7 @@ import { listEmptyVideos, deleteAssets } from '@/handlers/api/asset.handler'
 import { IAsset } from '@/types/asset'
 import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { Camera, Trash2 } from 'lucide-react'
+import { Camera, Trash2, Trash } from 'lucide-react'
 import { humanizeNumber } from '@/helpers/string.helper'
 import PhotoSelectionContext, { IPhotoSelectionContext } from '@/contexts/PhotoSelectionContext'
 import FloatingBar from '@/components/shared/FloatingBar'
@@ -102,7 +102,19 @@ export default function EmptyVideosPage() {
   }
 
   const handleDelete = () => {
-    return deleteAssets(contextState.selectedIds).then(() => {
+    return deleteAssets(contextState.selectedIds, { force: true }).then(() => {
+      const newAssets = contextState.assets.filter((a) => !contextState.selectedIds.includes(a.id));
+      setAssets(newAssets)
+      contextState.updateContext({
+        selectedIds: [],
+        assets: newAssets,
+      });
+    })
+  }
+
+  const handleTrash = () => {
+    // Move assets to trash: force = false (soft delete/trash)
+    return deleteAssets(contextState.selectedIds, { force: false }).then(() => {
       const newAssets = contextState.assets.filter((a) => !contextState.selectedIds.includes(a.id));
       setAssets(newAssets)
       contextState.updateContext({
@@ -261,6 +273,17 @@ export default function EmptyVideosPage() {
                   </Button>
                 )}
                 <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
+                <AlertDialog
+                  title="Move selected videos to Trash?"
+                  description="This action will move the selected videos to trash. You can restore them later."
+                  onConfirm={handleTrash}
+                  disabled={contextState.selectedIds.length === 0}
+                >
+                  <Button variant={"outline"} size={"sm"} disabled={contextState.selectedIds.length === 0}>
+                    <Trash className="w-4 h-4 mr-2" />
+                    Trash
+                  </Button>
+                </AlertDialog>
                 <AlertDialog
                   title="Delete the selected videos?"
                   description="This action will delete the selected videos and cannot be undone."

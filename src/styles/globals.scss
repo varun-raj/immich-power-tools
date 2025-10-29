@@ -99,3 +99,14 @@
     @apply bg-zinc-800 !important;
   }
 }
+
+
+.leaflet-tile-pane {
+  z-index: 1 !important;
+}
+.leaflet-pane {
+  z-index: 2 !important;
+}
+.leaflet-control-container {
+  z-index: 3 !important;
+}

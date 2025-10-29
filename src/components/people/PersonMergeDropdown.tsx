@@ -33,6 +33,8 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import FaceThumbnail from "./merge/FaceThumbnail";
 import ErrorBlock from "../shared/ErrorBlock";
 import { cn } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "../ui/select";
 
 interface PersonMergeDropdownProps {
   person: IPerson;
@@ -57,6 +59,7 @@ export function PersonMergeDropdown({
   const [primaryPerson, setPrimaryPerson] = useState<IPerson>(person);
   const [merging, setMerging] = useState(false);
   const [threshold, setThreshold] = useState(0.5);
+  const [name, setName] = useState<"nameless" | "tagged">("tagged");
   const { toast } = useToast();
 
   const selectedIds = useMemo(
@@ -90,7 +93,7 @@ export function PersonMergeDropdown({
   };
 
   const fetchSuggestions = () => {
-    return listSimilarFaces(person.id, threshold)
+    return listSimilarFaces(person.id, { threshold, name: name })
       .then(setSimilarPeople)
       .catch(() => {
         toast({
@@ -168,11 +171,11 @@ export function PersonMergeDropdown({
       setSimilarLoading(true);
       fetchSuggestions();
     }
-  }, [threshold, open]);
+  }, [threshold, name, open]);
 
   useEffect(() => {
     if (open && !similarPeople.length) fetchSuggestions();
-  }, [open, person.id, similarPeople]);
+  }, [open, person.id, similarPeople, threshold, name]);
 
   useEffect(() => {
     setPrimaryPerson(person);
@@ -291,10 +294,11 @@ export function PersonMergeDropdown({
             handleSearch(e.target.value);
           }}
         />
-        <div>
-          <label htmlFor="threshold" className="block text-sm font-medium text-gray-300">
+        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 flex-1">
+          <Label htmlFor="threshold">
             Threshold
-          </label>
+          </Label>
           <Input
             type="number"
             step="0.01"
@@ -303,8 +307,23 @@ export function PersonMergeDropdown({
             value={threshold}
             onChange={(e) => setThreshold(parseFloat(e.target.value))}
             placeholder="Threshold (0 to 1)"
-            className="mt-2"
           />
+        </div>
+        <div className="flex flex-col gap-2 flex-1">
+          <Label htmlFor="threshold">
+            Name
+          </Label>
+         <Select value={name} onValueChange={(value) => setName(value as "nameless" | "tagged")}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a name" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="tagged">Tagged</SelectItem>
+            <SelectItem value="nameless">Nameless</SelectItem>
+          </SelectContent>
+         </Select>
+        </div>
         </div>
 
         {selectedPeople.length > 0 ? (

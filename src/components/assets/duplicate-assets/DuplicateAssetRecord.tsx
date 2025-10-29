@@ -16,15 +16,17 @@ interface DuplicateAssetRecordProps {
   onDeleteRecord: (record: IDuplicateAssetRecord) => void
   onKeepSelected: (record: IDuplicateAssetRecord, selectedIds: string[], unselectedIds: string[]) => void
   onKeepAllInRecord: (record: IDuplicateAssetRecord) => void
+  selectionMode: 'keep' | 'discard'
 }
 
 interface DuplicateAssetItemProps {
   asset: IDuplicateAsset
   isSelected: boolean
   onSelect: (assetId: string, isShiftClick?: boolean) => void
+  selectionMode: 'keep' | 'discard'
 }
 
-function DuplicateAssetItem({ asset, isSelected, onSelect }: DuplicateAssetItemProps) {
+function DuplicateAssetItem({ asset, isSelected, onSelect, selectionMode }: DuplicateAssetItemProps) {
   const handleCheckboxChange = (event: React.MouseEvent) => {
     const isShiftClick = event.shiftKey
     onSelect(asset.id, isShiftClick)
@@ -51,16 +53,30 @@ function DuplicateAssetItem({ asset, isSelected, onSelect }: DuplicateAssetItemP
         
         {/* Keep/Trash label */}
         <div className="absolute top-2 right-2">
-          {isSelected ? (
-            <div className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
-              <Shield size={12} />
-              KEEP
-            </div>
+          {selectionMode === 'keep' ? (
+            isSelected ? (
+              <div className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
+                <Shield size={12} />
+                KEEP
+              </div>
+            ) : (
+              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
+                <Trash2 size={12} />
+                DISCARD
+              </div>
+            )
           ) : (
-            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
-              <Trash2 size={12} />
-              TRASH
-            </div>
+            isSelected ? (
+              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
+                <Trash2 size={12} />
+                DISCARD
+              </div>
+            ) : (
+              <div className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold flex items-center gap-1">
+                <Shield size={12} />
+                KEEP
+              </div>
+            )
           )}
         </div>
         
@@ -120,7 +136,8 @@ export default function DuplicateAssetRecord({
   onAssetSelect, 
   onDeleteRecord, 
   onKeepSelected,
-  onKeepAllInRecord
+  onKeepAllInRecord,
+  selectionMode
 }: DuplicateAssetRecordProps) {
   const recordAssetIds = record.assets.map(asset => asset.id)
   const selectedInRecord = recordAssetIds.filter(id => selectedAssets.has(id)).length
@@ -162,7 +179,13 @@ export default function DuplicateAssetRecord({
     
     if (selectedAssetIds.length === 0) return
 
-    onKeepSelected(record, selectedAssetIds, unselectedAssetIds)
+    if (selectionMode === 'keep') {
+      // Keep selected, delete unselected
+      onKeepSelected(record, selectedAssetIds, unselectedAssetIds)
+    } else {
+      // Delete selected, keep unselected
+      onKeepSelected(record, unselectedAssetIds, selectedAssetIds)
+    }
   }
 
   return (
@@ -180,14 +203,29 @@ export default function DuplicateAssetRecord({
             </div>
                       {selectedInRecord > 0 && (
             <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
-                <Shield size={16} />
-                {selectedInRecord} to keep ({humanizeBytes(selectedSize)})
-              </div>
-              <div className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
-                <Trash2 size={16} />
-                {unselectedInRecord} to delete ({humanizeBytes(unselectedSize)} savings)
-              </div>
+              {selectionMode === 'keep' ? (
+                <>
+                  <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
+                    <Shield size={16} />
+                    {selectedInRecord} to keep ({humanizeBytes(selectedSize)})
+                  </div>
+                  <div className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                    <Trash2 size={16} />
+                    {unselectedInRecord} to delete ({humanizeBytes(unselectedSize)} savings)
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                    <Trash2 size={16} />
+                    {selectedInRecord} to delete ({humanizeBytes(selectedSize)} savings)
+                  </div>
+                  <div className="flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
+                    <Shield size={16} />
+                    {unselectedInRecord} to keep ({humanizeBytes(unselectedSize)})
+                  </div>
+                </>
+              )}
             </div>
           )}
           </div>
@@ -211,8 +249,11 @@ export default function DuplicateAssetRecord({
             
             {selectedInRecord > 0 && (
               <AlertDialog
-                title="Keep Selected Assets"
-                description={`Keep ${selectedInRecord} selected assets and delete ${unselectedInRecord} unselected assets? The selected assets will be removed from duplicate detection. Storage savings: ${humanizeBytes(unselectedSize)}. This action cannot be undone.`}
+                title={selectionMode === 'keep' ? "Keep Selected Assets" : "Delete Selected Assets"}
+                description={selectionMode === 'keep' 
+                  ? `Keep ${selectedInRecord} selected assets and delete ${unselectedInRecord} unselected assets? The selected assets will be removed from duplicate detection. Storage savings: ${humanizeBytes(unselectedSize)}. This action cannot be undone.`
+                  : `Delete ${selectedInRecord} selected assets and keep ${unselectedInRecord} unselected assets? The unselected assets will be removed from duplicate detection. Storage savings: ${humanizeBytes(selectedSize)}. This action cannot be undone.`
+                }
                 onConfirm={handleKeepSelected}
                 variant="destructive"
                 asChild
@@ -221,10 +262,13 @@ export default function DuplicateAssetRecord({
                   variant="default"
                   size="sm"
                   className="flex items-center gap-1"
-                  title={`Keep selected, delete others (${humanizeBytes(unselectedSize)} savings)`}
+                  title={selectionMode === 'keep' 
+                    ? `Keep selected, delete others (${humanizeBytes(unselectedSize)} savings)`
+                    : `Delete selected, keep others (${humanizeBytes(selectedSize)} savings)`
+                  }
                 >
-                  <Shield size={16} />
-                  Keep Selected ({selectedInRecord})
+                  {selectionMode === 'keep' ? <Shield size={16} /> : <Trash2 size={16} />}
+                  {selectionMode === 'keep' ? 'Keep' : 'Delete'} Selected ({selectedInRecord})
                 </Button>
               </AlertDialog>
             )}
@@ -257,6 +301,7 @@ export default function DuplicateAssetRecord({
             asset={asset}
             isSelected={selectedAssets.has(asset.id)}
             onSelect={onAssetSelect}
+            selectionMode={selectionMode}
           />
         ))}
       </div>

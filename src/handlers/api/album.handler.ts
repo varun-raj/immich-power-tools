@@ -1,4 +1,4 @@
-import { ADD_ASSETS_ALBUMS_PATH, ALBUM_ASSETS_PATH, ALBUM_INFO_PATH, ALBUM_PEOPLE_PATH, CREATE_ALBUM_PATH, DELETE_ALBUMS_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH, SHARE_ALBUMS_PATH } from "@/config/routes";
+import { ADD_ASSETS_ALBUMS_PATH, ALBUM_ASSETS_PATH, ALBUM_INFO_PATH, ALBUM_PEOPLE_PATH, CREATE_ALBUM_PATH, DELETE_ALBUMS_PATH, LIST_ALBUMS_PATH, LIST_POTENTIAL_ALBUMS_ASSETS_PATH, LIST_POTENTIAL_ALBUMS_DATES_PATH, MERGE_ALBUMS_PATH, SHARE_ALBUMS_PATH } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
 import { IAlbumCreate } from "@/types/album";
@@ -53,4 +53,8 @@ export const shareAlbums = async (albums: { albumId: string, allowDownload: bool
 
 export const deleteAlbums = async (albumIds: string[]) => {
   return API.delete(DELETE_ALBUMS_PATH, { albumIds });
+}
+
+export const mergeAlbums = async (primaryAlbumId: string, secondaryAlbumIds: string[]) => {
+  return API.post(MERGE_ALBUMS_PATH, { primaryAlbumId, secondaryAlbumIds });
 }

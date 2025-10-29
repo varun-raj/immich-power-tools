@@ -1,4 +1,4 @@
-import { ASSET_STATISTICS, EXIF_DISTRIBUTION_PATH, HEATMAP_DATA, LIVE_PHOTO_STATISTICS } from "@/config/routes";
+import { ASSET_STATISTICS, EXIF_DISTRIBUTION_PATH, HEATMAP_DATA, LIVE_PHOTO_STATISTICS, PEOPLE_NAMES_STATISTICS, GEO_PHOTOS_STATISTICS, ALBUM_PHOTOS_STATISTICS } from "@/config/routes";
 import API from "@/lib/api";
 
 export type ISupportedEXIFColumns = 
@@ -18,4 +18,16 @@ export const getLivePhotoStatistics = async () => {
 
 export const getHeatMapData = async () => {
   return API.get(HEATMAP_DATA);
+}
+
+export const getPeopleNamesStatistics = async () => {
+  return API.get(PEOPLE_NAMES_STATISTICS);
+}
+
+export const getGeoPhotosStatistics = async () => {
+  return API.get(GEO_PHOTOS_STATISTICS);
+}
+
+export const getAlbumPhotosStatistics = async () => {
+  return API.get(ALBUM_PHOTOS_STATISTICS);
 }
