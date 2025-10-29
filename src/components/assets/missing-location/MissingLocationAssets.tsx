@@ -51,19 +51,7 @@ export default function MissingLocationAssets({ groupBy }: IProps) {
       sortedAssets = [...assets];
     }
 
-    return sortedAssets.map((asset) => ({
-      ...asset,
-      tags: [
-        {
-          title: "Immich Link",
-          value: (
-            <a href={exImmichUrl + "/photos/" + asset.id} target="_blank" rel="noopener noreferrer">
-              Open in Immich
-            </a>
-          ),
-        },
-      ],
-    }));
+    return sortedAssets;
   }, [assets, sortOrder, exImmichUrl]);
 
   const handleSelectionChange = (ids: string[]) => {
