@@ -101,8 +101,8 @@ export default function EmptyVideosPage() {
     })
   }
 
-  const handleDelete = () => {
-    return deleteAssets(contextState.selectedIds).then(() => {
+  const handleDelete = (force?: boolean) => {
+    return deleteAssets(contextState.selectedIds, { force }).then(() => {
       const newAssets = contextState.assets.filter((a) => !contextState.selectedIds.includes(a.id));
       setAssets(newAssets)
       contextState.updateContext({
@@ -264,7 +264,7 @@ export default function EmptyVideosPage() {
                 <AlertDialog
                   title="Delete the selected videos?"
                   description="This action will delete the selected videos and cannot be undone."
-                  onConfirm={handleDelete}
+                  onConfirm={() => handleDelete(true)}
                   disabled={contextState.selectedIds.length === 0}
                 >
                   <Button variant={"destructive"} size={"sm"} disabled={contextState.selectedIds.length === 0}>

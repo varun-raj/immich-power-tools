@@ -11,6 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import AssetHeatMap from "@/components/analytics/exif/AssetHeatMap";
+import PeopleNamesChart from "@/components/analytics/exif/PeopleNamesChart";
+import GeoPhotosChart from "@/components/analytics/exif/GeoPhotosChart";
+import AlbumPhotosChart from "@/components/analytics/exif/AlbumPhotosChart";
 import { useEffect, useState } from "react";
 import { getAssetStatistics, getLivePhotoStatistics } from "@/handlers/api/analytics.handler";
 import { humanizeBytes } from "@/helpers/string.helper";
@@ -130,6 +133,14 @@ export default function ExifDataAnalytics() {
           </Card>
         </div>
         <AssetHeatMap />
+        
+        {/* New Analytics Charts */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <PeopleNamesChart />
+          <GeoPhotosChart />
+          <AlbumPhotosChart />
+        </div>
+        
         <div className="grid grid-cols-3 gap-4">
           {exifCharts.map((chart) => (
             <EXIFDistribution
