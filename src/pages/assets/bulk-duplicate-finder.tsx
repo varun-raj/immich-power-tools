@@ -6,9 +6,10 @@ import Header from '@/components/shared/Header'
 import VirtualizedDuplicateList from '@/components/assets/duplicate-assets/VirtualizedDuplicateList'
 import Loader from '@/components/ui/loader'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Search, Shield, Trash2 } from 'lucide-react'
+import { RefreshCw, Search, Shield, Trash2, Zap } from 'lucide-react'
 import FloatingBar from '@/components/shared/FloatingBar'
 import { AlertDialog } from '@/components/ui/alert-dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import { toast } from '@/components/ui/use-toast'
 import { humanizeBytes } from '@/helpers/string.helper'
@@ -68,6 +69,22 @@ export default function BulkDuplicatePage() {
       window.removeEventListener('resize', updateHeight);
     };
   }, [duplicates]); // Re-calculate when duplicates change
+
+  // Handle Escape key to unselect all
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && selectedAssets.size > 0) {
+        setSelectedAssets(new Set());
+        setLastSelectedIndex(-1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedAssets.size]);
 
   // Flatten all asset IDs for selection operations
   const allAssetIds = useMemo(() => {
@@ -198,6 +215,50 @@ export default function BulkDuplicatePage() {
     }
   }, [duplicates]);
 
+  const handleAutoSelect = (criteria: 'lowest-quality' | 'smallest-size') => {
+    const newSelection = new Set<string>();
+    
+    duplicates.forEach(record => {
+      if (record.assets.length <= 1) return; // Skip if only one asset
+      
+      let selectedAsset = record.assets[0];
+      
+      for (let i = 1; i < record.assets.length; i++) {
+        const currentAsset = record.assets[i];
+        
+        if (criteria === 'lowest-quality') {
+          // Compare by resolution (width * height) - select lowest
+          const currentResolution = currentAsset.exifInfo.exifImageWidth * currentAsset.exifInfo.exifImageHeight;
+          const selectedResolution = selectedAsset.exifInfo.exifImageWidth * selectedAsset.exifInfo.exifImageHeight;
+          
+          if (currentResolution < selectedResolution) {
+            selectedAsset = currentAsset;
+          }
+        } else if (criteria === 'smallest-size') {
+          // Compare by file size - select smallest
+          if (currentAsset.exifInfo.fileSizeInByte < selectedAsset.exifInfo.fileSizeInByte) {
+            selectedAsset = currentAsset;
+          }
+        }
+      }
+      
+      newSelection.add(selectedAsset.id);
+    });
+    
+    setSelectedAssets(newSelection);
+    setLastSelectedIndex(-1);
+    
+    const criteriaText = {
+      'lowest-quality': 'lowest quality',
+      'smallest-size': 'smallest size'
+    }[criteria];
+    
+    toast({
+      title: "Auto-selection complete",
+      description: `Selected ${newSelection.size} assets based on ${criteriaText} criteria.`,
+    });
+  };
+
   const handleDeleteAllSelected = async () => {
     if (selectedAssets.size === 0 || selectionMode !== 'discard') return;
 
@@ -292,6 +353,7 @@ export default function BulkDuplicatePage() {
         leftComponent="Bulk Duplicate Finder"
         rightComponent={
           <div className="flex items-center gap-4">
+
             {/* Selection Mode Button Group */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -426,18 +488,46 @@ export default function BulkDuplicatePage() {
         </div>
       )}
 
-      {selectionMode === 'discard' && selectedAssets.size > 0 && (
+      {selectionMode === 'discard' && (
         <FloatingBar>
-          <div className="flex items-center gap-2 justify-between w-full">
-            <p className="text-sm text-muted-foreground">
-              {selectedAssetsInfo.count} Selected
-              {selectedAssetsInfo.totalSize > 0 && (
-                <span className="ml-2">
-                  ({humanizeBytes(selectedAssetsInfo.totalSize)})
-                </span>
-              )}
-            </p>
+          <div className="flex items-center gap-4 justify-between w-full">
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                {selectedAssets.size > 0 ? (
+                  <>
+                    {selectedAssetsInfo.count} Selected
+                    {selectedAssetsInfo.totalSize > 0 && (
+                      <span className="ml-2">
+                        ({humanizeBytes(selectedAssetsInfo.totalSize)})
+                        Savings
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  "No assets selected"
+                )}
+              </p>
+              
+              {/* Auto-select Dropdown */}
+              
+            </div>
+            
             <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+                <Select onValueChange={handleAutoSelect}>
+                  <SelectTrigger className="w-40 h-8">
+                    <SelectValue placeholder="Auto-select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lowest-quality">
+                      Select lowest quality
+                    </SelectItem>
+                    <SelectItem value="smallest-size">
+                      Select smallest size
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <AlertDialog
                 title="Delete the selected assets?"
                 description={`This action will delete ${selectedAssetsInfo.count} selected asset${selectedAssetsInfo.count !== 1 ? 's' : ''}${selectedAssetsInfo.totalSize > 0 ? ` and save ${humanizeBytes(selectedAssetsInfo.totalSize)} of storage` : ''}. This action cannot be undone.`}
