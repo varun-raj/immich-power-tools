@@ -41,7 +41,12 @@ export const mergePerson = (id: string, targetIds: string[]) => {
   return API.post(MERGE_PERSON_PATH(id), { ids: targetIds })
 }
 
-export const listSimilarFaces = (id: string, threshold: number) => {
-  return API.get(SIMILAR_FACES_PATH(id), { threshold: threshold })
+interface IListSimilarFacesParams {
+  threshold: number;
+  name: "nameless" | "tagged";
+}
+export const listSimilarFaces = (id: string, params: IListSimilarFacesParams) => {
+  const { threshold, name } = params;
+  return API.get(SIMILAR_FACES_PATH(id), { threshold: threshold, name: name })
     .then((response) => response.map((person: any) => cleanUpPerson(person, true)));
 }
