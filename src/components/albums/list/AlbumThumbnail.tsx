@@ -12,7 +12,7 @@ import { Calendar, Camera } from 'lucide-react';
 
 interface IAlbumThumbnailProps {
   album: IAlbum;
-  onSelect: (albumId: string, isShiftClick?: boolean) => void;
+  onSelect: (album: IAlbum, isShiftClick?: boolean) => void;
   selected: boolean;
 }
 
@@ -23,7 +23,7 @@ export default function AlbumThumbnail({ album, onSelect, selected }: IAlbumThum
 
   const handleCheckboxChange = (event: React.MouseEvent) => {
     const isShiftClick = event.shiftKey;
-    onSelect(album.id, isShiftClick);
+    onSelect(album, isShiftClick);
   };
 
   return (
