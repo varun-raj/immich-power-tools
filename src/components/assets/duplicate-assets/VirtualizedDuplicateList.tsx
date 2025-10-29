@@ -11,6 +11,7 @@ interface VirtualizedDuplicateListProps {
   onKeepSelected: (record: IDuplicateAssetRecord, selectedIds: string[], unselectedIds: string[]) => void
   onKeepAllInRecord: (record: IDuplicateAssetRecord) => void
   height: number
+  selectionMode: 'keep' | 'discard'
 }
 
 interface ListItemProps {
@@ -23,11 +24,12 @@ interface ListItemProps {
     onDeleteRecord: (record: IDuplicateAssetRecord) => void
     onKeepSelected: (record: IDuplicateAssetRecord, selectedIds: string[], unselectedIds: string[]) => void
     onKeepAllInRecord: (record: IDuplicateAssetRecord) => void
+    selectionMode: 'keep' | 'discard'
   }
 }
 
 const ListItem: React.FC<ListItemProps> = ({ index, style, data }) => {
-  const { duplicates, selectedAssets, onAssetSelect, onDeleteRecord, onKeepSelected, onKeepAllInRecord } = data
+  const { duplicates, selectedAssets, onAssetSelect, onDeleteRecord, onKeepSelected, onKeepAllInRecord, selectionMode } = data
   const record = duplicates[index]
 
   return (
@@ -40,6 +42,7 @@ const ListItem: React.FC<ListItemProps> = ({ index, style, data }) => {
           onDeleteRecord={onDeleteRecord}
           onKeepSelected={onKeepSelected}
           onKeepAllInRecord={onKeepAllInRecord}
+          selectionMode={selectionMode}
         />
       </div>
     </div>
@@ -68,7 +71,8 @@ export default function VirtualizedDuplicateList({
   onDeleteRecord,
   onKeepSelected,
   onKeepAllInRecord,
-  height
+  height,
+  selectionMode
 }: VirtualizedDuplicateListProps) {
   // Custom item size getter for VariableSizeList
   const getItemHeight = (index: number) => {
@@ -83,7 +87,8 @@ export default function VirtualizedDuplicateList({
     onAssetSelect,
     onDeleteRecord,
     onKeepSelected,
-    onKeepAllInRecord
+    onKeepAllInRecord,
+    selectionMode
   }
 
   // For better performance with many items, we'll use a custom implementation
