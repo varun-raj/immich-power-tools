@@ -27,12 +27,12 @@ const SELECT_ORPHAN_PHOTOS = (date: string, ownerId:  string) =>
       asset a
   LEFT JOIN 
       album_asset aaa 
-      ON a.id = aaa."assetsId"
+      ON a.id = aaa."assetId"
   LEFT JOIN 
       asset_exif e 
       ON a.id = e."assetId"
   WHERE 
-      aaa."albumsId" IS NULL 
+      aaa."albumId" IS NULL 
       AND a."ownerId" = '${ownerId}'
       AND e."dateTimeOriginal"::date = '${date}'
       AND a."visibility" = 'timeline'
