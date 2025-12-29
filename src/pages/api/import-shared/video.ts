@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const params = validateParams(req);
   if ("error" in params) {
-    return respondWithError(res, 400, params.error);
+    return respondWithError(res, 400, params.error as string);
   }
 
   const search = new URLSearchParams({ key: params.key });

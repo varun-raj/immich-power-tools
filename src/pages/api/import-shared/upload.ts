@@ -70,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const validation = validatePayload(payload);
   if ("error" in validation) {
-    return respondWithError(res, 400, validation.error);
+    return respondWithError(res, 400, validation.error ?? "Validation failed");
   }
 
   const params = validation;
