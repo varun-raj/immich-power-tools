@@ -309,7 +309,9 @@ const uploadAssetBuffer = async (
   const fileType = asset.type ?? inferAssetTypeFromName(payload.fileName);
   const resolvedFileName = payload.fileName || asset.originalFileName || `${asset.id}.bin`;
   const contentType = payload.contentType ?? guessContentType(resolvedFileName);
-  const blob = new Blob([payload.buffer], { type: contentType });
+  const uint8Array = new Uint8Array(payload.buffer.byteLength);
+  uint8Array.set(payload.buffer);
+  const blob = new Blob([uint8Array.buffer], { type: contentType });
   const createdAt = asset.fileCreatedAt ?? asset.localDateTime ?? new Date().toISOString();
   const modifiedAt = asset.localDateTime ?? asset.fileCreatedAt ?? createdAt;
 
