@@ -26,8 +26,8 @@ export default async function handler(
     numberOfPhotos: count(assets.id), 
   })
     .from(albums)
-    .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
-    .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
+    .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumId))
+    .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
     .where(and(eq(albums.ownerId, currentUser.id), eq(albums.id, id), isNotNull(person.id)))

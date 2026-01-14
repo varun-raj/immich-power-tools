@@ -22,7 +22,7 @@ const getRowsByDates = async (startDateDate: Date, endDateDate: Date, currentUse
       duration: assets.duration,
       encodedVideoPath: assets.encodedVideoPath,
       originalFileName: assets.originalFileName,
-      sidecarPath: assets.sidecarPath,
+      
       deletedAt: assets.deletedAt,
       localDateTime: assets.localDateTime,
       exifImageWidth: exif.exifImageWidth,
@@ -55,7 +55,7 @@ const getRowsByAlbums = async (currentUser: IUser, albumId: string) => {
     duration: assets.duration,
     encodedVideoPath: assets.encodedVideoPath,
     originalFileName: assets.originalFileName,
-    sidecarPath: assets.sidecarPath,
+    
     deletedAt: assets.deletedAt,
     localDateTime: assets.localDateTime,
     exifImageWidth: exif.exifImageWidth,
@@ -66,8 +66,8 @@ const getRowsByAlbums = async (currentUser: IUser, albumId: string) => {
   })
     .from(assets)
     .leftJoin(exif, eq(exif.assetId, assets.id))
-    .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetsId, assets.id))
-    .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumsId))
+    .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetId, assets.id))
+    .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumId))
     .where(and(
       isNull(exif.latitude),
       isNotNull(assets.createdAt),

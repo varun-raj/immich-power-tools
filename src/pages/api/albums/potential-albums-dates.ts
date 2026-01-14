@@ -21,12 +21,12 @@ export default async function handler(
       date: sql`DATE(${exif.dateTimeOriginal})`,
       asset_count: desc(count(assets.id)),
     }).from(assets)
-      .leftJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
+      .leftJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
       .leftJoin(exif, eq(assets.id, exif.assetId))
       .where(and  (
         eq(assets.ownerId, currentUser.id),
         eq(assets.visibility, "timeline"),
-        isNull(albumsAssetsAssets.albumsId),
+        isNull(albumsAssetsAssets.albumId),
         isNotNull(exif.dateTimeOriginal),
 
       ))

@@ -44,11 +44,11 @@ export const faceSearchRelations = relations(faceSearch, ({ one }) => ({
 // Assuming there are relations to be defined with `albums` and `assets`
 export const albumsAssetsAssetsRelations = relations(albumsAssetsAssets, ({ one }) => ({
   album: one(albums, {
-      fields: [albumsAssetsAssets.albumsId],
+      fields: [albumsAssetsAssets.albumId],
       references: [albums.id],
   }),
   asset: one(assets, {
-      fields: [albumsAssetsAssets.assetsId],
+      fields: [albumsAssetsAssets.assetId],
       references: [assets.id],
   }),
 }));
