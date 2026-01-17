@@ -7,6 +7,8 @@ import {
   LIST_MISSING_LOCATION_DATES_PATH,
   UPDATE_ASSETS_PATH,
   LIST_DUPLICATES_PATH,
+  FIND_ASSET_BY_CHECKSUM,
+  UPLOAD_ASSET,
 } from "@/config/routes";
 import { cleanUpAsset } from "@/helpers/asset.helper";
 import API from "@/lib/api";
@@ -90,4 +92,17 @@ export const listEmptyVideos = async (filters: IEmptyVideosParams) => {
 
 export const listDuplicates = async () => {
   return API.get(LIST_DUPLICATES_PATH);
+}
+
+export interface IFindAssetByChecksum {
+  id: string | null;
+  deletedAt: string | null;
+}
+
+export const findAssetByChecksum = async (checksum: string): Promise<IFindAssetByChecksum> => {
+  return API.get(FIND_ASSET_BY_CHECKSUM, {checksum});
+}
+
+export const uploadAsset = async (asset: File) => {
+  return API.postWithFiles(UPLOAD_ASSET, { asset });
 }

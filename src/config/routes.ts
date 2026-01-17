@@ -43,6 +43,8 @@ export const ASSET_PREVIEW_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/
 export const ASSET_VIDEO_PATH = (id: string) => BASE_PROXY_ENDPOINT + "/asset/video/" + id;
 export const ASSET_GEO_HEATMAP_PATH = BASE_API_ENDPOINT + "/assets/geo-heatmap";
 export const LIST_EMPTY_VIDEOS_PATH = BASE_API_ENDPOINT + "/assets/empty-videos";
+export const FIND_ASSET_BY_CHECKSUM = BASE_API_ENDPOINT + "/assets/checksum";
+export const UPLOAD_ASSET = BASE_API_ENDPOINT + "/assets/upload";
 
 
 
