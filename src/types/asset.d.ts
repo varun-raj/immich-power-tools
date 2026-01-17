@@ -85,3 +85,16 @@ export interface IDuplicateAssetExifInfo {
   projectionType:   null;
   rating:           null;
 }
+
+export interface IDeviceAsset {
+  id?:              string | null;
+  file:             File;
+  previewUrl:       string;
+  videoURL?:        string;
+  checksum:         string;
+  type:             "image" | "video";
+  exifImageWidth:   number;
+  exifImageHeight:  number;
+  dateTimeOriginal: Date
+  deletedAt?:       string | null;
+}

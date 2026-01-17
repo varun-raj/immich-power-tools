@@ -1,6 +1,5 @@
-import { ASSET_PREVIEW_PATH, ASSET_SHARE_THUMBNAIL_PATH, ASSET_THUMBNAIL_PATH, ASSET_VIDEO_PATH, PERSON_THUBNAIL_PATH } from "@/config/routes"
-import { IAsset } from "@/types/asset"
-
+import { ASSET_PREVIEW_PATH, ASSET_SHARE_THUMBNAIL_PATH, ASSET_THUMBNAIL_PATH, ASSET_VIDEO_PATH } from "@/config/routes"
+import { IAsset, IAssetExif, IDeviceAsset } from "@/types/asset"
 
 export const cleanUpAsset = (asset: IAsset): IAsset => {
   return {
@@ -37,4 +36,15 @@ function isRotated270CW(orientation: number) {
 export function isFlipped(orientation?: string | null) {
   const value = Number(orientation);
   return value && (isRotated270CW(value) || isRotated90CW(value));
+}
+
+export function sortAssetsByDateTime<A extends IAsset | IDeviceAsset>(
+  assets: A[],
+  order: "asc" | "desc"
+): A[] {
+  return [...assets].sort((a, b) => {
+    const tA = new Date(a.dateTimeOriginal).getTime();
+    const tB = new Date(b.dateTimeOriginal).getTime();
+    return order === "asc" ? tA - tB : tB - tA;
+  });
 }

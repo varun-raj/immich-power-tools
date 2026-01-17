@@ -14,6 +14,7 @@ A unofficial immich client to provide better tools to organize and manage your i
 - **Analytics 📈**: Get analytics on your library like assets over time, exif data, etc.
 - **Smart Search 🔎**: Search your library with natural language, supports queries like "show me all my photos from 2024 of <person name>"
 - **Bulk Date Offset 📅**: Offset the date of selected assets by a given amount of time. Majorly used to fix the date of assets that are out of sync with the actual date.
+- **Pre-Upload Check 🧹**: Scan files before uploading to Immich to detect which ones already exist in your library. Perfect for avoiding re‑uploading deleted, blurry, or duplicate photos—upload only what’s truly new.
 
 ### Support me 🙏
 
@@ -122,6 +123,7 @@ bun run dev
   - [x] Potential Albums
   - [x] People in Album
 - [x] Missing Location
+- [x] Pre-Upload Check
 - [x] Statistics
   - [x] EXIF Data
   - [x] Assets Overtime Chart
