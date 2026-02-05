@@ -19,7 +19,6 @@ export const assets = pgTable('asset', {
   createdAt: timestamp('createdAt', { withTimezone: true }).defaultNow().notNull(),
   status: varchar('status').default('active').notNull(),
   originalFileName: varchar('originalFileName').notNull(),
-  sidecarPath: varchar('sidecarPath'),
   // thumbhash: bytea('thumbhash'),
   isOffline: boolean('isOffline').default(false).notNull(),
   // libraryId: uuid('libraryId').references(() => libraries.id, { onDelete: 'cascade', onUpdate: 'cascade' }),

@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       duration: assets.duration,
       encodedVideoPath: assets.encodedVideoPath,
       originalFileName: assets.originalFileName,
-      sidecarPath: assets.sidecarPath,
+      
       deletedAt: assets.deletedAt,
       localDateTime: assets.localDateTime,
       exifImageWidth: exif.exifImageWidth,
@@ -76,8 +76,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       orientation: exif.orientation,
     }).from(assets)
       .innerJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-      .leftJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
-      .leftJoin(albums, eq(albumsAssetsAssets.albumsId, albums.id))
+      .leftJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
+      .leftJoin(albums, eq(albumsAssetsAssets.albumId, albums.id))
       .innerJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
         filteredPersonIds?.length > 0 ? inArray(assetFaces.personId, filteredPersonIds) : undefined,

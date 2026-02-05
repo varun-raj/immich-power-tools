@@ -58,7 +58,7 @@ const dbAssets = await db
     duration: assets.duration,
     encodedVideoPath: assets.encodedVideoPath,
     originalFileName: assets.originalFileName,
-    sidecarPath: assets.sidecarPath,
+    
     deletedAt: assets.deletedAt,
     localDateTime: assets.localDateTime,
     exifImageWidth: exif.exifImageWidth,

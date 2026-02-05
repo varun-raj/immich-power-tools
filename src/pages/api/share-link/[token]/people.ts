@@ -44,9 +44,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       assetCount: count(assets.id),
     }).from(assets)
       .innerJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-      .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
+      .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
       .innerJoin(person, eq(assetFaces.personId, person.id))
-      .innerJoin(albums, eq(albumsAssetsAssets.albumsId, albums.id))
+      .innerJoin(albums, eq(albumsAssetsAssets.albumId, albums.id))
       .innerJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
         personIds?.length > 0 ? inArray(assetFaces.personId, personIds) : undefined,

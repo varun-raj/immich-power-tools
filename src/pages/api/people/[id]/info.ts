@@ -36,8 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .leftJoin(assetFaces, eq(assetFaces.personId, personRecord.id))
   .leftJoin(assets, eq(assets.id, assetFaces.assetId))
   .leftJoin(exif, eq(exif.assetId, assets.id))
-  .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetsId, assets.id))
-    .where(eq(albumsAssetsAssets.albumsId, albums.id))
+  .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetId, assets.id))
+    .where(eq(albumsAssetsAssets.albumId, albums.id))
     .groupBy(albums.id);
   
 

@@ -21,15 +21,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     longitude: exif.longitude,
   }).from(assets)
   .innerJoin(exif, eq(assets.id, exif.assetId))
-  .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
-  .innerJoin(assetFaces, eq(albumsAssetsAssets.assetsId, assetFaces.assetId))
+  .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
+  .innerJoin(assetFaces, eq(albumsAssetsAssets.assetId, assetFaces.assetId))
   .innerJoin(person, eq(assetFaces.personId, person.id))
   .where(
     and(
       eq(assets.ownerId, currentUser.id),
       isNotNull(exif.latitude),
       isNotNull(exif.longitude),
-      albumIds?.length > 0 ? inArray(albumsAssetsAssets.albumsId, [albumIds]) : undefined,
+      albumIds?.length > 0 ? inArray(albumsAssetsAssets.albumId, [albumIds]) : undefined,
       peopleIds?.length > 0 ? inArray(person.id, [peopleIds]) : undefined
     )
   );
