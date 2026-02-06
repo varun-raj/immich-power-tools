@@ -61,13 +61,13 @@ export default async function handler(
   const secondaryAlbumAssets = await db
     .select()
     .from(albumsAssetsAssets)
-    .where(inArray(albumsAssetsAssets.albumsId, secondaryAlbumIds));
+    .where(inArray(albumsAssetsAssets.albumId, secondaryAlbumIds));
 
   if (secondaryAlbumAssets.length === 0) {
     return res.status(404).json({ error: "Secondary album assets not found" });
   }
 
-  const secondaryAlbumAssetsIds = secondaryAlbumAssets.map((albumAsset) => albumAsset.assetsId);
+  const secondaryAlbumAssetsIds = secondaryAlbumAssets.map((albumAsset) => albumAsset.assetId);
 
   const addAssetsToPrimaryAlbumURL = `${ENV.IMMICH_URL}/api/albums/${primaryAlbumId}/assets`;
   const addAssetsToPrimaryAlbum = await fetch(addAssetsToPrimaryAlbumURL, {

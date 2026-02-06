@@ -36,7 +36,7 @@ export default async function handler(
     duration: assets.duration,
     encodedVideoPath: assets.encodedVideoPath,
     originalFileName: assets.originalFileName,
-    sidecarPath: assets.sidecarPath,
+    
     deletedAt: assets.deletedAt,
     localDateTime: assets.localDateTime,
     exifImageWidth: exif.exifImageWidth,
@@ -46,12 +46,12 @@ export default async function handler(
     orientation: exif.orientation,
   })
     .from(albumsAssetsAssets)
-    .leftJoin(assets, eq(albumsAssetsAssets.assetsId, assets.id))
+    .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(exif, eq(assets.id, exif.assetId))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
     .leftJoin(person, eq(assetFaces.personId, person.id))
     .where(and(
-      eq(albumsAssetsAssets.albumsId, id), 
+      eq(albumsAssetsAssets.albumId, id), 
       eq(assets.visibility, "timeline"),
       eq(assets.status, "active"),
       faceId ? eq(assetFaces.personId, faceId) : undefined,

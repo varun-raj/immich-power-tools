@@ -69,9 +69,9 @@ export default async function handler(
     faceCount: count(sql<string>`DISTINCT ${assetFaces.personId}`), // Ensure unique personId
   })
     .from(albums)
-    .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumsId))
+    .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumId))
     .leftJoin(assets, and(
-      eq(albumsAssetsAssets.assetsId, assets.id),
+      eq(albumsAssetsAssets.assetId, assets.id),
       eq(assets.visibility, "timeline"),
       eq(assets.status, "active"),
     ))

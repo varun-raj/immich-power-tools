@@ -27,8 +27,8 @@ export default async function handler(
       })
       .from(assets)
       .leftJoin(exif, eq(exif.assetId, assets.id))
-      .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetsId, assets.id))
-      .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumsId))
+      .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetId, assets.id))
+      .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumId))
       .where(
         and(
           isNull(exif.latitude),

@@ -66,8 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     cover: albums.albumThumbnailAssetId
   })
   .from(albumsAssetsAssets)
-  .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumsId))
-  .leftJoin(assets, eq(assets.id, albumsAssetsAssets.assetsId))
+  .leftJoin(albums, eq(albums.id, albumsAssetsAssets.albumId))
+  .leftJoin(assets, eq(assets.id, albumsAssetsAssets.assetId))
   .leftJoin(exif, eq(exif.assetId, assets.id))
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),

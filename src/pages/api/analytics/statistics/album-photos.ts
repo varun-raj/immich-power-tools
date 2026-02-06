@@ -17,7 +17,7 @@ export default async function handler(
             value: count(sql`DISTINCT ${assets.id}`),
         })
         .from(assets)
-        .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetsId))
+        .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
         .where(eq(assets.ownerId, currentUser.id));
 
         // Count total photos
