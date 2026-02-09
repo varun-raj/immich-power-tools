@@ -1,4 +1,7 @@
-import { pgTable, uuid, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, boolean, customType } from "drizzle-orm/pg-core";
+
+const bytea = customType<{ data: Buffer }>({ dataType() { return "bytea"; }, });
+
 
 export const assets = pgTable('asset', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -12,7 +15,7 @@ export const assets = pgTable('asset', {
   isFavorite: boolean('isFavorite').default(false).notNull(),
   duration: varchar('duration'),
   encodedVideoPath: varchar('encodedVideoPath').default(''),
-  // checksum: bytea('checksum').notNull(),
+  checksum: bytea("checksum").notNull(),
   visibility: varchar('visibility').default('timeline').notNull(),
   livePhotoVideoId: uuid('livePhotoVideoId').references((): any => assets.id, { onDelete: 'set null', onUpdate: 'cascade' }),
   updatedAt: timestamp('updatedAt', { withTimezone: true }).defaultNow().notNull(),

@@ -45,7 +45,7 @@ export const sidebarNavs = [
   // Empty Videos
   {
     title: "Empty Videos",
-    link: "/assets/empty-videos", 
+    link: "/assets/empty-videos",
     icon: <Video className="h-4 w-4" />,
   },
   // Bulk Duplicate
@@ -54,5 +54,11 @@ export const sidebarNavs = [
     link: "/assets/bulk-duplicate-finder",
     icon: <Copy className="h-4 w-4" />,
   },
-  
+  // Pre Upload
+  {
+    title: "Pre-Upload",
+    link: "/assets/pre-upload",
+    icon: <Copy className="h-4 w-4" />,
+  },
+
 ];
