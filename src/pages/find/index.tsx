@@ -1,62 +1,178 @@
 import FindInput from '@/components/find/FindInput';
 import PageLayout from '@/components/layouts/PageLayout';
 import Header from '@/components/shared/Header';
-import Loader from '@/components/ui/loader';
-import { ASSET_PREVIEW_PATH } from '@/config/routes';
 import { useConfig } from '@/contexts/ConfigContext';
+import { LOGO_COLORS } from '@/config/constants/brand';
 import { findAssets } from '@/handlers/api/asset.handler';
-import { Search, TriangleAlert, WandSparkles } from 'lucide-react';
-import React, { useMemo, useState } from 'react'
+import Image from 'next/image';
+import {
+  Calendar,
+  MapPin,
+  MonitorSmartphone,
+  Plus,
+  SearchX,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+  TriangleAlert,
+  Video,
+  WandSparkles,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, LayoutGroup, MotionConfig, motion, type Variants } from 'framer-motion';
 import AssetGrid from "@/components/shared/AssetGrid";
 import FloatingBar from "@/components/shared/FloatingBar";
 import AssetsBulkDeleteButton from "@/components/shared/AssetsBulkDeleteButton";
-// Context Imports
 import PhotoSelectionContext, { IPhotoSelectionContext } from '@/contexts/PhotoSelectionContext';
-// Album Imports
 import AlbumSelectorDialog from '@/components/albums/AlbumSelectorDialog';
 import { addAssetToAlbum, createAlbum } from '@/handlers/api/album.handler';
 import { IAlbum, IAlbumCreate } from '@/types/album';
-import { useToast } from '@/components/ui/use-toast'; // Import useToast
-import { Button } from '@/components/ui/button'; // Import Button
+import { IAsset } from '@/types/asset';
+import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
 
 interface IFindFilters {
-  [key: string]: string;
+  [key: string]: string | string[] | boolean | number;
 }
 
-const FILTER_KEY_MAP = {
-  "city": "City",
-  "state": "State",
-  "country": "Country",
-  "takenAfter": "Taken After",
-  "takenBefore": "Taken Before",
-  "size": "Size",
-  "model": "Model",
-  "personIds": "People",
+interface IFindTurn {
+  id: number;
+  displayQuery: string;
+  status: 'loading' | 'done' | 'error';
+  assets: IAsset[];
+  filters: IFindFilters;
+  error?: string;
 }
 
-// Add suggestion list
+const FILTER_KEY_MAP: Record<string, string> = {
+  city: "City",
+  state: "State",
+  country: "Country",
+  takenAfter: "Taken After",
+  takenBefore: "Taken Before",
+  size: "Size",
+  model: "Model",
+  personIds: "People",
+  type: "Type",
+  isFavorite: "Favorite",
+}
+
 const SUGGESTIONS = [
-  { label: "Last week's photos", query: "Photos from last week" },
-  { label: "Photos from last summer", query: "Photos taken last summer" },
-  { label: "Videos from New York", query: "Videos taken in New York" },
-  { label: "Photos taken in Beach", query: "Photos taken in Berlin" }, // Example with person tag
-  { label: "Recent screenshots", query: "Screenshots taken recently" },
+  { label: "Last week's photos", query: "Photos from last week", icon: Calendar },
+  { label: "Photos from last summer", query: "Photos taken last summer", icon: Sun },
+  { label: "Videos from New York", query: "Videos taken in New York", icon: Video },
+  { label: "Photos taken in Berlin", query: "Photos taken in Berlin", icon: MapPin },
+  { label: "Recent screenshots", query: "Screenshots taken recently", icon: MonitorSmartphone },
 ];
 
-export default function FindPage() {
+const spring = { type: 'spring', stiffness: 380, damping: 32, mass: 0.8 } as const;
+const softSpring = { type: 'spring', stiffness: 260, damping: 28 } as const;
 
-  // Remove local selectedIds and assets state
-  // const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  // const [assets, setAssets] = useState<IAsset[]>([]);
-  const { toast } = useToast(); // Initialize toast
+const stagger: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.97 },
+  show: { opacity: 1, y: 0, scale: 1, transition: spring },
+};
+
+const pop: Variants = {
+  hidden: { opacity: 0, scale: 0.7, y: 6 },
+  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 500, damping: 26 } },
+};
+
+const filtersToChips = (filters: IFindFilters) => {
+  return Object.entries(filters)
+    .filter(([key, value]) => {
+      if (key === "query") return false;
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== '';
+    })
+    .map(([key, value]) => ({
+      label: FILTER_KEY_MAP[key] || key,
+      value: Array.isArray(value) ? value.join(', ') : String(value),
+    }));
+}
+
+const AiAvatar = ({ thinking }: { thinking?: boolean }) => (
+  <div className="relative h-8 w-8 shrink-0">
+    <AnimatePresence>
+      {thinking && (
+        <motion.span
+          key="pulse"
+          className="absolute inset-0 rounded-full bg-blue-500"
+          initial={{ opacity: 0, scale: 1 }}
+          animate={{ opacity: [0.45, 0], scale: [1, 1.9] }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeOut' }}
+        />
+      )}
+    </AnimatePresence>
+    <motion.div
+      className="relative flex h-8 w-8 items-center justify-center rounded-full border bg-card shadow-sm"
+      animate={thinking ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+      transition={thinking ? { duration: 1.4, repeat: Infinity, ease: 'easeInOut' } : spring}
+    >
+      <Sparkles className={thinking ? 'h-4 w-4 text-blue-500' : 'h-4 w-4 text-foreground'} />
+    </motion.div>
+  </div>
+);
+
+const ThinkingIndicator = () => (
+  <div className="flex w-fit items-center gap-3 rounded-2xl rounded-tl-md border bg-card px-4 py-3">
+    <div className="flex gap-1">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-blue-500"
+          animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+        />
+      ))}
+    </div>
+    <span className="bg-gradient-to-r from-muted-foreground via-foreground to-muted-foreground bg-[length:200%_100%] bg-clip-text text-sm text-transparent animate-shimmer">
+      Understanding your query…
+    </span>
+  </div>
+);
+
+const FilterChips = ({ filters }: { filters: IFindFilters }) => {
+  const chips = filtersToChips(filters);
+  if (chips.length === 0) return null;
+  return (
+    <motion.div className="flex flex-wrap gap-1.5" variants={stagger} initial="hidden" animate="show">
+      {chips.map((chip) => (
+        <motion.span
+          key={chip.label}
+          variants={pop}
+          className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs"
+        >
+          <span className="font-medium text-blue-600 dark:text-blue-400">{chip.label}</span>
+          <span className="text-muted-foreground">{chip.value}</span>
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+};
+
+const PrivacyNote = ({ className }: { className?: string }) => (
+  <p className={"flex items-center justify-center gap-1.5 text-xs text-muted-foreground " + (className || '')}>
+    <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+    <span>Your AI model only parses the query — none of your library data is sent to it.</span>
+  </p>
+);
+
+export default function FindPage() {
+  const { toast } = useToast();
   const { aiEnabled } = useConfig();
   const [query, setQuery] = useState('');
-  const [searchedQuery, setSearchedQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState<IFindFilters>({});
-  const [error, setError] = useState<string | null>(null);
+  const [turns, setTurns] = useState<IFindTurn[]>([]);
+  const turnIdRef = useRef(0);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Initialize context state
   const [contextState, setContextState] = useState<IPhotoSelectionContext>({
     selectedIds: [],
     assets: [],
@@ -65,7 +181,6 @@ export default function FindPage() {
       setContextState(prevState => ({
         ...prevState,
         ...newConfig,
-        // No deep merge needed for config here as it's simple
         config: newConfig.config ? { ...prevState.config, ...newConfig.config } : prevState.config
       }));
     }
@@ -73,58 +188,70 @@ export default function FindPage() {
 
   const updateContext = contextState.updateContext;
 
-  
-  const appliedFilters: {
-    label: string;
-    value: string;
-  }[] = useMemo(() => {
-    return Object.entries(filters)
-      .filter(([_key, value]) => {
-        if (Array.isArray(value)) {
-          return value.length > 0;
-        }
-        return value !== undefined && value !== null && value !== '';
-      })
-      .map(([key, value]) => ({
-        label: key,
-        value: Array.isArray(value) ? value.join(', ') : value,
-      }))
-      .filter((filter) => filter.label !== "query");
-  }, [filters]);
+  // Keep the shared selection context in sync with everything on screen
+  useEffect(() => {
+    updateContext({ assets: turns.flatMap((turn) => turn.assets) });
+  }, [turns, updateContext]);
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) return;
-    setQuery(query);
-    setSearchedQuery(query);
+  // Follow the conversation as turns are added or resolve
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 80);
+    return () => window.clearTimeout(id);
+  }, [turns]);
+
+  const patchTurn = (id: number, patch: Partial<IFindTurn>) => {
+    setTurns(prev => prev.map(turn => turn.id === id ? { ...turn, ...patch } : turn));
+  }
+
+  const handleSearch = useCallback((searchQuery: string, displayQuery?: string) => {
+    if (!searchQuery.trim() || loading) return;
+    const id = ++turnIdRef.current;
+    setTurns(prev => [...prev, {
+      id,
+      displayQuery: (displayQuery || searchQuery).trim(),
+      status: 'loading',
+      assets: [],
+      filters: {},
+    }]);
+    setQuery('');
     setLoading(true);
-    setError(null); // Clear previous errors
-    findAssets(query)
-      .then(({ assets, filters: _filters }) => {
-        // Update context state with fetched assets
-        updateContext({ assets: assets, selectedIds: [] });
-        setFilters(_filters);
+    updateContext({ selectedIds: [] });
+    findAssets(searchQuery)
+      .then(({ assets, filters, error }: { assets: IAsset[], filters: IFindFilters, error?: string }) => {
+        if (error) {
+          patchTurn(id, { status: 'error', filters: filters || {}, error });
+        } else {
+          patchTurn(id, { status: 'done', assets: assets || [], filters: filters || {} });
+        }
       })
       .catch((error: any) => {
-        setError(error.message || error.error || "Failed to fetch assets");
-        updateContext({ assets: [], selectedIds: [] }); // Clear assets on error
+        patchTurn(id, { status: 'error', error: error.message || error.error || "Failed to fetch assets" });
       })
       .finally(() => {
         setLoading(false);
       });
+  }, [loading, updateContext]);
+
+  const handleReset = () => {
+    setTurns([]);
+    setQuery('');
+    updateContext({ selectedIds: [], assets: [] });
   }
 
-  // Update handleSelectionChange to use context
   const handleSelectionChange = (ids: string[]) => {
     updateContext({ selectedIds: ids });
   }
 
-  // Update handleDelete to use context
   const handleDelete = (ids: string[]) => {
-    const newAssets = contextState.assets.filter((asset) => !ids.includes(asset.id));
-    updateContext({ selectedIds: [], assets: newAssets });
+    setTurns(prev => prev.map(turn => ({
+      ...turn,
+      assets: turn.assets.filter((asset) => !ids.includes(asset.id)),
+    })));
+    updateContext({ selectedIds: [] });
   }
 
-  // --- Album Handling Logic (Adapted from potential-albums.tsx) ---
   const handleSelectAlbum = (album: IAlbum) => {
     return addAssetToAlbum(album.id, contextState.selectedIds)
       .then(() => {
@@ -132,8 +259,6 @@ export default function FindPage() {
           title: `Assets added to ${album.albumName}`,
           description: `${contextState.selectedIds.length} assets added to album`,
         });
-        // Optionally clear selection or remove assets from view if needed
-        // updateContext({ selectedIds: [] });
       })
       .catch(() => {
         toast({
@@ -148,13 +273,11 @@ export default function FindPage() {
     return createAlbum({
       ...formData,
       assetIds: contextState.selectedIds,
-    }).then((newAlbum) => { // Assuming createAlbum returns the new album
+    }).then((newAlbum) => {
       toast({
         title: "Album created",
-        description: `Album "${newAlbum.albumName}" created successfully with ${contextState.selectedIds.length} assets.`, // Provide more detail
+        description: `Album "${newAlbum.albumName}" created successfully with ${contextState.selectedIds.length} assets.`,
       });
-      // Optionally clear selection or remove assets from view
-      // updateContext({ selectedIds: [] });
     }).catch(() => {
       toast({
         title: "Error creating album",
@@ -163,149 +286,256 @@ export default function FindPage() {
       });
     });
   }
-  // --- End Album Handling Logic ---
 
-  const renderFilters = () => {
-    if (appliedFilters.length === 0) return null;
-    return (
-      <div className="flex gap-2 flex-wrap px-2">
-        {appliedFilters.map((filter) => (
-          <div key={filter.label} className="flex gap-2 items-center divide-x divide-gray-400 dark:divide-zinc-800 bg-zinc-100 dark:bg-zinc-800 border border-gray-400 dark:border-zinc-800 rounded-md px-2">
-            <p className="text-sm text-gray-500 dark:text-zinc-400">{FILTER_KEY_MAP[filter.label as keyof typeof FILTER_KEY_MAP] || filter.label}</p>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 pl-1.5">{filter.value}</p>
+  const renderTurnResponse = (turn: IFindTurn) => {
+    if (turn.status === 'loading') {
+      return (
+        <motion.div key="thinking" variants={rise} initial="hidden" animate="show"
+          exit={{ opacity: 0, scale: 0.9, y: -6, transition: { duration: 0.18 } }}>
+          <ThinkingIndicator />
+        </motion.div>
+      );
+    }
+    if (turn.status === 'error') {
+      return (
+        <motion.div key="error" variants={rise} initial="hidden" animate="show"
+          className="flex w-fit max-w-xl items-start gap-3 rounded-2xl rounded-tl-md border border-red-200 bg-red-50 px-4 py-3 dark:border-red-500/30 dark:bg-red-500/10">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium">Oops, something went wrong</p>
+            <p className="text-sm text-muted-foreground">{turn.error}</p>
           </div>
+        </motion.div>
+      );
+    }
+    return (
+      <motion.div key="done" className="flex min-w-0 flex-1 flex-col gap-3"
+        variants={stagger} initial="hidden" animate="show">
+        <FilterChips filters={turn.filters} />
+        {turn.assets.length === 0 ? (
+          <motion.div variants={rise} className="flex w-fit items-center gap-3 rounded-2xl rounded-tl-md border bg-card px-4 py-3">
+            <SearchX className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              No matches for that one — try rephrasing or loosening the filters.
+            </p>
+          </motion.div>
+        ) : (
+          <>
+            <motion.p variants={rise} className="text-xs text-muted-foreground">
+              Found {turn.assets.length} {turn.assets.length === 1 ? 'result' : 'results'}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ ...softSpring, delay: 0.15 }}
+            >
+              <AssetGrid
+                assets={turn.assets}
+                selectable
+                onSelectionChange={handleSelectionChange}
+              />
+            </motion.div>
+          </>
+        )}
+      </motion.div>
+    );
+  };
+
+  const renderTurn = (turn: IFindTurn) => (
+    <div key={turn.id} className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={spring}
+          style={{ transformOrigin: 'bottom right' }}
+          className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm text-primary-foreground shadow-sm"
+        >
+          {turn.displayQuery}
+        </motion.div>
+      </div>
+      <motion.div
+        className="flex items-start gap-3"
+        initial={{ opacity: 0, x: -12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ ...spring, delay: 0.12 }}
+      >
+        <AiAvatar thinking={turn.status === 'loading'} />
+        <AnimatePresence mode="wait" initial={false}>
+          {renderTurnResponse(turn)}
+        </AnimatePresence>
+      </motion.div>
+    </div>
+  );
+
+  const renderComposer = (docked: boolean) => (
+    <motion.div layoutId="find-composer" layout="position" transition={softSpring} className="w-full">
+      <FindInput
+        value={query}
+        onChange={setQuery}
+        onSearch={handleSearch}
+        loading={loading}
+        autoFocus
+        dropdownPlacement={docked ? 'top' : 'bottom'}
+      />
+    </motion.div>
+  );
+
+  const renderHero = () => (
+    <motion.div
+      key="hero"
+      className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-4 pb-16"
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+      exit={{ opacity: 0, y: -24, scale: 0.98, transition: { duration: 0.25, ease: 'easeIn' } }}
+    >
+      <motion.div variants={rise} className="relative animate-float-slow">
+        <motion.div
+          className="absolute inset-0 scale-150 rounded-full opacity-50 blur-2xl dark:opacity-40"
+          style={{ background: `conic-gradient(from 0deg, ${LOGO_COLORS.join(', ')}, ${LOGO_COLORS[0]})` }}
+          animate={{ rotate: 360, scale: [1.5, 1.7, 1.5] }}
+          transition={{ rotate: { duration: 14, repeat: Infinity, ease: 'linear' }, scale: { duration: 5, repeat: Infinity, ease: 'easeInOut' } }}
+        />
+        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border bg-white shadow-lg">
+          <Image src="/favicon.png" alt="Immich Power Tools" width={40} height={40} className="h-10 w-10" />
+        </div>
+      </motion.div>
+      <motion.div variants={rise} className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Find anything in your library
+        </h1>
+        <p className="max-w-md text-sm text-muted-foreground">
+          Describe what you&apos;re looking for in plain language.
+          Use <kbd className="rounded-md bg-muted px-1.5 py-0.5 text-xs">@</kbd> to search for photos of a specific person.
+        </p>
+      </motion.div>
+      <motion.div variants={rise} className="w-full max-w-2xl">
+        {renderComposer(false)}
+      </motion.div>
+      <motion.div variants={stagger} className="flex max-w-2xl flex-wrap justify-center gap-2">
+        {SUGGESTIONS.map((suggestion) => (
+          <motion.button
+            key={suggestion.query}
+            variants={pop}
+            whileHover={{ y: -3, scale: 1.04 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 24 }}
+            className="group flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors duration-200 hover:border-foreground/30 hover:bg-accent hover:text-foreground hover:shadow-sm"
+            onClick={() => handleSearch(suggestion.query)}
+          >
+            <suggestion.icon className="h-3.5 w-3.5 text-blue-500" />
+            {suggestion.label}
+          </motion.button>
         ))}
-      </div>
-    )
-  }
+      </motion.div>
+      <motion.div variants={rise}>
+        <PrivacyNote />
+      </motion.div>
+    </motion.div>
+  );
 
-  const renderContent = () => {
-    if (loading) {
-      return <div className="flex justify-center items-center h-full">
-        <Loader />
-      </div>
-    }
-    else if (error) {
-      return (
-        <div className="flex justify-center items-center h-full flex-col gap-2">
-          <TriangleAlert className='w-10 h-10 text-muted-foreground' />
-          <p className='text-lg font-bold'>Oops, something went wrong</p>
-          <p className='text-sm text-muted-foreground max-w-md text-center'>
-            Error: {error}
-          </p>
+  const renderChat = () => (
+    <motion.div
+      key="chat"
+      className="absolute inset-0 flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 0.3 } }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6">
+          {turns.map(renderTurn)}
+          <div ref={bottomRef} />
         </div>
-      )
-    }
-    else if (searchedQuery.length === 0) {
-      return (
-        <div className="flex justify-center flex-col gap-2 items-center h-full">
-          <Search className='w-10 h-10 text-muted-foreground' />
-          <p className='text-lg font-bold'>Search for photos in natural language</p>
-          <p className='text-sm text-muted-foreground text-center max-w-lg'> {/* Centered and max-width */}
-            Example: <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>Sunset photos from last week</kbd>. Use <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>@</kbd> to search for photos of a specific person.
-          </p>
-          {/* Render suggestions */}
-          <div className="flex flex-wrap gap-2 justify-center mt-4 max-w-lg">
-            {SUGGESTIONS.map((suggestion) => (
-              <Button
-                key={suggestion.query}
-                variant="outline"
-                size="sm"
-                className="text-xs"
-                onClick={() => {
-                  setQuery(suggestion.query);
-                  handleSearch(suggestion.query);
-                }}
-              >
-                {suggestion.label}
-              </Button>
-            ))}
-          </div>
-          <p className='text-xs text-muted-foreground text-center flex gap-1 items-center mt-4'> {/* Adjusted margin top */}
-            <span>Power tools uses your configured AI model only for parsing your query. None of your library data is sent to the AI provider.</span>
-          </p>
-        </div>
-      )
-    }
-    // Use contextState.assets for the check
-    else if (contextState.assets.length === 0) {
-      return <div className="flex justify-center items-center h-full flex-col gap-2">
-        <TriangleAlert className='w-10 h-10 text-muted-foreground' />
-        <p className='text-lg font-bold'>No results found for the below filters</p>
-        {appliedFilters.length > 0 && // Show filters only if they exist
-          <div className='text-sm text-muted-foreground mt-2'> {/* Added margin top */}
-            {renderFilters()}
-          </div>
-        }
       </div>
-    }
+      <div className="shrink-0 bg-gradient-to-t from-background via-background to-transparent pt-4">
+        <div className="mx-auto w-full max-w-2xl px-4 pb-3">
+          {renderComposer(true)}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.4 } }}>
+            <PrivacyNote className="mt-2" />
+          </motion.div>
+        </div>
+      </div>
+      <AnimatePresence>
+        {contextState.selectedIds.length > 0 && (
+          <motion.div
+            key="floating-bar"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
+            transition={spring}
+            className="pointer-events-none fixed inset-x-0 bottom-44 z-50 flex justify-center px-4 md:left-[200px] lg:left-[240px]"
+          >
+            <FloatingBar className="pointer-events-auto !static w-full">
+              <p className="text-sm text-muted-foreground">
+                {contextState.selectedIds.length} Selected
+              </p>
+              <div className="flex items-center gap-2">
+                <AlbumSelectorDialog onSelected={handleSelectAlbum} onSubmit={handleCreateAlbum} />
+                <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div>
+                <AssetsBulkDeleteButton
+                  selectedIds={contextState.selectedIds}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </FloatingBar>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
 
-    // Wrap grid and floating bar with Context Provider
-    return (
-      <PhotoSelectionContext.Provider value={{ ...contextState, updateContext }}>
-        <div className="flex flex-col gap-4"> {/* Added gap */}
-          {renderFilters()}
-          <div className="w-full">
-            {/* Pass context assets and selection handler */}
-            <AssetGrid
-              assets={contextState.assets}
-              selectable
-              onSelectionChange={handleSelectionChange}
-            />
-            {/* Use contextState.selectedIds for FloatingBar condition and props */}
-            {contextState.selectedIds.length > 0 && (
-              <FloatingBar>
-                <p className="text-sm text-muted-foreground">
-                  {contextState.selectedIds.length} Selected
-                </p>
-                <div className="flex items-center gap-2"> {/* Container for buttons */}
-                  {/* Add AlbumSelectorDialog */}
-                  <AlbumSelectorDialog onSelected={handleSelectAlbum} onSubmit={handleCreateAlbum} />
-                  <div className="h-[10px] w-[1px] bg-zinc-500 dark:bg-zinc-600"></div> {/* Separator */}
-                  <AssetsBulkDeleteButton
-                    selectedIds={contextState.selectedIds}
-                    onDelete={handleDelete}
-                  />
-                </div>
-              </FloatingBar>
-            )}
-          </div>
-        </div>
-      </PhotoSelectionContext.Provider>
-    )
-  }
+  const renderAiDisabled = () => (
+    <div className="flex h-full flex-col items-center justify-center gap-2 py-10">
+      <WandSparkles className="h-10 w-10 text-muted-foreground" />
+      <p className="text-lg font-semibold">AI parsing is not enabled</p>
+      <p className="max-w-md text-center text-sm text-muted-foreground">
+        Currently, the Power Tools Find relies on an OpenAI-compatible API for parsing the query.
+        Please configure <kbd className="rounded-md bg-muted px-1.5 py-0.5 text-xs">AI_API_KEY</kbd> and <kbd className="rounded-md bg-muted px-1.5 py-0.5 text-xs">AI_MODEL</kbd> in the <kbd className="rounded-md bg-muted px-1.5 py-0.5 text-xs">.env</kbd> file.
+      </p>
+      <div className="mt-2 rounded-md border border-l-4 p-2">
+        <PrivacyNote />
+      </div>
+    </div>
+  );
 
   return (
-    <PageLayout className="pb-20">
-      <Header leftComponent="Find" />
-      {aiEnabled ? (
-        <>
-          <div className="flex flex-col gap-4 p-2">
-            <FindInput 
-              value={query}
-              onChange={setQuery}
-              onSearch={handleSearch} 
-              loading={loading}
-            />
-          </div>
-          {/* renderContent now includes the Provider */}
-          {renderContent()}
-        </>
-      ) : (
-        <div className="flex justify-center py-10 items-center h-full flex-col gap-2">
-          <WandSparkles className='w-10 h-10 text-muted-foreground' />
-          <p className='text-lg font-semibold'>AI parsing is not enabled</p>
-          <p className='text-sm text-muted-foreground max-w-md text-center'>
-            Currently, the Power Tools Find relies on an OpenAI-compatible API for parsing the query.
-            Please configure <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>AI_API_KEY</kbd> and <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>AI_MODEL</kbd> in the <kbd className='bg-zinc-200 text-black dark:text-white px-1 py-0.5 rounded-md dark:bg-zinc-500'>.env</kbd> file.
-          </p>
-          <div className="border border-l-4 border-zinc-200 dark:border-zinc-500 rounded-md p-2">
-            <p className='text-xs text-muted-foreground text-center flex gap-1 items-center'>
-              <span>Power tools uses your configured AI model only for parsing your query. None of your library data is sent to the AI provider.</span>
-            </p>
-          </div>
-        </div>
-      )}
-    </PageLayout>
+    <MotionConfig reducedMotion="user">
+      <PageLayout className="gap-0">
+        <Header
+          leftComponent="Find"
+          rightComponent={
+            <AnimatePresence>
+              {turns.length > 0 && (
+                <motion.div
+                  key="new-search"
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 12 }}
+                  transition={spring}
+                >
+                  <Button variant="ghost" size="sm" onClick={handleReset} className="gap-1.5">
+                    <Plus className="h-4 w-4" />
+                    New search
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          }
+        />
+        {aiEnabled ? (
+          <PhotoSelectionContext.Provider value={{ ...contextState, updateContext }}>
+            <LayoutGroup>
+              <div className="relative min-h-0 flex-1">
+                <AnimatePresence>
+                  {turns.length === 0 ? renderHero() : renderChat()}
+                </AnimatePresence>
+              </div>
+            </LayoutGroup>
+          </PhotoSelectionContext.Provider>
+        ) : renderAiDisabled()}
+      </PageLayout>
+    </MotionConfig>
   )
 }
