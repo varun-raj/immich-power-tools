@@ -13,8 +13,8 @@ export const assetFacesRelations = relations(assetFaces, ({ one }) => ({
       references: [assets.id],
   }),
   person: one(person, {
-      fields: [assetFaces.personId],
-      references: [person.id],
+      fields: [assetFaces.personGroupId],
+      references: [person.personGroupId],
   }),
 }));
 

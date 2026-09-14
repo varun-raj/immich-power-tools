@@ -24,14 +24,14 @@ export default async function handler(
     assetCount: count(assets.id),
     firstPhotoDate: min(exif.dateTimeOriginal),
     lastPhotoDate: max(exif.dateTimeOriginal),
-    faceCount: count(sql<string>`DISTINCT ${person.id}`), // Ensure unique personId
+    faceCount: count(sql<string>`DISTINCT ${person.personGroupId}`), // Ensure unique personId
   })
     .from(albums)
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumId))
     .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.visibility, "timeline")))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-    .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
+    .leftJoin(person, and(eq(assetFaces.personGroupId, person.personGroupId),eq(person.ownerId, assets.ownerId),eq(person.isHidden, false)))
     .where(and(eq(albums.id, id)))
     .groupBy(albums.id)
     .limit(1);

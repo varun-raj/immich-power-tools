@@ -1,8 +1,8 @@
-import { pgTable, uuid, varchar, timestamp, boolean, date, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, boolean, date, primaryKey } from "drizzle-orm/pg-core";
 
 
 export const person = pgTable("person", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  personGroupId: uuid("personGroupId").notNull(),
   createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow(),
   ownerId: uuid("ownerId").notNull(),
@@ -11,6 +11,8 @@ export const person = pgTable("person", {
   isHidden: boolean("isHidden").notNull().default(false),
   birthDate: date("birthDate", { mode: "date" }),
   faceAssetId: uuid("faceAssetId"),
-});
+}, (table) => ({
+  pk: primaryKey({ columns: [table.ownerId, table.personGroupId] }),
+}));
 
 export type Person = typeof person.$inferSelect;

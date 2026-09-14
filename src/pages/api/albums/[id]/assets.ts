@@ -46,12 +46,12 @@ export default async function handler(
     .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(exif, eq(assets.id, exif.assetId))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-    .leftJoin(person, eq(assetFaces.personId, person.id))
+    .leftJoin(person, and(eq(assetFaces.personGroupId, person.personGroupId),eq(person.ownerId, currentUser.id)))
     .where(and(
       eq(albumsAssetsAssets.albumId, id), 
       eq(assets.visibility, "timeline"),
       eq(assets.status, "active"),
-      faceId ? eq(assetFaces.personId, faceId) : undefined,
+      faceId ? eq(assetFaces.personGroupId, faceId) : undefined,
     ))
     .orderBy(desc(assets.id), desc(assets.localDateTime))
     .limit(100)

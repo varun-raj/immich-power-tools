@@ -71,7 +71,7 @@ export default async function handler(
     myRole: albumUsers.role,
     description: albums.description,
     lastModifiedAssetTimestamp: max(exif.dateTimeOriginal),
-    faceCount: count(sql<string>`DISTINCT ${assetFaces.personId}`), // Ensure unique personId
+    faceCount: count(sql<string>`DISTINCT ${assetFaces.personGroupId}`), // Ensure unique personId
   })
     .from(albums)
     .innerJoin(albumUsers, and(eq(albums.id, albumUsers.albumId), inArray(albumUsers.role, roles)))
@@ -83,7 +83,7 @@ export default async function handler(
     ))
     .leftJoin(exif, eq(assets.id, exif.assetId))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-    .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
+    .leftJoin(person, and(eq(assetFaces.personGroupId, person.personGroupId),eq(person.ownerId, currentUser.id), eq(person.isHidden, false)))
     .where(eq(albumUsers.userId, currentUser.id))
     .groupBy(albums.id, albumUsers.userId, albumUsers.role)
     .orderBy(desc(albums.createdAt));

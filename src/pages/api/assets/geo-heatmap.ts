@@ -31,7 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (peopleIds?.length > 0) {
     query = query
       .innerJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-      .innerJoin(person, eq(assetFaces.personId, person.id));
+      .innerJoin(person, and(
+        eq(assetFaces.personGroupId, person.personGroupId),
+        eq(person.ownerId, currentUser.id),
+      ));
   }
 
   const dbAssets = await query.where(
@@ -40,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       isNotNull(exif.latitude),
       isNotNull(exif.longitude),
       albumIds?.length > 0 ? inArray(albumsAssetsAssets.albumId, [albumIds]) : undefined,
-      peopleIds?.length > 0 ? inArray(person.id, [peopleIds]) : undefined
+      peopleIds?.length > 0 ? inArray(person.personGroupId, [peopleIds]) : undefined
     )
   );
   const heatmapData = dbAssets.map((asset) => [
