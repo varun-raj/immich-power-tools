@@ -33,7 +33,7 @@ export default async function handler(
     const personRecords = await db
       .select()
       .from(person)
-      .where(eq(person.id, id))
+      .where(and(eq(person.personGroupId, id), eq(person.ownerId, currentUser.id)))
       .limit(1);
 
     const personRecord = personRecords?.[0];
@@ -46,7 +46,7 @@ export default async function handler(
     const assetFaceRecords = await db
       .select()
       .from(assetFaces)
-      .where(eq(assetFaces.personId, personRecord.id))
+      .where(eq(assetFaces.personGroupId, personRecord.personGroupId))
       .limit(1);
     const assetFaceRecord = assetFaceRecords?.[0];
 
@@ -75,8 +75,8 @@ export default async function handler(
     )})`;
 
     const people = await db
-      .selectDistinctOn([person.id], {
-        id: person.id,
+      .selectDistinctOn([person.personGroupId], {
+        id: person.personGroupId,
         name: person.name,
         birthDate: person.birthDate,
         isHidden: person.isHidden,
@@ -87,11 +87,11 @@ export default async function handler(
       })
       .from(faceSearch)
       .leftJoin(assetFaces, eq(assetFaces.id, faceSearch.faceId))
-      .innerJoin(person, eq(person.id, assetFaces.personId))
+      .innerJoin(person, eq(person.personGroupId, assetFaces.personGroupId))
 
       .where(
         and(
-          ne(person.id, id),
+          ne(person.personGroupId, id),
           eq(person.ownerId, currentUser.id),
           gt(similarity, threshold) 
         )

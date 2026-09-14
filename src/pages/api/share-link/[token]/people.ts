@@ -38,28 +38,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { personIds, albumIds, startDate, endDate } = decoded as ShareLinkFilters;
 
     const dbPeople = await db.select({
-      id: person.id,
+      id: person.personGroupId,
       name: person.name,
       thumbnailAssetId: person.faceAssetId,
       assetCount: count(assets.id),
     }).from(assets)
       .innerJoin(assetFaces, eq(assets.id, assetFaces.assetId))
       .innerJoin(albumsAssetsAssets, eq(assets.id, albumsAssetsAssets.assetId))
-      .innerJoin(person, eq(assetFaces.personId, person.id))
+      .innerJoin(person, and(
+        eq(assetFaces.personGroupId, person.personGroupId),
+        eq(person.ownerId, assets.ownerId),
+      ))
       .innerJoin(albums, eq(albumsAssetsAssets.albumId, albums.id))
       .innerJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
-        personIds?.length > 0 ? inArray(assetFaces.personId, personIds) : undefined,
+        personIds?.length > 0 ? inArray(assetFaces.personGroupId, personIds) : undefined,
         albumIds?.length > 0 ? inArray(albums.id, albumIds) : undefined,
         startDate ? gte(assets.createdAt, new Date(startDate)) : undefined,
         endDate ? lte(assets.createdAt, new Date(endDate)) : undefined,
         eq(assets.status, "active"),
         eq(assets.visibility, "timeline"),
         eq(assets.isOffline, false),
-        isNotNull(person.id),
+        isNotNull(person.personGroupId),
         ne(person.name, "")
       ))
-      .groupBy(person.id)
+      .groupBy(person.ownerId, person.personGroupId)
       .orderBy(desc(count(assets.id)));
 
     const cleanedPeople = dbPeople.map((person) => {

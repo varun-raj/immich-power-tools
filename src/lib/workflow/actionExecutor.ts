@@ -65,7 +65,7 @@ async function immichFetch(path: string, method: string, body: any, user: IUser)
   return null;
 }
 
-async function resolveTemplate(template: string, assetIds: string[]): Promise<string> {
+async function resolveTemplate(template: string, assetIds: string[], ownerId: string): Promise<string> {
   if (!template || assetIds.length === 0) return template;
 
   let result = template;
@@ -112,7 +112,10 @@ async function resolveTemplate(template: string, assetIds: string[]): Promise<st
     const faces = await db
       .select({ name: person.name })
       .from(assetFaces)
-      .innerJoin(person, eq(assetFaces.personId, person.id))
+      .innerJoin(person, and(
+        eq(assetFaces.personGroupId, person.personGroupId),
+        eq(person.ownerId, ownerId),
+      ))
       .where(inArray(assetFaces.assetId, assetIds))
       .limit(100);
 
@@ -145,7 +148,7 @@ export async function executeAction(
 
   switch (subType) {
     case "create_album": {
-      const albumName = await resolveTemplate(config.nameTemplate || "Auto Album", assetIds);
+      const albumName = await resolveTemplate(config.nameTemplate || "Auto Album", assetIds, user.id);
       const album = await immichFetch("/albums", "POST", { albumName, assetIds: assetIds.slice(0, API_BATCH_SIZE) }, user);
       if (assetIds.length > API_BATCH_SIZE) {
         await immichFetchBatched(`/albums/${album.id}/assets`, "PUT", assetIds.slice(API_BATCH_SIZE), {}, user);

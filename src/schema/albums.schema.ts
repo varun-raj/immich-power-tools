@@ -6,7 +6,7 @@ export const albums = pgTable('album', {
     createdAt: timestamp('createdAt', { withTimezone: true }).defaultNow().notNull(),
     albumThumbnailAssetId: uuid('albumThumbnailAssetId'),
     updatedAt: timestamp('updatedAt', { withTimezone: true }).defaultNow().notNull(),
-    description: text('description').notNull().default(''),
+    description: text('description'),
     deletedAt: timestamp('deletedAt', { withTimezone: true }),
     isActivityEnabled: boolean('isActivityEnabled').notNull().default(true),
     order: varchar('order').notNull().default('desc'),

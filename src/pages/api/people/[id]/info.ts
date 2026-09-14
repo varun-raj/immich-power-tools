@@ -3,6 +3,7 @@ import { NextApiResponse } from "next";
 import { and, desc, eq, isNotNull, sql } from "drizzle-orm";
 
 import { db } from "@/config/db";
+import { getCurrentUser } from "@/handlers/serverUtils/user.utils";
 import { person } from "@/schema/person.schema";
 import { NextApiRequest } from "next";
 import { albums } from "@/schema/albums.schema";
@@ -11,10 +12,17 @@ import { albumsAssetsAssets } from "@/schema/albumAssetsAssets.schema";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
+  const currentUser = await getCurrentUser(req);
+  if (!currentUser) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const personRecords = await db
     .select()
     .from(person)
-    .where(eq(person.id, id as string))
+    .where(and(
+      eq(person.personGroupId, id as string),
+      eq(person.ownerId, currentUser.id),
+    ))
     .limit(1);
 
   const personRecord = personRecords?.[0];
@@ -33,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     lastAssetDate: sql<Date>`max(${exif.dateTimeOriginal})`,
   })
   .from(albums)
-  .leftJoin(assetFaces, eq(assetFaces.personId, personRecord.id))
+  .leftJoin(assetFaces, eq(assetFaces.personGroupId, personRecord.personGroupId))
   .leftJoin(assets, eq(assets.id, assetFaces.assetId))
   .leftJoin(exif, eq(exif.assetId, assets.id))
   .leftJoin(albumsAssetsAssets, eq(albumsAssetsAssets.assetId, assets.id))
@@ -49,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .leftJoin(assets, eq(assets.id, exif.assetId))
   .leftJoin(assetFaces, eq(assetFaces.assetId, assets.id))
   .where(and(
-    eq(assetFaces.personId, personRecord.id),
+    eq(assetFaces.personGroupId, personRecord.personGroupId),
     isNotNull(exif.city),
     isNotNull(exif.country),
   ))
@@ -59,6 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   return res.status(200).json({
     ...personRecord,
+    // The Immich API identifies a person by its personGroupId
+    id: personRecord.personGroupId,
     albums: dbPersonAlbums.sort((a, b) => b.assetCount - a.assetCount).map((album) => ({
       ...album,
       lastAssetYear: album.lastAssetDate ? new Date(album.lastAssetDate).getFullYear() : null,

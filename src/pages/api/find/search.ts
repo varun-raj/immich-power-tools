@@ -7,7 +7,7 @@ import { parseFindQuery } from "@/helpers/ai.helper";
 import { getUserHeaders } from "@/helpers/user.helper";
 import { person } from "@/schema";
 import { Person } from "@/schema/person.schema";
-import { inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function search(
@@ -28,7 +28,10 @@ export default async function search(
       dbPeople = await db
         .select()
         .from(person)
-        .where(inArray(person.id, personIds));
+        .where(and(
+          inArray(person.personGroupId, personIds),
+          eq(person.ownerId, currentUser.id),
+        ));
     }
 
     // Smart search requires query text; a filter-only search (e.g. "photos

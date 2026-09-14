@@ -56,6 +56,7 @@ export default async function handler(
       eq(assets.visibility, "timeline"),
       eq(assets.status, "active"),
       eq(assets.ownerId, currentUser.id),
+      eq(person.ownerId, currentUser.id),
       type === "all" ? undefined : (type === "nameless" ? eq(person.name, "") : ne(person.name, "")),
       query && query.length > 0 ? ilike(person.name, `%${query}%`) : undefined,
       visibility === "visible" ? eq(person.isHidden, false) : visibility === "hidden" ? eq(person.isHidden, true) : undefined
@@ -63,7 +64,7 @@ export default async function handler(
 
     let dbQuery = db
       .select({
-        id: person.id,
+        id: person.personGroupId,
         name: person.name,
         birthDate: person.birthDate,
         isHidden: person.isHidden,
@@ -71,11 +72,11 @@ export default async function handler(
         assetCount: count(assetFaces.id),
       })
       .from(person)
-      .leftJoin(assetFaces, eq(assetFaces.personId, person.id))
+      .leftJoin(assetFaces, eq(assetFaces.personGroupId, person.personGroupId))
       .leftJoin(assets, eq(assets.id, assetFaces.assetId))
       .where(whereClause)
       .having(lte(count(assetFaces.id), maximumAssetCount))
-      .groupBy(person.id);
+      .groupBy(person.ownerId, person.personGroupId);
 
     let sortedQuery;
     if (sort === "assetCount") {

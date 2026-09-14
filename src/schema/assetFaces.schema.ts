@@ -3,7 +3,7 @@ import { pgTable, uuid, integer } from "drizzle-orm/pg-core";
 export const assetFaces = pgTable("asset_face", {
     id: uuid("id").defaultRandom().primaryKey(),
     assetId: uuid("assetId").notNull(),
-    personId: uuid("personId"),
+    personGroupId: uuid("personGroupId"),
     imageWidth: integer("imageWidth").notNull().default(0),
     imageHeight: integer("imageHeight").notNull().default(0),
     boundingBoxX1: integer("boundingBoxX1").notNull().default(0),

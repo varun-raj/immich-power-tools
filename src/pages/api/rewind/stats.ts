@@ -83,12 +83,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   .select({ 
     name: person.name, 
     count: count(assets.id),
-    id: person.id,
+    id: person.personGroupId,
     cover: person.faceAssetId
   })
   .from(assetFaces)
   .leftJoin(assets, eq(assets.id, assetFaces.assetId))
-  .leftJoin(person, eq(person.id, assetFaces.personId))
+  .leftJoin(person, and(
+    eq(person.personGroupId, assetFaces.personGroupId),
+    eq(person.ownerId, user.id),
+  ))
   .leftJoin(exif, eq(exif.assetId, assets.id))
   .where(and(
     eq(sql`EXTRACT(YEAR FROM ${exif.dateTimeOriginal})`, year),
@@ -99,7 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   ))
   .orderBy(desc(count(assets.id)))
   .limit(2)
-  .groupBy(person.id);
+  .groupBy(person.ownerId, person.personGroupId);
 
   const favoritedAssets = await db
   .select({ id: assets.id })

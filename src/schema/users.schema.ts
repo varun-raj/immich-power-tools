@@ -3,7 +3,7 @@ import { pgTable, uuid, varchar, timestamp, boolean, bigint } from "drizzle-orm/
 export const users = pgTable("user", {
     id: uuid("id").defaultRandom().primaryKey(),
     email: varchar("email").notNull(),
-    password: varchar("password").notNull().default(''),
+    password: varchar("password"),
     createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow(),
     profileImagePath: varchar("profileImagePath").notNull().default(''),
     isAdmin: boolean("isAdmin").notNull().default(false),
