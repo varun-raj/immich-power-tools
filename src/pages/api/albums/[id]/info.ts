@@ -29,7 +29,7 @@ export default async function handler(
     assetCount: count(assets.id),
     firstPhotoDate: min(exif.dateTimeOriginal),
     lastPhotoDate: max(exif.dateTimeOriginal),
-    faceCount: count(sql<string>`DISTINCT ${person.id}`), // Ensure unique personId
+    faceCount: count(sql<string>`DISTINCT ${person.personGroupId}`), // Ensure unique personId
   })
     .from(albums)
     .innerJoin(albumUsers, and(eq(albums.id, albumUsers.albumId), eq(albumUsers.role, "owner")))
@@ -37,7 +37,7 @@ export default async function handler(
     .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(exif, and(eq(assets.id, exif.assetId), eq(assets.visibility, "timeline")))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-    .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
+    .leftJoin(person, and(eq(assetFaces.personGroupId, person.personGroupId),eq(person.ownerId, currentUser.id), eq(person.isHidden, false)))
     .where(and(eq(albumUsers.userId, currentUser.id), eq(albums.id, id)))
     .groupBy(albums.id)
     .limit(1);

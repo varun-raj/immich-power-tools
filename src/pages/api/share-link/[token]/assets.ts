@@ -77,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .leftJoin(albums, eq(albumsAssetsAssets.albumId, albums.id))
       .innerJoin(exif, eq(exif.assetId, assets.id))
       .where(and(
-        filteredPersonIds?.length > 0 ? inArray(assetFaces.personId, filteredPersonIds) : undefined,
+        filteredPersonIds?.length > 0 ? inArray(assetFaces.personGroupId, filteredPersonIds) : undefined,
         albumIds?.length > 0 ? inArray(albums.id, albumIds) : undefined,
         startDate ? gte(assets.createdAt, new Date(startDate)) : undefined,
         endDate ? lte(assets.createdAt, new Date(endDate)) : undefined,

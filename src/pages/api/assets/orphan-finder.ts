@@ -55,7 +55,7 @@ export default async function handler(
 
   if (noPeople === "true") {
     conditions.push(
-      sql`NOT EXISTS (SELECT 1 FROM "asset_face" af WHERE af."assetId" = ${assets.id} AND af."personId" IS NOT NULL)`
+      sql`NOT EXISTS (SELECT 1 FROM "asset_face" af WHERE af."assetId" = ${assets.id} AND af."personGroupId" IS NOT NULL)`
     );
   }
 

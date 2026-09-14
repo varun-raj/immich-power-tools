@@ -73,13 +73,16 @@ export default async function handler(
     // Fetch people detected in this asset
     const faces = await db
       .select({
-        personId: person.id,
+        personId: person.personGroupId,
         personName: person.name,
         thumbnailPath: person.thumbnailPath,
         isHidden: person.isHidden,
       })
       .from(assetFaces)
-      .innerJoin(person, eq(assetFaces.personId, person.id))
+      .innerJoin(person, and(
+        eq(assetFaces.personGroupId, person.personGroupId),
+        eq(person.ownerId, currentUser.id),
+      ))
       .where(eq(assetFaces.assetId, id));
 
     return res.status(200).json({

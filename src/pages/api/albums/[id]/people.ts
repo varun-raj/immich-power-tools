@@ -21,7 +21,7 @@ export default async function handler(
   const { id } = req.query as { id: string };
 
   const dbAlbumPeople = await db.select({
-    id: person.id,
+    id: person.personGroupId,
     name: person.name,
     thumbnailAssetId: person.faceAssetId,
     numberOfPhotos: count(assets.id), 
@@ -31,10 +31,10 @@ export default async function handler(
     .leftJoin(albumsAssetsAssets, eq(albums.id, albumsAssetsAssets.albumId))
     .leftJoin(assets, eq(albumsAssetsAssets.assetId, assets.id))
     .leftJoin(assetFaces, eq(assets.id, assetFaces.assetId))
-    .leftJoin(person, and(eq(assetFaces.personId, person.id), eq(person.isHidden, false)))
-    .where(and(eq(albumUsers.userId, currentUser.id), eq(albums.id, id), isNotNull(person.id)))
+    .leftJoin(person, and(eq(assetFaces.personGroupId, person.personGroupId),eq(person.ownerId, currentUser.id), eq(person.isHidden, false)))
+    .where(and(eq(albumUsers.userId, currentUser.id), eq(albums.id, id), isNotNull(person.personGroupId)))
     .orderBy(desc(person.name))
-    .groupBy(person.id);  
+    .groupBy(person.ownerId, person.personGroupId);  
 
   res.status(200).json(dbAlbumPeople);
 }
