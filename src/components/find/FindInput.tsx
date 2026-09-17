@@ -15,7 +15,11 @@ interface FindInputProps {
   loading?: boolean;
   autoFocus?: boolean;
   dropdownPlacement?: 'top' | 'bottom';
+  // cycled through while the input is empty, to hint at what can be asked
+  placeholders?: string[];
 }
+
+const DEFAULT_PLACEHOLDERS = ['Ask for photos, use @ to mention people']
 
 const iconSwap = {
   initial: { opacity: 0, scale: 0.5, rotate: -90 },
@@ -24,9 +28,10 @@ const iconSwap = {
   transition: { type: 'spring' as const, stiffness: 500, damping: 30 },
 }
 
-export default function FindInput({ onSearch, value, onChange, loading, autoFocus, dropdownPlacement }: FindInputProps) {
+export default function FindInput({ onSearch, value, onChange, loading, autoFocus, dropdownPlacement, placeholders = DEFAULT_PLACEHOLDERS }: FindInputProps) {
   const [options, setOptions] = React.useState<{ value: string; label: string }[]>([])
   const [focused, setFocused] = React.useState(false)
+  const [placeholderIndex, setPlaceholderIndex] = React.useState(0)
   const nameToIdRef = React.useRef<Record<string, string>>({})
   const mentionsRef = React.useRef<React.ComponentRef<typeof Mentions>>(null)
   const wasLoadingRef = React.useRef(false)
@@ -37,6 +42,13 @@ export default function FindInput({ onSearch, value, onChange, loading, autoFocu
     if (wasLoadingRef.current && !loading) mentionsRef.current?.focus()
     wasLoadingRef.current = !!loading
   }, [loading])
+
+  React.useEffect(() => {
+    if (value || placeholders.length < 2) return
+    const id = window.setInterval(() => setPlaceholderIndex((index) => index + 1), 3200)
+    return () => window.clearInterval(id)
+  }, [value, placeholders.length])
+
   const isDark = resolvedTheme !== 'light'
   const canSubmit = !!value.trim() && !loading
 
@@ -119,7 +131,7 @@ export default function FindInput({ onSearch, value, onChange, loading, autoFocu
           ref={mentionsRef}
           value={value}
           prefix="@"
-          placeholder={loading ? 'Searching your library…' : 'Ask for photos, use @ to mention people'}
+          placeholder={loading ? 'Searching your library…' : placeholders[placeholderIndex % placeholders.length]}
           disabled={loading}
           onSearch={handleMentionSearch}
           onChange={onChange}
