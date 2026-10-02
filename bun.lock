@@ -32,7 +32,6 @@
         "@types/qs": "^6.15.1",
         "@types/react-window": "^1.8.8",
         "@xyflow/react": "^12.11.3",
-        "ai": "^6.0.264",
         "axios": "^1.20.0",
         "bs58": "^6.0.0",
         "chrono-node": "^2.10.1",
